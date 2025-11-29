@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -15,7 +15,6 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
 	// Set defaults
@@ -25,13 +24,12 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("CLICKHOUSE_DSN", "clickhouse://default@localhost:9000/default")
 	viper.SetDefault("JWT_SECRET", "change-this-secret-in-production")
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			log.Printf("Error reading config file: %v", err)
+	// Use .env file if it exists, otherwise rely on environment variables
+	if _, err := os.Stat(".env"); err == nil {
+		viper.SetConfigFile(".env")
+		if err := viper.ReadInConfig(); err != nil {
 			return nil, err
 		}
-		// Config file not found; ignore error if desired
-		log.Println("No .env file found, using environment variables and defaults")
 	}
 
 	var config Config
