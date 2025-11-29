@@ -57,6 +57,30 @@ Scaling strategies: horizontal worker scaling, database sharding, Redis caching,
 
 ## Quick Start
 
+### Option 1: Docker Compose (Recommended)
+
+Start everything with a single command:
+
+```bash
+docker compose up -d
+```
+
+This starts PostgreSQL, Valkey (Redis), ClickHouse, the API server, and worker. The server will be available at `http://localhost:8080`.
+
+To view logs:
+
+```bash
+docker compose logs -f
+```
+
+To stop:
+
+```bash
+docker compose down
+```
+
+### Option 2: Local Development
+
 **Prerequisites:** Go 1.24+, Docker and Docker Compose
 
 1. Start infrastructure services:
@@ -135,5 +159,8 @@ pulse/
 │   ├── scheduler/  # Check scheduling logic
 │   ├── store/      # Data access layer
 │   └── worker/     # Worker process logic
+├── Dockerfile.server
+├── Dockerfile.worker
+├── docker-compose.yml
 └── docker-compose.infrastructure.yml
 ```
