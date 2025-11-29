@@ -66,4 +66,3 @@ func (a *Alerter) sendAlert(check *models.Check, alertType string, result *model
 		}
 	}
 }
-

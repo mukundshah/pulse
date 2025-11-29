@@ -11,12 +11,12 @@ import (
 )
 
 type WebhookPayload struct {
-	CheckID    string    `json:"check_id"`
-	CheckName  string    `json:"check_name"`
-	Type       string    `json:"type"`
-	Status     string    `json:"status"`
-	Error      string    `json:"error,omitempty"`
-	Timestamp  time.Time `json:"timestamp"`
+	CheckID   string    `json:"check_id"`
+	CheckName string    `json:"check_name"`
+	Type      string    `json:"type"`
+	Status    string    `json:"status"`
+	Error     string    `json:"error,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 func SendWebhook(webhookURL string, check *models.Check, alertType string, result *models.CheckRun) error {
@@ -84,4 +84,3 @@ func SendWebhook(webhookURL string, check *models.Check, alertType string, resul
 
 	return fmt.Errorf("failed to send webhook after %d attempts", maxRetries)
 }
-
