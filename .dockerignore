@@ -4,6 +4,7 @@
 
 # Documentation
 README
+LICENSE
 *.md
 
 # Build artifacts
@@ -36,10 +37,6 @@ test/
 Dockerfile*
 docker-compose*.yml
 .dockerignore
-
-# Archives
-archived/
-example/
 
 # OS
 .DS_Store
