@@ -17,6 +17,8 @@ type Check struct {
 	Headers          datatypes.JSON `gorm:"type:jsonb"`
 	ExpectedStatus   int            `gorm:"default:200"`
 	BodyContains     *string        `gorm:"type:text"`
+	TimeoutMs        int            `gorm:"default:10000"` // timeout in milliseconds
+	WebhookURL       *string        `gorm:"type:text"`     // webhook URL for alerts
 	IntervalSeconds  int            `gorm:"not null"`
 	AlertThreshold   int            `gorm:"not null;default:3"`
 	ConsecutiveFails int            `gorm:"not null;default:0"`
@@ -26,6 +28,16 @@ type Check struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
+}
+
+type CheckRun struct {
+	ID         uuid.UUID `json:"id"`
+	CheckID    uuid.UUID `json:"check_id"`
+	Status     string    `json:"status"` // success, fail, timeout, error
+	LatencyMs  int64     `json:"latency_ms"`
+	StatusCode int       `json:"status_code"`
+	Error      *string   `json:"error,omitempty"`
+	RunAt      time.Time `json:"run_at"`
 }
 
 type Alert struct {
