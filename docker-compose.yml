@@ -36,8 +36,8 @@ services:
     container_name: pulse-clickhouse
     environment:
       CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_USER: pulse
+      CLICKHOUSE_PASSWORD: password
     volumes:
       - clickhouse_data:/var/lib/clickhouse
     healthcheck:
@@ -56,7 +56,7 @@ services:
     environment:
       DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
       REDIS_URL: redis://valkey:6379
-      CLICKHOUSE_DSN: clickhouse://default@clickhouse:9000/default
+      CLICKHOUSE_DSN: clickhouse://pulse:password@clickhouse:9000/default
       PORT: 8080
     ports:
       - "8080:8080"
@@ -79,7 +79,7 @@ services:
     environment:
       DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
       REDIS_URL: redis://valkey:6379
-      CLICKHOUSE_DSN: clickhouse://default@clickhouse:9000/default
+      CLICKHOUSE_DSN: clickhouse://pulse:password@clickhouse:9000/default
     depends_on:
       postgres:
         condition: service_healthy

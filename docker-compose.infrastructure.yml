@@ -36,8 +36,8 @@ services:
     container_name: pulse-clickhouse
     environment:
       CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_USER: pulse
+      CLICKHOUSE_PASSWORD: password
     ports:
       - "9000:9000"  # Native protocol
       - "8123:8123"   # HTTP interface
