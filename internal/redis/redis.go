@@ -19,7 +19,7 @@ type Client struct {
 }
 
 func Connect(cfg *config.Config) (*Client, error) {
-	opt, err := redis.ParseURL(fmt.Sprintf("redis://%s", cfg.RedisURL))
+	opt, err := redis.ParseURL(cfg.RedisURL)
 	if err != nil {
 		// Try direct connection if URL parsing fails
 		opt = &redis.Options{

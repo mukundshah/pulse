@@ -21,7 +21,7 @@ func LoadConfig() (*Config, error) {
 	// Set defaults
 	viper.SetDefault("PORT", "8080")
 	viper.SetDefault("DATABASE_URL", "postgres://user:password@localhost:5432/pulse?sslmode=disable")
-	viper.SetDefault("REDIS_URL", "localhost:6379")
+	viper.SetDefault("REDIS_URL", "redis://localhost:6379")
 	viper.SetDefault("CLICKHOUSE_DSN", "clickhouse://default@localhost:9000/default")
 	viper.SetDefault("JWT_SECRET", "change-this-secret-in-production")
 
