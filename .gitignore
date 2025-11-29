@@ -1,0 +1,38 @@
+# OS Specific
+.DS_Store
+
+# Build Artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+node_modules
+build
+dist
+.output
+.data
+.nuxt
+.nitro
+.cache
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# IDE and Editor Specific
+.idea/
+.vscode/
+.fleet
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
