@@ -33,7 +33,9 @@ func main() {
 	}
 
 	// Connect to ClickHouse (optional, will work without it)
-	chClient, err := clickhouse.NewClient(cfg)
+	var chClient *clickhouse.Client
+	var runsStore *store.RunsStore
+	chClient, err = clickhouse.NewClient(cfg)
 	if err != nil {
 		log.Printf("Warning: Failed to connect to ClickHouse: %v", err)
 	} else {
@@ -42,6 +44,7 @@ func main() {
 		if err := chClient.InitSchema(ctx); err != nil {
 			log.Printf("Warning: Failed to initialize ClickHouse schema: %v", err)
 		}
+		runsStore = store.NewRunsStore(chClient)
 	}
 
 	// Connect to Redis for caching (optional, will work without it)
@@ -56,13 +59,14 @@ func main() {
 	}
 
 	// Setup handlers
-	checksHandler := handlers.NewChecksHandler(s)
+	checksHandler := handlers.NewChecksHandler(s, runsStore)
 
 	// Setup routes
 	r := gin.Default()
 	r.GET("/checks", checksHandler.ListChecks)
 	r.POST("/checks", checksHandler.CreateCheck)
 	r.GET("/checks/:id", checksHandler.GetCheck)
+	r.GET("/checks/:id/runs", checksHandler.GetCheckRuns)
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(302, "/checks")
 	})
