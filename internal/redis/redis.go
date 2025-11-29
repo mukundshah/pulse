@@ -124,4 +124,3 @@ func (c *Client) DeleteCheck(checkID uuid.UUID) error {
 func (c *Client) Close() error {
 	return c.client.Close()
 }
-
