@@ -10,24 +10,24 @@ import (
 )
 
 type Check struct {
-	ID               uuid.UUID      `gorm:"type:uuid;primaryKey"`
-	Name             string         `gorm:"not null"`
-	URL              string         `gorm:"not null"`
-	Method           string         `gorm:"not null;default:GET"`
-	Headers          datatypes.JSON `gorm:"type:jsonb"`
-	ExpectedStatus   int            `gorm:"default:200"`
-	BodyContains     *string        `gorm:"type:text"`
-	TimeoutMs        int            `gorm:"default:10000"` // timeout in milliseconds
-	WebhookURL       *string        `gorm:"type:text"`     // webhook URL for alerts
-	IntervalSeconds  int            `gorm:"not null"`
-	AlertThreshold   int            `gorm:"not null;default:3"`
-	ConsecutiveFails int            `gorm:"not null;default:0"`
-	LastStatus       string         `gorm:"type:varchar(20);default:'unknown'"`
-	LastRunAt        *time.Time
-	NextRunAt        *time.Time
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	DeletedAt        gorm.DeletedAt `gorm:"index"`
+	ID               uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	Name             string         `gorm:"not null" json:"name"`
+	URL              string         `gorm:"not null" json:"url"`
+	Method           string         `gorm:"not null;default:GET" json:"method"`
+	Headers          datatypes.JSON `gorm:"type:jsonb" json:"headers"`
+	ExpectedStatus   int            `gorm:"default:200" json:"expected_status"`
+	BodyContains     *string        `gorm:"type:text" json:"body_contains,omitempty"`
+	TimeoutMs        int            `gorm:"default:10000" json:"timeout_ms"` // timeout in milliseconds
+	WebhookURL       *string        `gorm:"type:text" json:"webhook_url,omitempty"` // webhook URL for alerts
+	IntervalSeconds  int            `gorm:"not null" json:"interval_seconds"`
+	AlertThreshold   int            `gorm:"not null;default:3" json:"alert_threshold"`
+	ConsecutiveFails int            `gorm:"not null;default:0" json:"consecutive_fails"`
+	LastStatus       string         `gorm:"type:varchar(20);default:'unknown'" json:"last_status"`
+	LastRunAt        *time.Time     `json:"last_run_at,omitempty"`
+	NextRunAt        *time.Time     `json:"next_run_at,omitempty"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+	DeletedAt        gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
 type CheckRun struct {
