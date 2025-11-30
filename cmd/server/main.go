@@ -60,6 +60,7 @@ func main() {
 
 	// Setup handlers
 	checksHandler := handlers.NewChecksHandler(s, runsStore)
+	healthHandler := handlers.NewHealthHandler(pgDB, redisClient, chClient)
 
 	// Setup routes
 	r := gin.Default()
@@ -67,6 +68,9 @@ func main() {
 	r.POST("/checks", checksHandler.CreateCheck)
 	r.GET("/checks/:id", checksHandler.GetCheck)
 	r.GET("/checks/:id/runs", checksHandler.GetCheckRuns)
+	r.GET("/health", healthHandler.Health)
+	r.GET("/ready", healthHandler.Ready)
+	r.GET("/metrics", healthHandler.Metrics)
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(302, "/checks")
 	})
