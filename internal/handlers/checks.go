@@ -130,9 +130,30 @@ func (h *ChecksHandler) GetCheckRuns(c *gin.Context) {
 		return
 	}
 
+	// Create response without check_id in each run
+	type RunResponse struct {
+		ID         uuid.UUID `json:"id"`
+		Status     string    `json:"status"`
+		LatencyMs  int64     `json:"latency_ms"`
+		StatusCode int32     `json:"status_code"`
+		Error      *string   `json:"error,omitempty"`
+		RunAt      time.Time `json:"run_at"`
+	}
+
+	runResponses := make([]RunResponse, len(runs))
+	for i, run := range runs {
+		runResponses[i] = RunResponse{
+			ID:         run.ID,
+			Status:     run.Status,
+			LatencyMs:  run.LatencyMs,
+			StatusCode: run.StatusCode,
+			Error:      run.Error,
+			RunAt:      run.RunAt,
+		}
+	}
+
 	c.JSON(200, gin.H{
-		"check_id": id,
-		"runs":     runs,
-		"count":    len(runs),
+		"runs":  runResponses,
+		"count": len(runResponses),
 	})
 }
