@@ -44,3 +44,16 @@ func (c *Client) GetCheckRuns(ctx context.Context, checkID uuid.UUID, limit int)
 
 	return runs, rows.Err()
 }
+
+// GetAverageLatency returns the average latency in milliseconds for all check runs
+func (c *Client) GetAverageLatency(ctx context.Context) (float64, error) {
+	query := `SELECT avg(latency_ms) FROM check_runs`
+
+	var avgLatency float64
+	err := c.conn.QueryRow(ctx, query).Scan(&avgLatency)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query average latency: %w", err)
+	}
+
+	return avgLatency, nil
+}

@@ -129,3 +129,8 @@ func (c *Client) Close() error {
 func (c *Client) HealthCheck() error {
 	return c.client.Ping(c.ctx).Err()
 }
+
+// GetQueueDepth returns the number of jobs in the queue
+func (c *Client) GetQueueDepth() (int64, error) {
+	return c.client.LLen(c.ctx, "pulse:jobs").Result()
+}
