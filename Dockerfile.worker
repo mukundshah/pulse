@@ -8,7 +8,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy source code
-COPY . .COPY cmd/ ./cmd/
+COPY cmd/ ./cmd/
 COPY internal/ ./internal/
 
 # Build the worker
@@ -31,6 +31,9 @@ RUN chown -R pulse:pulse /app
 
 # Switch to non-root user
 USER pulse
+
+# Expose port for health/metrics endpoints
+EXPOSE 8081
 
 # Run the worker
 CMD ["/app/worker"]

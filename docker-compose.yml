@@ -80,6 +80,8 @@ services:
       DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
       REDIS_URL: redis://valkey:6379
       CLICKHOUSE_DSN: clickhouse://pulse:password@clickhouse:9000/default
+    ports:
+      - "8081:8081"
     depends_on:
       postgres:
         condition: service_healthy
@@ -89,6 +91,12 @@ services:
         condition: service_healthy
       server:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - pulse-network
     restart: unless-stopped
