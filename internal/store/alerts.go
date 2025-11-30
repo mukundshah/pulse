@@ -19,6 +19,7 @@ func (s *Store) CreateAlert(alert *models.Alert) error {
 func (s *Store) GetAlerts(checkID uuid.UUID, limit int) ([]*models.Alert, error) {
 	var alerts []*models.Alert
 	err := s.db.Where("check_id = ?", checkID).
+		Omit("Check").
 		Order("sent_at DESC").
 		Limit(limit).
 		Find(&alerts).Error
