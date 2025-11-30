@@ -41,3 +41,8 @@ func (c *Client) Close() error {
 func (c *Client) Conn() driver.Conn {
 	return c.conn
 }
+
+// HealthCheck pings ClickHouse to verify connectivity
+func (c *Client) HealthCheck(ctx context.Context) error {
+	return c.conn.Ping(ctx)
+}

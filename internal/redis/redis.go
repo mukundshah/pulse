@@ -124,3 +124,8 @@ func (c *Client) DeleteCheck(checkID uuid.UUID) error {
 func (c *Client) Close() error {
 	return c.client.Close()
 }
+
+// HealthCheck pings Redis to verify connectivity
+func (c *Client) HealthCheck() error {
+	return c.client.Ping(c.ctx).Err()
+}

@@ -33,3 +33,12 @@ func Migrate(db *gorm.DB) error {
 
 	return nil
 }
+
+// HealthCheck pings the database to verify connectivity
+func HealthCheck(db *gorm.DB) error {
+	var tmp int
+	if err := db.Raw("SELECT 1").Scan(&tmp).Error; err != nil {
+		return err
+	}
+	return nil
+}
