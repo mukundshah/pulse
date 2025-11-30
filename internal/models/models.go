@@ -35,7 +35,7 @@ type CheckRun struct {
 	CheckID    uuid.UUID `json:"check_id"`
 	Status     string    `json:"status"` // success, fail, timeout, error
 	LatencyMs  int64     `json:"latency_ms"`
-	StatusCode int       `json:"status_code"`
+	StatusCode int32     `json:"status_code"`
 	Error      *string   `json:"error,omitempty"`
 	RunAt      time.Time `json:"run_at"`
 }

@@ -88,7 +88,7 @@ func Execute(check *models.Check) *models.CheckRun {
 				CheckID:    check.ID,
 				Status:     "error",
 				LatencyMs:  latency.Milliseconds(),
-				StatusCode: resp.StatusCode,
+				StatusCode: int32(resp.StatusCode),
 				Error:      stringPtr("failed to read body: " + err.Error()),
 				RunAt:      start,
 			}
@@ -116,7 +116,7 @@ func Execute(check *models.Check) *models.CheckRun {
 		CheckID:    check.ID,
 		Status:     status,
 		LatencyMs:  latency.Milliseconds(),
-		StatusCode: resp.StatusCode,
+		StatusCode: int32(resp.StatusCode),
 		Error:      errMsg,
 		RunAt:      start,
 	}
