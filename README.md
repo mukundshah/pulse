@@ -182,6 +182,7 @@ curl -X GET http://localhost:8080/checks/{check-id}/webhooks?limit=100
 Returns all webhook delivery attempts for a check, including retries. Optional `limit` query parameter (default: 100, max: 1000).
 
 Each webhook attempt includes:
+
 - Request details (URL, body, headers)
 - Response details (status code, body, headers)
 - Error messages (if any)
@@ -269,17 +270,6 @@ Analytics are **optional** - if ClickHouse is not configured or unavailable, the
 - No authentication or rate limiting on API
 - Basic error handling for webhooks
 
-## Scaling Considerations
-
-At 10M checks/day (~115 checks/second), potential bottlenecks:
-
-- **PostgreSQL**: Connection pooling and read replicas
-- **Redis**: Cluster mode, shard queues by check ID
-- **ClickHouse**: Batch inserts, cluster scaling
-- **Workers**: Limit concurrency, use worker pools, rate limit requests
-
-Scaling strategies: horizontal worker scaling, database sharding, Redis caching, async alert processing.
-
 ## Configuration
 
 All configuration is done via environment variables or a `.env` file:
@@ -303,12 +293,6 @@ make build
 
 # Build worker
 make build-worker
-```
-
-### Run Tests
-
-```bash
-make test
 ```
 
 ### Clean Build Artifacts
@@ -352,7 +336,7 @@ pulse/
 
 ## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests. Whether it's bug fixes, new features, documentation improvements, or examples, your contributions help make this project better.
+Contributions are welcome. While I'm not planning to actively maintain this repo, feel free to add features, fix bugs, improve documentation, or make other changes, who knows if this turn into something more than a weekend experiment. As long as your contributions abide by the project's license terms, you're free to fork, modify, and use this code as needed.
 
 ## License
 
