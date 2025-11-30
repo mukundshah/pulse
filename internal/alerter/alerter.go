@@ -62,7 +62,7 @@ func (a *Alerter) sendAlert(check *models.Check, alertType string, result *model
 
 	// Send webhook if configured
 	if check.WebhookURL != nil && *check.WebhookURL != "" {
-		if err := SendWebhook(*check.WebhookURL, check, alertType, result); err != nil {
+		if err := SendWebhook(a.store, alert.ID, *check.WebhookURL, check, alertType, result); err != nil {
 			log.Printf("Error sending webhook: %v", err)
 		} else {
 			metrics.IncrementAlertsSent()
