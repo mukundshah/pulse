@@ -154,8 +154,39 @@ curl -X GET http://localhost:8080/checks
 #### Get Check Details
 
 ```bash
-curl -X GET http://localhost:8080/checks/1
+curl -X GET http://localhost:8080/checks/{check-id}
 ```
+
+#### Get Check Runs
+
+```bash
+curl -X GET http://localhost:8080/checks/{check-id}/runs?limit=100
+```
+
+Returns check execution history from ClickHouse. Optional `limit` query parameter (default: 100, max: 1000).
+
+#### Get Check Alerts
+
+```bash
+curl -X GET http://localhost:8080/checks/{check-id}/alerts?limit=100
+```
+
+Returns all alerts for a check. Optional `limit` query parameter (default: 100, max: 1000).
+
+#### Get Check Webhook Attempts
+
+```bash
+curl -X GET http://localhost:8080/checks/{check-id}/webhooks?limit=100
+```
+
+Returns all webhook delivery attempts for a check, including retries. Optional `limit` query parameter (default: 100, max: 1000).
+
+Each webhook attempt includes:
+- Request details (URL, body, headers)
+- Response details (status code, body, headers)
+- Error messages (if any)
+- Latency and timeout information
+- Retry number
 
 ### Health & Observability
 
