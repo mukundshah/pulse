@@ -3,15 +3,16 @@ package worker
 import (
 	"context"
 	"log"
+	"sync"
+	"time"
+
+	"github.com/google/uuid"
+
 	"pulse/internal/alerter"
 	"pulse/internal/checker"
 	"pulse/internal/metrics"
 	"pulse/internal/redis"
 	"pulse/internal/store"
-	"sync"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 type Worker struct {

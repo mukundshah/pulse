@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"pulse/internal/models"
-	"pulse/internal/store"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
+
+	"pulse/internal/models"
+	"pulse/internal/store"
 )
 
 type WebhookPayload struct {

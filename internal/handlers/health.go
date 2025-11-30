@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"pulse/internal/clickhouse"
 	"pulse/internal/db"
 	"pulse/internal/metrics"
 	"pulse/internal/redis"
-	"gorm.io/gorm"
 )
 
 type HealthHandler struct {

@@ -3,10 +3,9 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-
-	"github.com/google/uuid"
 )
 
 type Check struct {

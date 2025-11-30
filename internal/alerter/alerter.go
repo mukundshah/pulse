@@ -2,6 +2,7 @@ package alerter
 
 import (
 	"log"
+
 	"pulse/internal/metrics"
 	"pulse/internal/models"
 	"pulse/internal/store"

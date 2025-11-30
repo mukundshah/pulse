@@ -1,9 +1,9 @@
 package store
 
 import (
-	"pulse/internal/models"
-
 	"github.com/google/uuid"
+
+	"pulse/internal/models"
 )
 
 func (s *Store) CreateAlert(alert *models.Alert) error {
