@@ -2,6 +2,7 @@ package alerter
 
 import (
 	"log"
+	"pulse/internal/metrics"
 	"pulse/internal/models"
 	"pulse/internal/store"
 )
@@ -63,6 +64,11 @@ func (a *Alerter) sendAlert(check *models.Check, alertType string, result *model
 	if check.WebhookURL != nil && *check.WebhookURL != "" {
 		if err := SendWebhook(*check.WebhookURL, check, alertType, result); err != nil {
 			log.Printf("Error sending webhook: %v", err)
+		} else {
+			metrics.IncrementAlertsSent()
 		}
+	} else {
+		// Still count alerts even if no webhook configured (alert was persisted)
+		metrics.IncrementAlertsSent()
 	}
 }

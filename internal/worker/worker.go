@@ -5,6 +5,7 @@ import (
 	"log"
 	"pulse/internal/alerter"
 	"pulse/internal/checker"
+	"pulse/internal/metrics"
 	"pulse/internal/redis"
 	"pulse/internal/store"
 	"sync"
@@ -71,6 +72,9 @@ func (w *Worker) work(id int) {
 }
 
 func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID int) {
+	metrics.IncrementActiveJobs()
+	defer metrics.DecrementActiveJobs()
+
 	// Load check from database
 	check, err := w.store.GetCheck(checkID)
 	if err != nil {
@@ -80,6 +84,12 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 
 	// Execute check
 	result := checker.Execute(check)
+	metrics.IncrementChecksExecuted()
+
+	// Track failures
+	if result.Status != "success" {
+		metrics.IncrementChecksFailed()
+	}
 
 	// Save result to ClickHouse
 	if err := w.runsStore.CreateCheckRun(ctx, result); err != nil {
