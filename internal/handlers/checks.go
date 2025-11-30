@@ -157,3 +157,77 @@ func (h *ChecksHandler) GetCheckRuns(c *gin.Context) {
 		"count": len(runResponses),
 	})
 }
+
+func (h *ChecksHandler) GetCheckAlerts(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid check ID"})
+		return
+	}
+
+	// Verify check exists
+	_, err = h.store.GetCheck(id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Check not found"})
+		return
+	}
+
+	// Get limit from query parameter (default: 100)
+	limit := 100
+	if limitStr := c.Query("limit"); limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil || limit < 1 || limit > 1000 {
+			c.JSON(400, gin.H{"error": "Invalid limit. Must be between 1 and 1000"})
+			return
+		}
+	}
+
+	// Get alerts from database
+	alerts, err := h.store.GetAlerts(id, limit)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"alerts": alerts,
+		"count":  len(alerts),
+	})
+}
+
+func (h *ChecksHandler) GetCheckWebhooks(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid check ID"})
+		return
+	}
+
+	// Verify check exists
+	_, err = h.store.GetCheck(id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Check not found"})
+		return
+	}
+
+	// Get limit from query parameter (default: 100)
+	limit := 100
+	if limitStr := c.Query("limit"); limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil || limit < 1 || limit > 1000 {
+			c.JSON(400, gin.H{"error": "Invalid limit. Must be between 1 and 1000"})
+			return
+		}
+	}
+
+	// Get webhook attempts from database
+	attempts, err := h.store.GetWebhookAttempts(id, limit)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"webhooks": attempts,
+		"count":    len(attempts),
+	})
+}

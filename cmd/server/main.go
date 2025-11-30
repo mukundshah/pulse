@@ -68,6 +68,8 @@ func main() {
 	r.POST("/checks", checksHandler.CreateCheck)
 	r.GET("/checks/:id", checksHandler.GetCheck)
 	r.GET("/checks/:id/runs", checksHandler.GetCheckRuns)
+	r.GET("/checks/:id/alerts", checksHandler.GetCheckAlerts)
+	r.GET("/checks/:id/webhooks", checksHandler.GetCheckWebhooks)
 	r.GET("/health", healthHandler.Health)
 	r.GET("/ready", healthHandler.Ready)
 	r.GET("/metrics", healthHandler.Metrics)
