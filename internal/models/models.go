@@ -41,29 +41,29 @@ type CheckRun struct {
 }
 
 type Alert struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
-	CheckID   uuid.UUID `gorm:"type:uuid;index;not null"`
-	Type      string    `gorm:"type:varchar(20);not null"`
-	Payload   string    `gorm:"type:text;not null"`
-	CreatedAt time.Time
-	Check     Check     `gorm:"foreignKey:CheckID"`
-	SentAt    time.Time `gorm:"not null"`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	CheckID   uuid.UUID `gorm:"type:uuid;index;not null" json:"check_id"`
+	Type      string    `gorm:"type:varchar(20);not null" json:"type"`
+	Payload   string    `gorm:"type:text;not null" json:"payload"`
+	CreatedAt time.Time `json:"created_at"`
+	Check     Check     `gorm:"foreignKey:CheckID" json:"check,omitempty"`
+	SentAt    time.Time `gorm:"not null" json:"sent_at"`
 }
 
 type WebhookAttempt struct {
-	ID             uuid.UUID      `gorm:"type:uuid;primaryKey"`
-	AlertID        *uuid.UUID     `gorm:"type:uuid;index"`
-	CheckID        uuid.UUID      `gorm:"type:uuid;index;not null"`
-	URL            string         `gorm:"type:text;not null"`
-	RequestBody    string         `gorm:"type:text"`
-	RequestHeaders datatypes.JSON `gorm:"type:jsonb"`
-	ResponseCode   *int           `gorm:"type:integer"`
-	ResponseBody   *string         `gorm:"type:text"`
-	ResponseHeaders datatypes.JSON `gorm:"type:jsonb"`
-	Error          *string         `gorm:"type:text"`
-	LatencyMs      *int64         `gorm:"type:bigint"`
-	RetryNumber    int            `gorm:"default:0"`
-	Timeout        bool           `gorm:"default:false"`
-	Status         string         `gorm:"type:varchar(20);not null"` // success, failed
-	CreatedAt      time.Time
+	ID              uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	AlertID         *uuid.UUID     `gorm:"type:uuid;index" json:"alert_id,omitempty"`
+	CheckID         uuid.UUID      `gorm:"type:uuid;index;not null" json:"check_id"`
+	URL             string         `gorm:"type:text;not null" json:"url"`
+	RequestBody     string         `gorm:"type:text" json:"request_body"`
+	RequestHeaders  datatypes.JSON `gorm:"type:jsonb" json:"request_headers"`
+	ResponseCode    *int           `gorm:"type:integer" json:"response_code,omitempty"`
+	ResponseBody    *string        `gorm:"type:text" json:"response_body,omitempty"`
+	ResponseHeaders datatypes.JSON `gorm:"type:jsonb" json:"response_headers"`
+	Error           *string        `gorm:"type:text" json:"error,omitempty"`
+	LatencyMs       *int64         `gorm:"type:bigint" json:"latency_ms,omitempty"`
+	RetryNumber     int            `gorm:"default:0" json:"retry_number"`
+	Timeout         bool           `gorm:"default:false" json:"timeout"`
+	Status          string         `gorm:"type:varchar(20);not null" json:"status"` // success, failed
+	CreatedAt       time.Time      `json:"created_at"`
 }
