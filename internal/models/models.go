@@ -36,6 +36,18 @@ type Tag struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
+type User struct {
+	ID            uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	Name          string         `gorm:"not null" json:"name"`
+	Email         string         `gorm:"not null;unique" json:"email"`
+	PasswordHash  string         `gorm:"not null" json:"password_hash"`
+	EmailVerified bool           `gorm:"default:false" json:"email_verified"`
+	IsActive      bool           `gorm:"default:true" json:"is_active"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+	DeletedAt     gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
 type Project struct {
 	ID        uuid.UUID      `gorm:"type:uuid;primaryKey;default:uuidv7()" json:"id"`
 	Name      string         `gorm:"not null" json:"name"`
@@ -44,6 +56,29 @@ type Project struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 
 	Tags []Tag `gorm:"many2many:project_tags;" json:"tags,omitempty"`
+}
+
+type ProjectInvitation struct {
+	ID        uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	ProjectID uuid.UUID      `gorm:"type:uuid;index;not null" json:"project_id"`
+	Email     string         `gorm:"not null" json:"email"`
+	Token     string         `gorm:"not null" json:"token"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+type ProjectMember struct {
+	ID        uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	ProjectID uuid.UUID      `gorm:"type:uuid;index;not null" json:"project_id"`
+	UserID    uuid.UUID      `gorm:"type:uuid;index;not null" json:"user_id"`
+	Role      string         `gorm:"type:varchar(20);not null" json:"role"` // admin, member, viewer
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+
+	Project Project `gorm:"foreignKey:ProjectID" json:"project,omitempty"`
+	User    User    `gorm:"foreignKey:UserID" json:"user,omitempty"`
 }
 
 type Region struct {

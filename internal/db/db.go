@@ -28,6 +28,9 @@ func Migrate(db *gorm.DB) error {
 		&models.Project{},
 		&models.Tag{},
 		&models.Region{},
+		&models.User{},
+		&models.ProjectMember{},
+		&models.ProjectInvitation{},
 		&models.Check{},
 		&models.CheckRun{},
 	); err != nil {
