@@ -8,9 +8,11 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.41.0
 	github.com/bdpiprava/scalar-go v0.13.0
 	github.com/gin-gonic/gin v1.11.0
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/spf13/viper v1.21.0
+	golang.org/x/crypto v0.45.0
 	gorm.io/datatypes v1.2.7
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
@@ -82,7 +84,6 @@ require (
 	go.uber.org/mock v0.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.23.0 // indirect
-	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
