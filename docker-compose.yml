@@ -1,51 +1,4 @@
 services:
-  postgres:
-    image: postgres:18-alpine
-    container_name: pulse-postgres
-    environment:
-      POSTGRES_USER: pulse
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: pulse
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - pulse-network
-
-  valkey:
-    image: valkey/valkey:9-alpine
-    container_name: pulse-valkey
-    volumes:
-      - valkey_data:/data
-    healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - pulse-network
-
-  clickhouse:
-    image: clickhouse/clickhouse-server:latest
-    container_name: pulse-clickhouse
-    environment:
-      CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: pulse
-      CLICKHOUSE_PASSWORD: password
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-    healthcheck:
-      test: ["CMD", "curl", "-f", "-s", "http://localhost:8123/ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - pulse-network
-
   server:
     build:
       context: .
@@ -98,6 +51,53 @@ services:
     networks:
       - pulse-network
     restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: pulse-postgres
+    environment:
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pulse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pulse-network
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    container_name: pulse-valkey
+    volumes:
+      - valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pulse-network
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.11-alpine
+    container_name: pulse-clickhouse
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: pulse
+      CLICKHOUSE_PASSWORD: password
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pulse-network
 
 volumes:
   postgres_data:
