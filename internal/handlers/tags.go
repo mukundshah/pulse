@@ -18,8 +18,21 @@ func NewTagHandler(s *store.Store) *TagHandler {
 	return &TagHandler{store: s}
 }
 
-// CreateTag handles POST /tags
+// CreateTag handles POST /projects/:projectId/tags
 func (h *TagHandler) CreateTag(c *gin.Context) {
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	// Verify project exists
+	_, err = h.store.GetProject(projectID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
+		return
+	}
+
 	var req struct {
 		Name string `json:"name" binding:"required"`
 	}
@@ -30,7 +43,8 @@ func (h *TagHandler) CreateTag(c *gin.Context) {
 	}
 
 	tag := &models.Tag{
-		Name: req.Name,
+		Name:      req.Name,
+		ProjectID: projectID,
 	}
 
 	if err := h.store.CreateTag(tag); err != nil {
@@ -41,8 +55,27 @@ func (h *TagHandler) CreateTag(c *gin.Context) {
 	c.JSON(http.StatusCreated, tag)
 }
 
-// ListTags handles GET /tags
+// ListTags handles GET /tags or GET /projects/:projectId/tags
 func (h *TagHandler) ListTags(c *gin.Context) {
+	// Check if projectId is provided in the path
+	if projectIDStr := c.Param("projectId"); projectIDStr != "" {
+		projectID, err := uuid.Parse(projectIDStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+			return
+		}
+
+		tags, err := h.store.GetTagsByProject(projectID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list tags"})
+			return
+		}
+
+		c.JSON(http.StatusOK, tags)
+		return
+	}
+
+	// List all tags if no project ID provided
 	tags, err := h.store.ListTags()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list tags"})
@@ -71,13 +104,14 @@ func (h *TagHandler) AddTagToProject(c *gin.Context) {
 		return
 	}
 
-	project, err := h.store.GetProject(projectID)
+	// Reload tag to return updated tag
+	tag, err := h.store.GetTag(tagID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load project"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load tag"})
 		return
 	}
 
-	c.JSON(http.StatusOK, project)
+	c.JSON(http.StatusOK, tag)
 }
 
 // RemoveTagFromProject handles DELETE /projects/:projectId/tags/:tagId
@@ -99,13 +133,7 @@ func (h *TagHandler) RemoveTagFromProject(c *gin.Context) {
 		return
 	}
 
-	project, err := h.store.GetProject(projectID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load project"})
-		return
-	}
-
-	c.JSON(http.StatusOK, project)
+	c.JSON(http.StatusOK, gin.H{"message": "Tag removed from project"})
 }
 
 // AddTagToCheck handles POST /checks/:checkId/tags/:tagId

@@ -96,11 +96,8 @@ func main() {
 
 	// API routes
 	api := r.Group("/api/v1")
-	{
-		// Tag routes (no conflicts)
-		api.POST("/tags", tagHandler.CreateTag)
-		api.GET("/tags", tagHandler.ListTags)
 
+	{
 		// Project routes - specific routes first to avoid conflicts
 		api.POST("/projects", projectHandler.CreateProject)
 		api.GET("/projects", projectHandler.ListProjects)
@@ -108,6 +105,8 @@ func main() {
 		// Project sub-resources (must come before /projects/:projectId)
 		api.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
 		api.GET("/projects/:projectId/checks", checkHandler.ListChecks)
+		api.POST("/projects/:projectId/tags", tagHandler.CreateTag)
+		api.GET("/projects/:projectId/tags", tagHandler.ListTags)
 		api.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
 		api.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
 
