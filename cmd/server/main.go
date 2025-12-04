@@ -32,6 +32,11 @@ func main() {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
+	// Seed database
+	if err := db.Seed(pgDB); err != nil {
+		log.Fatalf("Failed to seed database: %v", err)
+	}
+
 	// Connect to ClickHouse (optional, will work without it)
 	var chClient *clickhouse.Client
 	var runsStore *store.RunsStore
