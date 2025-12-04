@@ -30,11 +30,6 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Run migrations
-	if err := db.Migrate(pgDB); err != nil {
-		log.Fatalf("Failed to migrate database: %v", err)
-	}
-
 	// Seed database
 	if err := db.Seed(pgDB); err != nil {
 		log.Fatalf("Failed to seed database: %v", err)

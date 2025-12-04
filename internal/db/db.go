@@ -22,24 +22,7 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 	return db, nil
 }
 
-func Migrate(db *gorm.DB) error {
-	log.Println("Running migrations...")
-	if err := db.AutoMigrate(
-		&models.Project{},
-		&models.Tag{},
-		&models.Region{},
-		&models.User{},
-		&models.ProjectMember{},
-		&models.ProjectInvitation{},
-		&models.Check{},
-		&models.CheckRun{},
-	); err != nil {
-		return err
-	}
-
-	return nil
-}
-
+// TODO: use migrations instead of seeding
 func Seed(db *gorm.DB) error {
 	if err := seedRegions(db); err != nil {
 		return err
