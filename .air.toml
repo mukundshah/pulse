@@ -1,0 +1,8 @@
+#:schema https://json.schemastore.org/any.json
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+include_file = ['.env']
+exclude_dir = ["bin", "tmp", "vendor", "build", "node_modules"]
