@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"log"
+	"path/filepath"
 
+	scalargo "github.com/bdpiprava/scalar-go"
+	scalarModel "github.com/bdpiprava/scalar-go/model"
 	"github.com/gin-gonic/gin"
 
 	"pulse/internal/clickhouse"
@@ -70,6 +73,30 @@ func main() {
 	checkRunHandler := handlers.NewCheckRunHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
 
+	r.GET("/docs/v1", (func(c *gin.Context) {
+		html, err := scalargo.NewV2(
+			scalargo.WithSpecDir(filepath.Join(cfg.APISpecDir, "v1")),
+			scalargo.WithMetaDataOpts(
+				scalargo.WithTitle("Pulse API"),
+				scalargo.WithKeyValue("description", "Pulse API"),
+			),
+			scalargo.WithSpecModifier(func(spec *scalarModel.Spec) *scalarModel.Spec {
+				localhost := "Localhost"
+				spec.Servers = []scalarModel.Server{
+					{URL: "http://localhost:8080/api/v1", Description: &localhost},
+				}
+				return spec
+			}),
+		)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.Data(200, "text/html", []byte(html))
+	}))
 
 	r.GET("/health", (func(c *gin.Context) {
 		c.JSON(200, gin.H{
