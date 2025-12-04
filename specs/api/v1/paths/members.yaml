@@ -83,8 +83,6 @@ paths:
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
-
-  /projects/{projectId}/members/{userId}:
     delete:
       summary: Remove a member from a project
       tags:
