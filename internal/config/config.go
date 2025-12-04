@@ -7,12 +7,13 @@ import (
 )
 
 type Config struct {
-	DatabaseURL   string `mapstructure:"DATABASE_URL"`
-	RedisURL      string `mapstructure:"REDIS_URL"`
-	ClickHouseDSN string `mapstructure:"CLICKHOUSE_DSN"`
-	Port          string `mapstructure:"PORT"`
-	JWTSecret     string `mapstructure:"JWT_SECRET"`
-	APISpecDir    string `mapstructure:"API_SPEC_DIR"`
+	DatabaseURL          string `mapstructure:"DATABASE_URL"`
+	RedisURL             string `mapstructure:"REDIS_URL"`
+	ClickHouseDSN        string `mapstructure:"CLICKHOUSE_DSN"`
+	Port                 string `mapstructure:"PORT"`
+	JWTSecret            string `mapstructure:"JWT_SECRET"`
+	APISpecDir           string `mapstructure:"API_SPEC_DIR"`
+	PasswordResetTimeout int    `mapstructure:"PASSWORD_RESET_TIMEOUT"` // in seconds, default 3 days
 }
 
 func LoadConfig() (*Config, error) {
@@ -25,6 +26,7 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("CLICKHOUSE_DSN", "clickhouse://default@localhost:9000/default")
 	viper.SetDefault("JWT_SECRET", "change-this-secret-in-production")
 	viper.SetDefault("API_SPEC_DIR", "./api-specs")
+	viper.SetDefault("PASSWORD_RESET_TIMEOUT", 259200) // 3 days in seconds
 
 	// Use .env file if it exists, otherwise rely on environment variables
 	if _, err := os.Stat(".env"); err == nil {

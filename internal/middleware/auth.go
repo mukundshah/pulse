@@ -3,11 +3,12 @@ package middleware
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"pulse/internal/auth"
+	"pulse/internal/auth/token"
 	"pulse/internal/config"
 )
 
@@ -29,8 +30,13 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		jwtGenerator := token.NewJWTTokenGenerator(token.TokenConfig{
+			Secret:   cfg.JWTSecret,
+			Validity: 24 * time.Hour,
+		})
+
 		token := parts[1]
-		claims, err := auth.ValidateToken(token, cfg.JWTSecret)
+		claims, err := jwtGenerator.Validate(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
 			c.Abort()
@@ -54,4 +60,3 @@ func GetUserID(c *gin.Context) (uuid.UUID, bool) {
 	id, ok := userID.(uuid.UUID)
 	return id, ok
 }
-
