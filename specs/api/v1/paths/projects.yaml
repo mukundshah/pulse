@@ -4,6 +4,8 @@ paths:
       summary: List all projects
       tags:
         - Projects
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: List of projects
@@ -19,6 +21,8 @@ paths:
       summary: Create a new project
       tags:
         - Projects
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -48,6 +52,8 @@ paths:
       summary: Get a project by ID
       tags:
         - Projects
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -70,6 +76,8 @@ paths:
       summary: Update a project
       tags:
         - Projects
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -106,6 +114,8 @@ paths:
       summary: Delete a project
       tags:
         - Projects
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -134,6 +144,8 @@ paths:
       summary: List all checks in a project
       tags:
         - Checks
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -158,6 +170,8 @@ paths:
       summary: Create a new check in a project
       tags:
         - Checks
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -253,9 +267,11 @@ paths:
 
   /projects/{projectId}/tags/{tagId}:
     post:
-      summary: Add a tag to a project
+      summary: Move a tag to a project (update tag's project_id)
       tags:
         - Tags
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -271,19 +287,21 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Tag added successfully
+          description: Tag moved to project successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/Tag'
         '400':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
     delete:
-      summary: Remove a tag from a project
+      summary: Remove a tag from a project (delete the tag)
       tags:
         - Tags
+      security:
+        - BearerAuth: []
       parameters:
         - name: projectId
           in: path
@@ -303,7 +321,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Tag removed from project"
         '400':
           $ref: '#/components/responses/Error'
         '500':

@@ -1,0 +1,45 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the user
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  name:
+    type: string
+    description: Full name of the user
+    example: "John Doe"
+  email:
+    type: string
+    format: email
+    description: Email address of the user
+    example: "john.doe@example.com"
+  email_verified:
+    type: boolean
+    description: Whether the user's email has been verified
+    default: false
+  is_active:
+    type: boolean
+    description: Whether the user account is active
+    default: true
+  last_login:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp of the user's last login
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the user was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the user was last updated
+required:
+  - id
+  - name
+  - email
+  - email_verified
+  - is_active
+  - created_at
+  - updated_at

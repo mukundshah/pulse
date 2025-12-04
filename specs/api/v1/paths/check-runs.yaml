@@ -4,6 +4,8 @@ paths:
       summary: Get a check run by ID
       tags:
         - Check Runs
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path

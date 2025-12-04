@@ -9,6 +9,11 @@ properties:
     type: string
     description: Name of the tag
     example: "production"
+  project_id:
+    type: string
+    format: uuid
+    description: ID of the project this tag belongs to
+    example: "550e8400-e29b-41d4-a716-446655440000"
   created_at:
     type: string
     format: date-time
@@ -20,6 +25,6 @@ properties:
 required:
   - id
   - name
+  - project_id
   - created_at
   - updated_at
-

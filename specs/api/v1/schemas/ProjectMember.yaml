@@ -1,0 +1,45 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the project member
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  project_id:
+    type: string
+    format: uuid
+    description: ID of the project
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  user_id:
+    type: string
+    format: uuid
+    description: ID of the user
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  role:
+    type: string
+    enum: [admin, member, viewer]
+    description: Role of the user in the project
+    example: "member"
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the member was added
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the member was last updated
+  project:
+    $ref: '#/components/schemas/Project'
+    nullable: true
+    description: Project details (when preloaded)
+  user:
+    $ref: '#/components/schemas/User'
+    nullable: true
+    description: User details (when preloaded)
+required:
+  - id
+  - project_id
+  - user_id
+  - role
+  - created_at
+  - updated_at

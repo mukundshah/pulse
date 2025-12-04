@@ -4,6 +4,8 @@ paths:
       summary: List all tags
       tags:
         - Tags
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: List of tags
@@ -15,10 +17,47 @@ paths:
                   $ref: '#/components/schemas/Tag'
         '500':
           $ref: '#/components/responses/Error'
-    post:
-      summary: Create a new tag
+
+  /projects/{projectId}/tags:
+    get:
+      summary: List all tags for a project
       tags:
         - Tags
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of tags for the project
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    post:
+      summary: Create a new tag in a project
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -39,6 +78,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Tag'
         '400':
+          $ref: '#/components/responses/Error'
+        '404':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'

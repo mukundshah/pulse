@@ -17,14 +17,8 @@ properties:
     type: string
     format: date-time
     description: Timestamp when the project was last updated
-  tags:
-    type: array
-    items:
-      $ref: '#/components/schemas/Tag'
-    description: Tags associated with the project
 required:
   - id
   - name
   - created_at
   - updated_at
-

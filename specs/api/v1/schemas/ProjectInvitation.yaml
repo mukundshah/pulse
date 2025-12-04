@@ -1,0 +1,36 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the invitation
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  project_id:
+    type: string
+    format: uuid
+    description: ID of the project
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  email:
+    type: string
+    format: email
+    description: Email address of the invited user
+    example: "john.doe@example.com"
+  token:
+    type: string
+    description: Invitation token
+    example: "a1b2c3d4e5f6..."
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation was last updated
+required:
+  - id
+  - project_id
+  - email
+  - token
+  - created_at
+  - updated_at

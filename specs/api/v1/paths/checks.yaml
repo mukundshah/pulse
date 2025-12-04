@@ -4,6 +4,8 @@ paths:
       summary: Get a check by ID
       tags:
         - Checks
+      security:
+        - BearerAuth: []
       parameters:
         - name: checkId
           in: path
@@ -22,6 +24,8 @@ paths:
       summary: Update a check
       tags:
         - Checks
+      security:
+        - BearerAuth: []
       parameters:
         - name: checkId
           in: path
@@ -91,6 +95,8 @@ paths:
       summary: Delete a check
       tags:
         - Checks
+      security:
+        - BearerAuth: []
       parameters:
         - name: checkId
           in: path
@@ -119,6 +125,8 @@ paths:
       summary: List check runs for a check
       tags:
         - Check Runs
+      security:
+        - BearerAuth: []
       parameters:
         - name: checkId
           in: path
@@ -154,6 +162,8 @@ paths:
       summary: Add a tag to a check
       tags:
         - Tags
+      security:
+        - BearerAuth: []
       parameters:
         - name: checkId
           in: path
@@ -182,6 +192,8 @@ paths:
       summary: Remove a tag from a check
       tags:
         - Tags
+      security:
+        - BearerAuth: []
       parameters:
         - name: checkId
           in: path
