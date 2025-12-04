@@ -30,11 +30,6 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Seed database
-	if err := db.Seed(pgDB); err != nil {
-		log.Fatalf("Failed to seed database: %v", err)
-	}
-
 	// Connect to ClickHouse (optional, will work without it)
 	var chClient *clickhouse.Client
 	chClient, err = clickhouse.NewClient(cfg)
