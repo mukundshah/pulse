@@ -1,0 +1,63 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the check run
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  status:
+    type: string
+    enum: [success, fail, timeout, error, unknown]
+    description: Status of the check run
+    example: "success"
+  response_status:
+    type: integer
+    description: HTTP response status code
+    example: 200
+  assertion_results:
+    type: object
+    additionalProperties: true
+    description: Results of assertion validations
+  playwright_report:
+    type: object
+    nullable: true
+    additionalProperties: true
+    description: Playwright execution report (for browser checks)
+  network_timings:
+    type: object
+    additionalProperties: true
+    description: Network timing metrics
+  metrics:
+    type: object
+    additionalProperties: true
+    description: Performance metrics
+  region_id:
+    type: string
+    format: uuid
+    description: ID of the region where the check was executed
+  region:
+    $ref: '#/components/schemas/Region'
+    nullable: true
+  check_id:
+    type: string
+    format: uuid
+    description: ID of the check that was executed
+  check:
+    $ref: '#/components/schemas/Check'
+    nullable: true
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the check run was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the check run was last updated
+required:
+  - id
+  - status
+  - region_id
+  - check_id
+  - created_at
+  - updated_at
+

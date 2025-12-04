@@ -1,0 +1,30 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the region
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  name:
+    type: string
+    description: Name of the region
+    example: "Asia Pacific"
+  code:
+    type: string
+    description: Unique code for the region
+    example: "apac"
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the region was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the region was last updated
+required:
+  - id
+  - name
+  - code
+  - created_at
+  - updated_at
+

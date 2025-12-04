@@ -1,0 +1,30 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the project
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  name:
+    type: string
+    description: Name of the project
+    example: "My Project"
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the project was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the project was last updated
+  tags:
+    type: array
+    items:
+      $ref: '#/components/schemas/Tag'
+    description: Tags associated with the project
+required:
+  - id
+  - name
+  - created_at
+  - updated_at
+

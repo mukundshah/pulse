@@ -1,0 +1,8 @@
+type: object
+properties:
+  error:
+    type: string
+    description: Error message
+    example: "Resource not found"
+required:
+  - error

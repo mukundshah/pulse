@@ -1,0 +1,131 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the check
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  name:
+    type: string
+    description: Name of the check
+    example: "API Health Check"
+  is_enabled:
+    type: boolean
+    description: Whether the check is enabled
+    default: true
+  is_muted:
+    type: boolean
+    description: Whether alerts for this check are muted
+    default: false
+  type:
+    type: string
+    enum: [http, tcp, dns, browser, heartbeat]
+    description: Type of check to perform
+    example: "http"
+  url:
+    type: string
+    description: URL or endpoint to check
+    example: "https://api.example.com/health"
+  method:
+    type: string
+    description: HTTP method to use
+    default: "GET"
+    example: "GET"
+  headers:
+    type: object
+    additionalProperties: true
+    description: Custom headers to send with the request
+  playwright_script:
+    type: string
+    nullable: true
+    description: Playwright script for browser checks
+  assertions:
+    type: object
+    additionalProperties: true
+    description: Assertions to validate the response
+  expected_status:
+    type: integer
+    description: Expected HTTP status code
+    default: 200
+    example: 200
+  should_fail:
+    type: boolean
+    description: Whether the check should intentionally fail (for testing)
+    default: false
+  pre_script:
+    type: string
+    nullable: true
+    description: Script to run before the check
+  post_script:
+    type: string
+    nullable: true
+    description: Script to run after the check
+  timeout_ms:
+    type: integer
+    description: Timeout in milliseconds
+    default: 10000
+    example: 10000
+  interval_seconds:
+    type: integer
+    description: Interval between checks in seconds
+    example: 60
+  alert_threshold:
+    type: integer
+    description: Number of consecutive failures before alerting
+    default: 3
+    example: 3
+  consecutive_fails:
+    type: integer
+    description: Current number of consecutive failures
+    default: 0
+  last_status:
+    type: string
+    enum: [success, fail, timeout, error, unknown]
+    description: Status of the last check run
+    default: "unknown"
+  last_run_at:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp of the last check run
+  next_run_at:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp of the next scheduled check run
+  project_id:
+    type: string
+    format: uuid
+    description: ID of the project this check belongs to
+  project:
+    $ref: '#/components/schemas/Project'
+    nullable: true
+  tags:
+    type: array
+    items:
+      $ref: '#/components/schemas/Tag'
+    description: Tags associated with the check
+  regions:
+    type: array
+    items:
+      $ref: '#/components/schemas/Region'
+    description: Regions where the check should run
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the check was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the check was last updated
+required:
+  - id
+  - name
+  - type
+  - url
+  - method
+  - interval_seconds
+  - project_id
+  - created_at
+  - updated_at
+
