@@ -13,6 +13,7 @@ import (
 	"pulse/internal/config"
 	"pulse/internal/db"
 	"pulse/internal/handlers"
+	"pulse/internal/middleware"
 	"pulse/internal/redis"
 	"pulse/internal/store"
 )
@@ -62,6 +63,7 @@ func main() {
 	checkHandler := handlers.NewCheckHandler(s)
 	checkRunHandler := handlers.NewCheckRunHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
+	authHandler := handlers.NewAuthHandler(s, cfg)
 
 	r.GET("/docs/v1", (func(c *gin.Context) {
 		html, err := scalargo.NewV2(
@@ -98,35 +100,46 @@ func main() {
 	api := r.Group("/api/v1")
 
 	{
+		// Auth routes
+		api.POST("/auth/register", authHandler.Register)
+		api.POST("/auth/login", authHandler.Login)
+		api.POST("/auth/password/reset", authHandler.ForgotPassword)
+		api.POST("/auth/password/reset/done", authHandler.ResetPassword)
+	}
+
+	protected := api.Group("/").Use(middleware.AuthMiddleware(cfg))
+
+	{
 		// Project routes - specific routes first to avoid conflicts
-		api.POST("/projects", projectHandler.CreateProject)
-		api.GET("/projects", projectHandler.ListProjects)
+		protected.POST("/projects", projectHandler.CreateProject)
+		protected.GET("/projects", projectHandler.ListProjects)
 
 		// Project sub-resources (must come before /projects/:projectId)
-		api.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
-		api.GET("/projects/:projectId/checks", checkHandler.ListChecks)
-		api.POST("/projects/:projectId/tags", tagHandler.CreateTag)
-		api.GET("/projects/:projectId/tags", tagHandler.ListTags)
-		api.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
-		api.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
+		protected.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
+		protected.GET("/projects/:projectId/checks", checkHandler.ListChecks)
+		protected.POST("/projects/:projectId/tags", tagHandler.CreateTag)
+		protected.GET("/projects/:projectId/tags", tagHandler.ListTags)
+		protected.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
+		protected.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
 
 		// Project CRUD (generic routes come after specific ones)
-		api.GET("/projects/:projectId", projectHandler.GetProject)
-		api.PUT("/projects/:projectId", projectHandler.UpdateProject)
-		api.DELETE("/projects/:projectId", projectHandler.DeleteProject)
+		protected.GET("/projects/:projectId", projectHandler.GetProject)
+		protected.PUT("/projects/:projectId", projectHandler.UpdateProject)
+		protected.DELETE("/projects/:projectId", projectHandler.DeleteProject)
 
 		// Check routes - specific routes first
-		api.GET("/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
-		api.POST("/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
-		api.DELETE("/checks/:checkId/tags/:tagId", tagHandler.RemoveTagFromCheck)
+		protected.GET("/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
+		protected.POST("/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
+		protected.DELETE("/checks/:checkId/tags/:tagId", tagHandler.RemoveTagFromCheck)
 
 		// Check CRUD (generic routes come after specific ones)
-		api.GET("/checks/:checkId", checkHandler.GetCheck)
-		api.PUT("/checks/:checkId", checkHandler.UpdateCheck)
-		api.DELETE("/checks/:checkId", checkHandler.DeleteCheck)
+		protected.GET("/checks/:checkId", checkHandler.GetCheck)
+		protected.PUT("/checks/:checkId", checkHandler.UpdateCheck)
+		protected.DELETE("/checks/:checkId", checkHandler.DeleteCheck)
 
 		// CheckRun routes
-		api.GET("/check-runs/:id", checkRunHandler.GetCheckRun)
+		protected.GET("/check-runs/:id", checkRunHandler.GetCheckRun)
+
 	}
 
 	log.Printf("Server starting on port %s", cfg.Port)
