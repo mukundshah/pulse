@@ -12,6 +12,7 @@ type Config struct {
 	ClickHouseDSN string `mapstructure:"CLICKHOUSE_DSN"`
 	Port          string `mapstructure:"PORT"`
 	JWTSecret     string `mapstructure:"JWT_SECRET"`
+	APISpecDir    string `mapstructure:"API_SPEC_DIR"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -23,6 +24,7 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("REDIS_URL", "redis://localhost:6379")
 	viper.SetDefault("CLICKHOUSE_DSN", "clickhouse://default@localhost:9000/default")
 	viper.SetDefault("JWT_SECRET", "change-this-secret-in-production")
+	viper.SetDefault("API_SPEC_DIR", "./api-specs")
 
 	// Use .env file if it exists, otherwise rely on environment variables
 	if _, err := os.Stat(".env"); err == nil {
