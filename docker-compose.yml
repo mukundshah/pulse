@@ -1,4 +1,18 @@
 services:
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrator
+    container_name: pulse-migrator
+    environment:
+      DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pulse-network
+    restart: "no"
+
   server:
     build:
       context: .
@@ -18,6 +32,8 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
     networks:
       - pulse-network
     restart: unless-stopped
@@ -40,6 +56,8 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
       server:
         condition: service_started
     healthcheck:

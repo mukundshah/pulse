@@ -1,0 +1,40 @@
+# Build stage
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+# Copy source code
+COPY cmd/ ./cmd/
+COPY internal/ ./internal/
+
+# Build the migrator
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux go build -o /app/bin/migrate ./cmd/db
+
+# Runtime stage
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates tzdata && \
+    addgroup -g 1000 pulse && \
+    adduser -D -u 1000 -G pulse pulse
+
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/bin/migrate /app/migrate
+
+# Change ownership
+RUN chown -R pulse:pulse /app
+
+# Switch to non-root user
+USER pulse
+
+# Run migrations
+CMD ["/app/migrate", "up"]
