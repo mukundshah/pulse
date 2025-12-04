@@ -16,7 +16,4 @@ type Tag struct {
 
 	ProjectID uuid.UUID `gorm:"type:uuid;index;not null" json:"project_id"`
 	Project   Project   `gorm:"foreignKey:ProjectID" json:"project,omitempty"`
-
-	UserID uuid.UUID `gorm:"type:uuid;index;not null" json:"user_id"`
-	User   User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
 }
