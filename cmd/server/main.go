@@ -64,6 +64,8 @@ func main() {
 	checkRunHandler := handlers.NewCheckRunHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
 	authHandler := handlers.NewAuthHandler(s, cfg)
+	invitesHandler := handlers.NewInvitesHandler(s)
+	membersHandler := handlers.NewMembersHandler(s)
 
 	r.GET("/docs/v1", (func(c *gin.Context) {
 		html, err := scalargo.NewV2(
@@ -121,6 +123,11 @@ func main() {
 		protected.GET("/projects/:projectId/tags", tagHandler.ListTags)
 		protected.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
 		protected.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
+		protected.POST("/projects/:projectId/invites", invitesHandler.CreateInvite)
+		protected.GET("/projects/:projectId/invites", invitesHandler.ListInvites)
+		protected.GET("/projects/:projectId/members", membersHandler.ListMembers)
+		protected.PUT("/projects/:projectId/members/:userId", membersHandler.UpdateMemberRole)
+		protected.DELETE("/projects/:projectId/members/:userId", membersHandler.RemoveMember)
 
 		// Project CRUD (generic routes come after specific ones)
 		protected.GET("/projects/:projectId", projectHandler.GetProject)
@@ -140,6 +147,8 @@ func main() {
 		// CheckRun routes
 		protected.GET("/check-runs/:id", checkRunHandler.GetCheckRun)
 
+		// Invite routes
+		protected.POST("/invites/accept", invitesHandler.AcceptInvite)
 	}
 
 	log.Printf("Server starting on port %s", cfg.Port)
