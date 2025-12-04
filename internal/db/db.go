@@ -25,9 +25,11 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 func Migrate(db *gorm.DB) error {
 	log.Println("Running migrations...")
 	if err := db.AutoMigrate(
+		&models.Project{},
+		&models.Tag{},
+		&models.Region{},
 		&models.Check{},
-		&models.Alert{},
-		&models.WebhookAttempt{},
+		&models.CheckRun{},
 	); err != nil {
 		return err
 	}
