@@ -39,7 +39,6 @@ func main() {
 
 	// Connect to ClickHouse (optional, will work without it)
 	var chClient *clickhouse.Client
-	var runsStore *store.RunsStore
 	chClient, err = clickhouse.NewClient(cfg)
 	if err != nil {
 		log.Printf("Warning: Failed to connect to ClickHouse: %v", err)
@@ -49,7 +48,6 @@ func main() {
 		if err := chClient.InitSchema(ctx); err != nil {
 			log.Printf("Warning: Failed to initialize ClickHouse schema: %v", err)
 		}
-		runsStore = store.NewRunsStore(chClient)
 	}
 
 	// Connect to Redis for caching (optional, will work without it)
@@ -63,24 +61,57 @@ func main() {
 		s = store.NewWithCache(pgDB, redisClient)
 	}
 
-	// Setup handlers
-	checksHandler := handlers.NewChecksHandler(s, runsStore)
-	healthHandler := handlers.NewHealthHandler(pgDB, redisClient, chClient)
-
 	// Setup routes
 	r := gin.Default()
-	r.GET("/checks", checksHandler.ListChecks)
-	r.POST("/checks", checksHandler.CreateCheck)
-	r.GET("/checks/:id", checksHandler.GetCheck)
-	r.GET("/checks/:id/runs", checksHandler.GetCheckRuns)
-	r.GET("/checks/:id/alerts", checksHandler.GetCheckAlerts)
-	r.GET("/checks/:id/webhooks", checksHandler.GetCheckWebhooks)
-	r.GET("/health", healthHandler.Health)
-	r.GET("/ready", healthHandler.Ready)
-	r.GET("/metrics", healthHandler.Metrics)
-	r.GET("/", func(c *gin.Context) {
-		c.Redirect(302, "/checks")
-	})
+
+	// Initialize handlers
+	projectHandler := handlers.NewProjectHandler(s)
+	checkHandler := handlers.NewCheckHandler(s)
+	checkRunHandler := handlers.NewCheckRunHandler(s)
+	tagHandler := handlers.NewTagHandler(s)
+
+
+	r.GET("/health", (func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "ok",
+		})
+	}))
+
+	// API routes
+	api := r.Group("/api/v1")
+	{
+		// Tag routes (no conflicts)
+		api.POST("/tags", tagHandler.CreateTag)
+		api.GET("/tags", tagHandler.ListTags)
+
+		// Project routes - specific routes first to avoid conflicts
+		api.POST("/projects", projectHandler.CreateProject)
+		api.GET("/projects", projectHandler.ListProjects)
+
+		// Project sub-resources (must come before /projects/:projectId)
+		api.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
+		api.GET("/projects/:projectId/checks", checkHandler.ListChecks)
+		api.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
+		api.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
+
+		// Project CRUD (generic routes come after specific ones)
+		api.GET("/projects/:projectId", projectHandler.GetProject)
+		api.PUT("/projects/:projectId", projectHandler.UpdateProject)
+		api.DELETE("/projects/:projectId", projectHandler.DeleteProject)
+
+		// Check routes - specific routes first
+		api.GET("/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
+		api.POST("/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
+		api.DELETE("/checks/:checkId/tags/:tagId", tagHandler.RemoveTagFromCheck)
+
+		// Check CRUD (generic routes come after specific ones)
+		api.GET("/checks/:checkId", checkHandler.GetCheck)
+		api.PUT("/checks/:checkId", checkHandler.UpdateCheck)
+		api.DELETE("/checks/:checkId", checkHandler.DeleteCheck)
+
+		// CheckRun routes
+		api.GET("/check-runs/:id", checkRunHandler.GetCheckRun)
+	}
 
 	log.Printf("Server starting on port %s", cfg.Port)
 	if err := r.Run(":" + cfg.Port); err != nil {

@@ -1,63 +1,94 @@
 package handlers
 
 import (
-	"context"
-	"strconv"
-	"time"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 
 	"pulse/internal/models"
 	"pulse/internal/store"
 )
 
-type ChecksHandler struct {
-	store     *store.Store
-	runsStore *store.RunsStore
+type CheckHandler struct {
+	store *store.Store
 }
 
-func NewChecksHandler(s *store.Store, rs *store.RunsStore) *ChecksHandler {
-	return &ChecksHandler{store: s, runsStore: rs}
+func NewCheckHandler(s *store.Store) *CheckHandler {
+	return &CheckHandler{store: s}
 }
 
-func (h *ChecksHandler) ListChecks(c *gin.Context) {
-	checks, err := h.store.GetAllChecks()
+// CreateCheck handles POST /projects/:projectId/checks
+func (h *CheckHandler) CreateCheck(c *gin.Context) {
+	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
 
-	c.JSON(200, checks)
-}
-
-func (h *ChecksHandler) GetCheck(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	// Verify project exists
+	_, err = h.store.GetProject(projectID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid check ID"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
 		return
 	}
 
-	check, err := h.store.GetCheck(id)
-	if err != nil {
-		c.JSON(404, gin.H{"error": err.Error()})
+	var req struct {
+		Name             string         `json:"name" binding:"required"`
+		Type             string         `json:"type" binding:"required"`
+		URL              string         `json:"url" binding:"required"`
+		Method           string         `json:"method"`
+		Headers          datatypes.JSON `json:"headers"`
+		PlaywrightScript *string        `json:"playwright_script,omitempty"`
+		Assertions       datatypes.JSON `json:"assertions"`
+		ExpectedStatus   int            `json:"expected_status"`
+		ShouldFail       bool           `json:"should_fail"`
+		PreScript        *string        `json:"pre_script,omitempty"`
+		PostScript       *string        `json:"post_script,omitempty"`
+		TimeoutMs        int            `json:"timeout_ms"`
+		IntervalSeconds  int            `json:"interval_seconds" binding:"required"`
+		AlertThreshold   int            `json:"alert_threshold"`
+		IsEnabled        bool           `json:"is_enabled"`
+		IsMuted          bool           `json:"is_muted"`
+		TagIDs           []uuid.UUID    `json:"tag_ids,omitempty"`
+		RegionIDs        []uuid.UUID    `json:"region_ids,omitempty"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, check)
-}
-
-func (h *ChecksHandler) CreateCheck(c *gin.Context) {
-	var check models.Check
-	if err := c.ShouldBindJSON(&check); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	checkType := models.CheckType(req.Type)
+	if checkType != models.CheckTypeHTTP && checkType != models.CheckTypeTCP &&
+		checkType != models.CheckTypeDNS && checkType != models.CheckTypeBrowser &&
+		checkType != models.CheckTypeHeartbeat {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check type"})
 		return
+	}
+
+	check := &models.Check{
+		Name:             req.Name,
+		Type:             checkType,
+		URL:              req.URL,
+		Method:           req.Method,
+		Headers:          req.Headers,
+		PlaywrightScript: req.PlaywrightScript,
+		Assertions:       req.Assertions,
+		ExpectedStatus:   req.ExpectedStatus,
+		ShouldFail:       req.ShouldFail,
+		PreScript:        req.PreScript,
+		PostScript:       req.PostScript,
+		TimeoutMs:        req.TimeoutMs,
+		IntervalSeconds:  req.IntervalSeconds,
+		AlertThreshold:   req.AlertThreshold,
+		IsEnabled:        req.IsEnabled,
+		IsMuted:          req.IsMuted,
+		ProjectID:        projectID,
 	}
 
 	// Set defaults
-	if check.ID == uuid.Nil {
-		check.ID = uuid.New()
-	}
 	if check.Method == "" {
 		check.Method = "GET"
 	}
@@ -70,164 +101,186 @@ func (h *ChecksHandler) CreateCheck(c *gin.Context) {
 	if check.AlertThreshold == 0 {
 		check.AlertThreshold = 3
 	}
-	if check.IntervalSeconds == 0 {
-		check.IntervalSeconds = 60
-	}
-	if check.LastStatus == "" {
-		check.LastStatus = "unknown"
-	}
-	now := time.Now()
-	check.CreatedAt = now
-	check.UpdatedAt = now
-	if check.NextRunAt == nil {
-		nextRun := now.Add(time.Duration(check.IntervalSeconds) * time.Second)
-		check.NextRunAt = &nextRun
+	if !req.IsEnabled {
+		check.IsEnabled = true
 	}
 
-	if err := h.store.CreateCheck(&check); err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	if err := h.store.CreateCheck(check); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create check"})
 		return
 	}
 
-	c.JSON(201, check)
+	// Add tags if provided
+	if len(req.TagIDs) > 0 {
+		for _, tagID := range req.TagIDs {
+			_ = h.store.AddTagToCheck(check.ID, tagID)
+		}
+	}
+
+	// Add regions if provided
+	if len(req.RegionIDs) > 0 {
+		// Note: Region association would need to be implemented in store
+		// For now, we'll just create the check
+	}
+
+	// Reload check with associations
+	check, err = h.store.GetCheck(check.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load check"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, check)
 }
 
-func (h *ChecksHandler) GetCheckRuns(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+// GetCheck handles GET /checks/:checkId
+func (h *CheckHandler) GetCheck(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid check ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
 		return
 	}
 
-	// Verify check exists
-	_, err = h.store.GetCheck(id)
+	check, err := h.store.GetCheck(id)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Check not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
 		return
 	}
 
-	// Check if ClickHouse is available
-	if h.runsStore == nil {
-		c.JSON(503, gin.H{"error": "ClickHouse is not available"})
-		return
-	}
-
-	// Get limit from query parameter (default: 100)
-	limit := 100
-	if limitStr := c.Query("limit"); limitStr != "" {
-		limit, err = strconv.Atoi(limitStr)
-		if err != nil || limit < 1 || limit > 1000 {
-			c.JSON(400, gin.H{"error": "Invalid limit. Must be between 1 and 1000"})
-			return
-		}
-	}
-
-	// Get runs from ClickHouse
-	ctx := context.Background()
-	runs, err := h.runsStore.GetCheckRuns(ctx, id, limit)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Create response without check_id in each run
-	type RunResponse struct {
-		ID         uuid.UUID `json:"id"`
-		Status     string    `json:"status"`
-		LatencyMs  int64     `json:"latency_ms"`
-		StatusCode int32     `json:"status_code"`
-		Error      *string   `json:"error,omitempty"`
-		RunAt      time.Time `json:"run_at"`
-	}
-
-	runResponses := make([]RunResponse, len(runs))
-	for i, run := range runs {
-		runResponses[i] = RunResponse{
-			ID:         run.ID,
-			Status:     run.Status,
-			LatencyMs:  run.LatencyMs,
-			StatusCode: run.StatusCode,
-			Error:      run.Error,
-			RunAt:      run.RunAt,
-		}
-	}
-
-	c.JSON(200, gin.H{
-		"runs":  runResponses,
-		"count": len(runResponses),
-	})
+	c.JSON(http.StatusOK, check)
 }
 
-func (h *ChecksHandler) GetCheckAlerts(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+// ListChecks handles GET /projects/:projectId/checks
+func (h *CheckHandler) ListChecks(c *gin.Context) {
+	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid check ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
 
-	// Verify check exists
-	_, err = h.store.GetCheck(id)
+	checks, err := h.store.GetChecksByProject(projectID)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Check not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list checks"})
 		return
 	}
 
-	// Get limit from query parameter (default: 100)
-	limit := 100
-	if limitStr := c.Query("limit"); limitStr != "" {
-		limit, err = strconv.Atoi(limitStr)
-		if err != nil || limit < 1 || limit > 1000 {
-			c.JSON(400, gin.H{"error": "Invalid limit. Must be between 1 and 1000"})
-			return
-		}
-	}
-
-	// Get alerts from database
-	alerts, err := h.store.GetAlerts(id, limit)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"alerts": alerts,
-		"count":  len(alerts),
-	})
+	c.JSON(http.StatusOK, checks)
 }
 
-func (h *ChecksHandler) GetCheckWebhooks(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+// UpdateCheck handles PUT /checks/:checkId
+func (h *CheckHandler) UpdateCheck(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid check ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
 		return
 	}
 
-	// Verify check exists
-	_, err = h.store.GetCheck(id)
+	check, err := h.store.GetCheck(id)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Check not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
 		return
 	}
 
-	// Get limit from query parameter (default: 100)
-	limit := 100
-	if limitStr := c.Query("limit"); limitStr != "" {
-		limit, err = strconv.Atoi(limitStr)
-		if err != nil || limit < 1 || limit > 1000 {
-			c.JSON(400, gin.H{"error": "Invalid limit. Must be between 1 and 1000"})
-			return
-		}
+	var req struct {
+		Name             string         `json:"name"`
+		Type             string         `json:"type"`
+		URL              string         `json:"url"`
+		Method           string         `json:"method"`
+		Headers          datatypes.JSON `json:"headers"`
+		PlaywrightScript *string        `json:"playwright_script,omitempty"`
+		Assertions       datatypes.JSON `json:"assertions"`
+		ExpectedStatus   int            `json:"expected_status"`
+		ShouldFail       bool           `json:"should_fail"`
+		PreScript        *string        `json:"pre_script,omitempty"`
+		PostScript       *string        `json:"post_script,omitempty"`
+		TimeoutMs        int            `json:"timeout_ms"`
+		IntervalSeconds  int            `json:"interval_seconds"`
+		AlertThreshold   int            `json:"alert_threshold"`
+		IsEnabled        *bool          `json:"is_enabled"`
+		IsMuted          *bool          `json:"is_muted"`
 	}
 
-	// Get webhook attempts from database
-	attempts, err := h.store.GetWebhookAttempts(id, limit)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"webhooks": attempts,
-		"count":    len(attempts),
-	})
+	// Update fields if provided
+	if req.Name != "" {
+		check.Name = req.Name
+	}
+	if req.Type != "" {
+		checkType := models.CheckType(req.Type)
+		check.Type = checkType
+	}
+	if req.URL != "" {
+		check.URL = req.URL
+	}
+	if req.Method != "" {
+		check.Method = req.Method
+	}
+	if req.Headers != nil {
+		check.Headers = req.Headers
+	}
+	if req.PlaywrightScript != nil {
+		check.PlaywrightScript = req.PlaywrightScript
+	}
+	if req.Assertions != nil {
+		check.Assertions = req.Assertions
+	}
+	if req.ExpectedStatus != 0 {
+		check.ExpectedStatus = req.ExpectedStatus
+	}
+	check.ShouldFail = req.ShouldFail
+	if req.PreScript != nil {
+		check.PreScript = req.PreScript
+	}
+	if req.PostScript != nil {
+		check.PostScript = req.PostScript
+	}
+	if req.TimeoutMs != 0 {
+		check.TimeoutMs = req.TimeoutMs
+	}
+	if req.IntervalSeconds != 0 {
+		check.IntervalSeconds = req.IntervalSeconds
+	}
+	if req.AlertThreshold != 0 {
+		check.AlertThreshold = req.AlertThreshold
+	}
+	if req.IsEnabled != nil {
+		check.IsEnabled = *req.IsEnabled
+	}
+	if req.IsMuted != nil {
+		check.IsMuted = *req.IsMuted
+	}
+
+	if err := h.store.UpdateCheck(check); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update check"})
+		return
+	}
+
+	// Reload check with associations
+	check, err = h.store.GetCheck(check.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load check"})
+		return
+	}
+
+	c.JSON(http.StatusOK, check)
+}
+
+// DeleteCheck handles DELETE /checks/:checkId
+func (h *CheckHandler) DeleteCheck(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("checkId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
+		return
+	}
+
+	if err := h.store.DeleteCheck(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete check"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Check deleted successfully"})
 }
