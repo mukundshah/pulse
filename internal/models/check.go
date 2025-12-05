@@ -29,10 +29,9 @@ type Check struct {
 	PreScript  *string `gorm:"type:text" json:"pre_script,omitempty"`
 	PostScript *string `gorm:"type:text" json:"post_script,omitempty"`
 
-	TimeoutMs        int `gorm:"default:10000" json:"timeout_ms"`
-	IntervalSeconds  int `gorm:"not null" json:"interval_seconds"`
-	AlertThreshold   int `gorm:"not null;default:3" json:"alert_threshold"`
-	ConsecutiveFails int `gorm:"not null;default:0" json:"consecutive_fails"`
+	TimeoutMs       int `gorm:"default:10000" json:"timeout_ms"`
+	IntervalSeconds int `gorm:"not null" json:"interval_seconds"`
+	AlertThreshold  int `gorm:"not null;default:3" json:"alert_threshold"`
 
 	LastStatus CheckRunStatus `gorm:"type:varchar(20);default:'unknown'" json:"last_status"`
 	LastRunAt  *time.Time     `json:"last_run_at,omitempty"`

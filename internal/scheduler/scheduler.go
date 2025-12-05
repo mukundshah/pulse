@@ -64,7 +64,7 @@ func (s *Scheduler) poller() {
 
 				// Update next_run_at
 				nextRun := time.Now().Add(time.Duration(check.IntervalSeconds) * time.Second)
-				if err := s.store.UpdateCheckStatus(check.ID, nextRun, check.ConsecutiveFails, string(check.LastStatus)); err != nil {
+				if err := s.store.UpdateCheckStatus(check.ID, nextRun, string(check.LastStatus)); err != nil {
 					log.Printf("Error updating check status for %s: %v", check.ID, err)
 				}
 

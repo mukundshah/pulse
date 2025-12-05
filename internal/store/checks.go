@@ -67,12 +67,11 @@ func (s *Store) GetDueChecks(regionCode string) ([]models.Check, error) {
 	return checks, nil
 }
 
-func (s *Store) UpdateCheckStatus(checkID uuid.UUID, nextRun time.Time, consecutiveFails int, lastStatus string) error {
+func (s *Store) UpdateCheckStatus(checkID uuid.UUID, nextRun time.Time, lastStatus string) error {
 	now := time.Now()
 	return s.db.Model(&models.Check{}).Where("id = ?", checkID).Updates(map[string]interface{}{
-		"last_run_at":       now,
-		"next_run_at":       nextRun,
-		"consecutive_fails": consecutiveFails,
-		"last_status":       lastStatus,
+		"last_run_at": now,
+		"next_run_at": nextRun,
+		"last_status": lastStatus,
 	}).Error
 }
