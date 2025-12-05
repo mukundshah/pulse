@@ -1,6 +1,7 @@
 paths:
   /v1/check-runs/{id}:
     get:
+      operationId: getCheckRunById
       summary: Get a check run by ID
       tags:
         - Check Runs

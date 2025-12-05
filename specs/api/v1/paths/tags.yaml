@@ -1,6 +1,7 @@
 paths:
   /v1/tags:
     get:
+      operationId: listTags
       summary: List all tags
       tags:
         - Tags
@@ -20,6 +21,7 @@ paths:
 
   /v1/projects/{projectId}/tags:
     get:
+      operationId: listProjectTags
       summary: List all tags for a project
       tags:
         - Tags
@@ -46,6 +48,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     post:
+      operationId: createProjectTag
       summary: Create a new tag in a project
       tags:
         - Tags

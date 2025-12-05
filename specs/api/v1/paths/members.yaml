@@ -1,6 +1,7 @@
 paths:
   /v1/projects/{projectId}/members:
     get:
+      operationId: listProjectMembers
       summary: List all members of a project
       tags:
         - Members
@@ -33,6 +34,7 @@ paths:
 
   /v1/projects/{projectId}/members/{userId}:
     put:
+      operationId: updateProjectMemberRole
       summary: Update a member's role
       tags:
         - Members
@@ -84,6 +86,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     delete:
+      operationId: removeProjectMember
       summary: Remove a member from a project
       tags:
         - Members

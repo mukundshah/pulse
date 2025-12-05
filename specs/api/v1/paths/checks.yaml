@@ -1,6 +1,7 @@
 paths:
   /v1/checks/{checkId}:
     get:
+      operationId: getCheckById
       summary: Get a check by ID
       tags:
         - Checks
@@ -21,6 +22,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Check'
     put:
+      operationId: updateCheck
       summary: Update a check
       tags:
         - Checks
@@ -92,6 +94,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     delete:
+      operationId: deleteCheck
       summary: Delete a check
       tags:
         - Checks
@@ -122,6 +125,7 @@ paths:
 
   /v1/checks/{checkId}/runs:
     get:
+      operationId: listCheckRunsByCheck
       summary: List check runs for a check
       tags:
         - Check Runs
@@ -159,6 +163,7 @@ paths:
 
   /v1/checks/{checkId}/tags/{tagId}:
     post:
+      operationId: addTagToCheck
       summary: Add a tag to a check
       tags:
         - Tags
@@ -189,6 +194,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     delete:
+      operationId: removeTagFromCheck
       summary: Remove a tag from a check
       tags:
         - Tags

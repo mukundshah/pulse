@@ -1,6 +1,7 @@
 paths:
   /v1/auth/register:
     post:
+      operationId: registerUser
       summary: Register a new user
       tags:
         - Authentication
@@ -49,6 +50,7 @@ paths:
 
   /v1/auth/login:
     post:
+      operationId: loginUser
       summary: Login with email and password
       tags:
         - Authentication
@@ -94,6 +96,7 @@ paths:
 
   /v1/auth/password/change:
     post:
+      operationId: changePassword
       summary: Change password (authenticated users)
       tags:
         - Authentication
@@ -140,6 +143,7 @@ paths:
 
   /v1/auth/password/reset:
     post:
+      operationId: requestPasswordReset
       summary: Request password reset
       tags:
         - Authentication
@@ -177,6 +181,7 @@ paths:
 
   /v1/auth/password/reset/done:
     post:
+      operationId: resetPassword
       summary: Reset password using reset token
       tags:
         - Authentication
