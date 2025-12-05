@@ -1,5 +1,5 @@
 paths:
-  /projects/{projectId}/invites:
+  /v1/projects/{projectId}/invites:
     get:
       summary: List all invitations for a project
       tags:
@@ -74,7 +74,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /invites/accept:
+  /v1/invites/accept:
     post:
       summary: Accept a project invitation
       tags:

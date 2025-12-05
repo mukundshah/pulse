@@ -1,5 +1,5 @@
 paths:
-  /checks/{checkId}:
+  /v1/checks/{checkId}:
     get:
       summary: Get a check by ID
       tags:
@@ -120,7 +120,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /checks/{checkId}/runs:
+  /v1/checks/{checkId}/runs:
     get:
       summary: List check runs for a check
       tags:
@@ -157,7 +157,7 @@ paths:
         '404':
           $ref: '#/components/responses/Error'
 
-  /checks/{checkId}/tags/{tagId}:
+  /v1/checks/{checkId}/tags/{tagId}:
     post:
       summary: Add a tag to a check
       tags:

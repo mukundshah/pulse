@@ -86,7 +86,7 @@ func main() {
 			scalargo.WithSpecModifier(func(spec *scalarModel.Spec) *scalarModel.Spec {
 				localhost := "Localhost"
 				spec.Servers = []scalarModel.Server{
-					{URL: "http://localhost:8080/api/v1", Description: &localhost},
+					{URL: "http://localhost:8080/api", Description: &localhost},
 				}
 				return spec
 			}),

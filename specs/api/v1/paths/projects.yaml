@@ -1,5 +1,5 @@
 paths:
-  /projects:
+  /v1/projects:
     get:
       summary: List all projects
       tags:
@@ -47,7 +47,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /projects/{projectId}:
+  /v1/projects/{projectId}:
     get:
       summary: Get a project by ID
       tags:
@@ -139,7 +139,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /projects/{projectId}/checks:
+  /v1/projects/{projectId}/checks:
     get:
       summary: List all checks in a project
       tags:
@@ -265,7 +265,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /projects/{projectId}/tags/{tagId}:
+  /v1/projects/{projectId}/tags/{tagId}:
     post:
       summary: Move a tag to a project (update tag's project_id)
       tags:

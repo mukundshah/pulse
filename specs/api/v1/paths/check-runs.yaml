@@ -1,5 +1,5 @@
 paths:
-  /check-runs/{id}:
+  /v1/check-runs/{id}:
     get:
       summary: Get a check run by ID
       tags:

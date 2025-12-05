@@ -1,5 +1,5 @@
 paths:
-  /projects/{projectId}/members:
+  /v1/projects/{projectId}/members:
     get:
       summary: List all members of a project
       tags:
@@ -31,7 +31,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /projects/{projectId}/members/{userId}:
+  /v1/projects/{projectId}/members/{userId}:
     put:
       summary: Update a member's role
       tags:

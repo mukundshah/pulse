@@ -1,5 +1,5 @@
 paths:
-  /tags:
+  /v1/tags:
     get:
       summary: List all tags
       tags:
@@ -18,7 +18,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /projects/{projectId}/tags:
+  /v1/projects/{projectId}/tags:
     get:
       summary: List all tags for a project
       tags:
