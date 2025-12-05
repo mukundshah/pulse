@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	scalargo "github.com/bdpiprava/scalar-go"
+	scalarLoader "github.com/bdpiprava/scalar-go/loader"
 	scalarModel "github.com/bdpiprava/scalar-go/model"
 	"github.com/gin-gonic/gin"
 
@@ -99,6 +100,39 @@ func main() {
 		}
 
 		c.Data(200, "text/html", []byte(html))
+	}))
+
+	r.GET("/docs/:version/openapi.:format", (func(c *gin.Context) {
+		version := c.Param("version")
+		format := c.Param("format")
+
+		if version != "v1" {
+			c.JSON(404, gin.H{
+				"error": "Unsupported version",
+			})
+			return
+		}
+
+		spec, err := scalarLoader.Load(filepath.Join(cfg.APISpecDir, version))
+
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		switch format {
+		case "json":
+			c.JSON(200, spec)
+		case "yaml", "yml":
+			c.YAML(200, spec)
+		default:
+			c.JSON(404, gin.H{
+				"error": "Unsupported format",
+			})
+			return
+		}
 	}))
 
 	r.GET("/health", (func(c *gin.Context) {
