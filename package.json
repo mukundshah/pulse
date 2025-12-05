@@ -46,5 +46,10 @@
     "@antfu/eslint-config": "^6.4.2",
     "eslint": "^9.39.1",
     "shadcn-vue": "^2.4.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "8.0.0-beta.0"
+    }
   }
 }
