@@ -67,9 +67,18 @@ func main() {
 	invitesHandler := handlers.NewInvitesHandler(s)
 	membersHandler := handlers.NewMembersHandler(s)
 
-	r.GET("/docs/v1", (func(c *gin.Context) {
+	r.GET("/docs/:version", (func(c *gin.Context) {
+		version := c.Param("version")
+
+		if version != "v1" {
+			c.JSON(404, gin.H{
+				"error": "Unsupported version",
+			})
+			return
+		}
+
 		html, err := scalargo.NewV2(
-			scalargo.WithSpecDir(filepath.Join(cfg.APISpecDir, "v1")),
+			scalargo.WithSpecDir(filepath.Join(cfg.APISpecDir, version)),
 			scalargo.WithMetaDataOpts(
 				scalargo.WithTitle("Pulse API"),
 				scalargo.WithKeyValue("description", "Pulse API"),
