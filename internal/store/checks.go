@@ -36,12 +36,34 @@ func (s *Store) DeleteCheck(id uuid.UUID) error {
 	return s.db.Delete(&models.Check{}, "id = ?", id).Error
 }
 
-func (s *Store) GetDueChecks() ([]models.Check, error) {
-	var checks []models.Check
-	now := time.Now()
-	if err := s.db.Where("is_enabled = ? AND (next_run_at IS NULL OR next_run_at <= ?)", true, now).Find(&checks).Error; err != nil {
+func (s *Store) GetRegionByCode(code string) (*models.Region, error) {
+	var region models.Region
+	if err := s.db.Where("code = ?", code).First(&region).Error; err != nil {
 		return nil, err
 	}
+	return &region, nil
+}
+
+func (s *Store) GetDueChecks(regionCode string) ([]models.Check, error) {
+	var checks []models.Check
+	now := time.Now()
+
+	// Get region ID by code
+	var region models.Region
+	if err := s.db.Where("code = ?", regionCode).First(&region).Error; err != nil {
+		return nil, err
+	}
+
+	// Get checks that are due and have this region enabled
+	// Using a join to filter by region
+	if err := s.db.
+		Preload("Regions").
+		Joins("JOIN check_regions ON checks.id = check_regions.check_id").
+		Where("checks.is_enabled = ? AND check_regions.region_id = ? AND (checks.next_run_at IS NULL OR checks.next_run_at <= ?)", true, region.ID, now).
+		Find(&checks).Error; err != nil {
+		return nil, err
+	}
+
 	return checks, nil
 }
 
