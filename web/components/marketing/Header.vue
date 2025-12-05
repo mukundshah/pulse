@@ -4,6 +4,13 @@ const colorMode = useColorMode()
 
 <template>
   <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <div class="bg-foreground text-background">
+      <div class="container py-2">
+        <p class="text-center text-xs tracking-wide font-medium flex items-center justify-center gap-2">
+          <Icon name="lucide:alert-triangle" class="h-4 w-4" /> The contents shown are dummy data and for illustration purposes only.
+        </p>
+      </div>
+    </div>
     <div class="container flex h-16 items-center justify-between">
       <div class="flex items-center gap-2">
         <NuxtLink class="flex items-center gap-2" to="/">
