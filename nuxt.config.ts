@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     'shadcn-nuxt',
     'nuxt-gtag',
+    'nuxt-open-fetch',
   ],
 
   srcDir: 'web',
@@ -71,6 +72,15 @@ export default defineNuxtConfig({
 
   shadcn: {
     prefix: '',
+  },
+
+  openFetch: {
+    clients: {
+      pulseAPI: {
+        baseURL: 'http://localhost:8080/api',
+        schema: 'http://localhost:8080/docs/v1/openapi.json',
+      },
+    },
   },
 
   vite: {
