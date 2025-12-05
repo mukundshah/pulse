@@ -14,6 +14,7 @@ type Config struct {
 	JWTSecret            string `mapstructure:"JWT_SECRET"`
 	APISpecDir           string `mapstructure:"API_SPEC_DIR"`
 	PasswordResetTimeout int    `mapstructure:"PASSWORD_RESET_TIMEOUT"` // in seconds, default 3 days
+	RegionCode           string `mapstructure:"REGION_CODE"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -27,6 +28,7 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("JWT_SECRET", "change-this-secret-in-production")
 	viper.SetDefault("API_SPEC_DIR", "./api-specs")
 	viper.SetDefault("PASSWORD_RESET_TIMEOUT", 259200) // 3 days in seconds
+	viper.SetDefault("REGION_CODE", "apac")            // default region
 
 	// Use .env file if it exists, otherwise rely on environment variables
 	if _, err := os.Stat(".env"); err == nil {
