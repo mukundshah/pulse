@@ -10,17 +10,19 @@ import (
 )
 
 type Scheduler struct {
-	store *store.Store
-	redis *redis.Client
-	quit  chan struct{}
-	wg    sync.WaitGroup
+	store      *store.Store
+	redis      *redis.Client
+	regionCode string
+	quit       chan struct{}
+	wg         sync.WaitGroup
 }
 
-func New(s *store.Store, r *redis.Client) *Scheduler {
+func New(s *store.Store, r *redis.Client, regionCode string) *Scheduler {
 	return &Scheduler{
-		store: s,
-		redis: r,
-		quit:  make(chan struct{}),
+		store:      s,
+		redis:      r,
+		regionCode: regionCode,
+		quit:       make(chan struct{}),
 	}
 }
 
@@ -47,9 +49,9 @@ func (s *Scheduler) poller() {
 		case <-s.quit:
 			return
 		case <-ticker.C:
-			checks, err := s.store.GetDueChecks()
+			checks, err := s.store.GetDueChecks(s.regionCode)
 			if err != nil {
-				log.Printf("Error getting due checks: %v", err)
+				log.Printf("Error getting due checks for region %s: %v", s.regionCode, err)
 				continue
 			}
 
