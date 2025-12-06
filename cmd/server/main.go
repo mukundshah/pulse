@@ -8,6 +8,7 @@ import (
 	scalargo "github.com/bdpiprava/scalar-go"
 	scalarLoader "github.com/bdpiprava/scalar-go/loader"
 	scalarModel "github.com/bdpiprava/scalar-go/model"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"pulse/internal/clickhouse"
@@ -58,6 +59,7 @@ func main() {
 
 	// Setup routes
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(s)

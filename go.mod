@@ -7,6 +7,7 @@ tool github.com/air-verse/air
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.41.0
 	github.com/bdpiprava/scalar-go v0.13.0
+	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-gormigrate/gormigrate/v2 v2.1.5
 	github.com/golang-jwt/jwt/v5 v5.3.0
