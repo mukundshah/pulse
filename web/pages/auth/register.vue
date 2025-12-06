@@ -57,7 +57,7 @@ const onSubmit = handleSubmit(async (data) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form class="flex flex-col gap-y-6" @submit="onSubmit">
+          <form class="flex flex-col gap-y-6" @submit="onSubmit">
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>
                 <FormLabel>Name</FormLabel>
@@ -122,7 +122,7 @@ const onSubmit = handleSubmit(async (data) => {
               <span v-if="isSubmitting">Creating account...</span>
               <span v-else>Create account</span>
             </Button>
-          </Form>
+          </form>
         </CardContent>
         <CardFooter class="flex flex-col gap-4">
           <div class="relative w-full text-center text-sm">

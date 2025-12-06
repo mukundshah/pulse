@@ -58,7 +58,7 @@ const onSubmit = handleSubmit(async (data) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form class="flex flex-col gap-y-6" @submit="onSubmit">
+          <form class="flex flex-col gap-y-6" @submit="onSubmit">
             <FormField v-slot="{ componentField }" name="password">
               <FormItem>
                 <FormLabel>Password</FormLabel>
@@ -95,7 +95,7 @@ const onSubmit = handleSubmit(async (data) => {
               <span v-if="isSubmitting">Resetting password...</span>
               <span v-else>Reset password</span>
             </Button>
-          </Form>
+          </form>
         </CardContent>
         <CardFooter>
           <Button
