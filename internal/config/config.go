@@ -16,8 +16,8 @@ type Config struct {
 	PasswordResetTimeout int    `mapstructure:"PASSWORD_RESET_TIMEOUT"` // in seconds, default 3 days
 	RegionCode           string `mapstructure:"REGION_CODE"`
 	// Email Configuration
-	EmailURL    string `mapstructure:"EMAIL_URL"`    // e.g., smtp://user:pass@host:port, consolemail://, etc.
-	EmailFrom   string `mapstructure:"EMAIL_FROM"`   // From email address
+	EmailURL    string `mapstructure:"EMAIL_URL"`  // e.g., smtp://user:pass@host:port, consolemail://, etc.
+	EmailFrom   string `mapstructure:"EMAIL_FROM"` // From email address
 	FrontendURL string `mapstructure:"FRONTEND_URL"`
 }
 
@@ -33,7 +33,7 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("API_SPEC_DIR", "./api-specs")
 	viper.SetDefault("PASSWORD_RESET_TIMEOUT", 259200) // 3 days in seconds
 	viper.SetDefault("REGION_CODE", "apac")            // default region
-	viper.SetDefault("EMAIL_URL", "consolemail://") // default to console backend
+	viper.SetDefault("EMAIL_URL", "consolemail://")    // default to console backend
 	viper.SetDefault("FRONTEND_URL", "http://localhost:3000")
 
 	// Use .env file if it exists, otherwise rely on environment variables
