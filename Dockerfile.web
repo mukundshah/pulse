@@ -27,8 +27,8 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 FROM node:24-alpine AS development
 
 RUN apk --no-cache add ca-certificates tzdata curl && \
-    addgroup -g 1000 pulse && \
-    adduser -D -u 1000 -G pulse pulse
+    addgroup -g 1001 pulse && \
+    adduser -D -u 1001 -G pulse pulse
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -63,8 +63,8 @@ CMD ["pnpm", "dev"]
 FROM node:24-alpine AS production
 
 RUN apk --no-cache add ca-certificates tzdata && \
-    addgroup -g 1000 pulse && \
-    adduser -D -u 1000 -G pulse pulse
+    addgroup -g 1001 pulse && \
+    adduser -D -u 1001 -G pulse pulse
 
 WORKDIR /app
 

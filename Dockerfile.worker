@@ -22,8 +22,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates tzdata && \
-    addgroup -g 1000 pulse && \
-    adduser -D -u 1000 -G pulse pulse
+    addgroup -g 1001 pulse && \
+    adduser -D -u 1001 -G pulse pulse
 
 WORKDIR /app
 
