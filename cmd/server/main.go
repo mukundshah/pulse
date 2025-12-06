@@ -74,6 +74,7 @@ func main() {
 	checkRunHandler := handlers.NewCheckRunHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
 	authHandler := handlers.NewAuthHandler(s, cfg, emailService)
+	accountHandler := handlers.NewAccountHandler(s)
 	invitesHandler := handlers.NewInvitesHandler(s)
 	membersHandler := handlers.NewMembersHandler(s)
 
@@ -164,6 +165,12 @@ func main() {
 	protected := api.Group("/").Use(middleware.AuthMiddleware(cfg))
 
 	{
+		// Account routes
+		protected.GET("/account/me", accountHandler.GetCurrentUser)
+		protected.PUT("/account/profile", accountHandler.UpdateProfile)
+		protected.PATCH("/account/password", accountHandler.ChangePassword)
+		protected.DELETE("/account", accountHandler.DeleteAccount)
+
 		// Project routes - specific routes first to avoid conflicts
 		protected.POST("/projects", projectHandler.CreateProject)
 		protected.GET("/projects", projectHandler.ListProjects)
