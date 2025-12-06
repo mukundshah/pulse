@@ -12,6 +12,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # Copy source code
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
+COPY specs/ ./specs/
+COPY templates/ ./templates/
 
 # Build the server
 RUN --mount=type=cache,target=/go/pkg/mod \
@@ -29,6 +31,14 @@ WORKDIR /app
 
 # Copy binary from builder
 COPY --from=builder /app/bin/server /app/server
+
+# Copy specs and templates needed at runtime
+COPY --from=builder /app/specs ./specs
+COPY --from=builder /app/templates ./templates
+
+# Set environment variables
+ENV API_SPEC_DIR=/app/specs
+ENV TEMPLATES_DIR=/app/templates
 
 # Change ownership
 RUN chown -R pulse:pulse /app
