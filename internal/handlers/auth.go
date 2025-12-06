@@ -11,7 +11,6 @@ import (
 	"pulse/internal/auth/token"
 	"pulse/internal/config"
 	"pulse/internal/email"
-	"pulse/internal/middleware"
 	"pulse/internal/models"
 	"pulse/internal/store"
 )
@@ -175,11 +174,6 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	})
 }
 
-type ChangePasswordRequest struct {
-	CurrentPassword string `json:"current_password" binding:"required"`
-	NewPassword     string `json:"new_password" binding:"required,min=8"`
-}
-
 type ForgotPasswordRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }
@@ -191,56 +185,6 @@ type ForgotPasswordResponse struct {
 type ResetPasswordRequest struct {
 	Token    string `json:"token" binding:"required"`
 	Password string `json:"password" binding:"required,min=8"`
-}
-
-// ChangePassword allows authenticated users to change their password
-func (h *AuthHandler) ChangePassword(c *gin.Context) {
-	userID, exists := middleware.GetUserID(c)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
-		return
-	}
-
-	var req ChangePasswordRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Get user
-	user, err := h.store.GetUserByID(userID)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
-		return
-	}
-
-	// Verify old password
-	ok, err := h.hasher.Verify(req.CurrentPassword, user.PasswordHash)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify password"})
-		return
-	}
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid old password"})
-		return
-	}
-
-	// Hash new password
-	newPasswordHash, err := h.hasher.Hash(req.NewPassword)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
-		return
-	}
-
-	// Update password
-	user.PasswordHash = newPasswordHash
-	user.UpdatedAt = time.Now()
-	if err := h.store.UpdateUser(user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update password"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "password changed successfully"})
 }
 
 // ForgotPassword generates a password reset token for a user
