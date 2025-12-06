@@ -187,9 +187,8 @@ type ForgotPasswordResponse struct {
 }
 
 type ResetPasswordRequest struct {
-	Email       string `json:"email" binding:"required,email"`
-	Token       string `json:"token" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required,min=8"`
+	Token    string `json:"token" binding:"required"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
 // ChangePassword allows authenticated users to change their password
@@ -265,7 +264,7 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	}
 
 	// Generate reset token
-	resetToken := h.passwordResetToken.Generate(token.User{
+	resetToken := h.passwordResetToken.GenerateWithUID(token.User{
 		ID:           user.ID.String(),
 		PasswordHash: user.PasswordHash,
 		LastLogin:    user.LastLogin,
@@ -288,8 +287,10 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
+	uid := h.passwordResetToken.GetUID(req.Token)
+
 	// Get user by email
-	user, err := h.store.GetUserByEmail(req.Email)
+	user, err := h.store.GetUserByID(uuid.MustParse(uid))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token or user not found"})
 		return
@@ -302,7 +303,7 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	}
 
 	// Validate token
-	if !h.passwordResetToken.Validate(token.User{
+	if !h.passwordResetToken.ValidateWithUID(token.User{
 		ID:           user.ID.String(),
 		PasswordHash: user.PasswordHash,
 		LastLogin:    user.LastLogin,
@@ -313,7 +314,7 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	}
 
 	// Hash new password
-	newPasswordHash, err := h.hasher.Hash(req.NewPassword)
+	newPasswordHash, err := h.hasher.Hash(req.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return

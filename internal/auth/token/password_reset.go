@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"crypto/subtle"
+	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
@@ -45,6 +46,46 @@ type User struct {
 func (g *PasswordResetTokenGenerator) Generate(u User) string {
 	ts := secondsSinceEpoch(time.Now())
 	return g.generateWithTimestamp(u, ts)
+}
+
+func (g *PasswordResetTokenGenerator) GetUID(token string) string {
+	parts := strings.SplitN(token, "-", 3)
+	if len(parts) != 3 {
+		return ""
+	}
+	uidb64 := parts[0]
+	uid, err := base64.RawURLEncoding.DecodeString(uidb64)
+	if err != nil {
+		return ""
+	}
+	return string(uid)
+}
+
+func (g *PasswordResetTokenGenerator) GenerateWithUID(u User) string {
+	ts := secondsSinceEpoch(time.Now())
+	token := g.generateWithTimestamp(u, ts)
+	uidb64 := base64.RawURLEncoding.EncodeToString([]byte(u.ID))
+	return fmt.Sprintf("%s-%s", uidb64, token)
+}
+
+func (g *PasswordResetTokenGenerator) ValidateWithUID(u User, token string) bool {
+	parts := strings.SplitN(token, "-", 2)
+	if len(parts) != 2 {
+		return false
+	}
+	uidb64 := parts[0]
+	token = parts[1]
+	uid, err := base64.RawURLEncoding.DecodeString(uidb64)
+
+	if err != nil {
+		return false
+	}
+
+	if string(uid) != u.ID {
+		return false
+	}
+
+	return g.ValidateWithFallbacks(u, token, nil)
 }
 
 // Validate checks if a token is valid for the given user.

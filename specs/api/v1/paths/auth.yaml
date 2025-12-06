@@ -196,18 +196,14 @@ paths:
                 - token
                 - new_password
               properties:
-                email:
-                  type: string
-                  format: email
-                  example: "john.doe@example.com"
                 token:
                   type: string
-                  example: "reset-token-here"
-                new_password:
+                  example: reset-token-here
+                password:
                   type: string
                   format: password
                   minLength: 8
-                  example: "newpassword123"
+                  example: newpassword123
       responses:
         '200':
           description: Password reset successfully
