@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { z } from 'zod'
 import { toast } from 'vue-sonner'
+import { z } from 'zod'
 
-const {$api} = useNuxtApp()
+const { $pulseAPI } = useNuxtApp()
 
 useHead({
   title: 'Forgot password',
@@ -19,7 +19,7 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $api('v1/auth/password/reset', {
+  await $pulseAPI('/v1/auth/password/reset', {
     method: 'POST',
     body: data,
   })

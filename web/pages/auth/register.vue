@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { z } from 'zod'
 import { toast } from 'vue-sonner'
+import { z } from 'zod'
 
-const {$api} = useNuxtApp()
+const { $pulseAPI } = useNuxtApp()
 
 useHead({
   title: 'Create account',
@@ -25,7 +25,7 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $api('v1/auth/register', {
+  await $pulseAPI('/v1/auth/register', {
     method: 'POST',
     body: data,
   })

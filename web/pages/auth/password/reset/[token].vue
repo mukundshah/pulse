@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import { z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
+import { z } from 'zod'
 
 useHead({
   title: 'Reset password',
 })
 
 const route = useRoute()
-const token = route.query.token as string | undefined
 
-const {$api} = useNuxtApp()
+const { $pulseAPI } = useNuxtApp()
 
 const resetPasswordSchema = z.object({
   password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 'Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
   confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Passwords don\'t match',
   path: ['confirmPassword'],
 })
 
@@ -26,9 +25,9 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $api('v1/auth/password/reset/done', {
+  await $pulseAPI('/v1/auth/password/reset/done', {
     method: 'POST',
-    body: { ...data, token },
+    body: { ...data, token: route.params.token?.toString() ?? '' },
   })
   toast('Password reset successfully')
   await navigateTo('/auth/login')
@@ -64,8 +63,8 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
-                    type="password"
                     placeholder="••••••••"
+                    type="password"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -78,8 +77,8 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input
-                    type="password"
                     placeholder="••••••••"
+                    type="password"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -89,8 +88,8 @@ const onSubmit = handleSubmit(async (data) => {
 
             <Button
               class="w-full"
-              :disabled="isSubmitting"
               type="submit"
+              :disabled="isSubmitting"
             >
               <span v-if="isSubmitting">Resetting password...</span>
               <span v-else>Reset password</span>

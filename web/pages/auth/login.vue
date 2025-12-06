@@ -4,7 +4,7 @@ import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
-const { $api } = useNuxtApp()
+const { $pulseAPI } = useNuxtApp()
 
 useHead({
   title: 'Sign in',
@@ -20,11 +20,13 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $api('v1/auth/login', {
+  await $pulseAPI('/v1/auth/login', {
     method: 'POST',
     body: data,
   })
-  toast('Welcome back!')
+  toast('Welcome back!', {
+    description: 'You are now logged in',
+  })
   await navigateTo('/dashboard')
 })
 </script>
