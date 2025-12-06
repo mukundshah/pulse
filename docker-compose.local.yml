@@ -231,3 +231,5 @@ volumes:
 networks:
   pulse-network:
     driver: bridge
+    driver_opts:
+      dns: 1.1.1.1
