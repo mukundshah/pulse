@@ -42,13 +42,40 @@ type Claims struct {
 }
 
 // Generate creates a new JWT token for a user.
-func (g *JWTTokenGenerator) Generate(userID uuid.UUID, email string) (string, error) {
+// Returns the token string and the JTI (JWT ID) for session tracking.
+func (g *JWTTokenGenerator) Generate(userID uuid.UUID, email string) (string, string, error) {
+	now := time.Now()
+	jti := uuid.New().String() // Generate unique JWT ID
+
+	claims := Claims{
+		UserID: userID,
+		Email:  email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        jti, // JTI: JWT ID for tracking and invalidation
+			ExpiresAt: jwt.NewNumericDate(now.Add(g.validity)),
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signed, err := token.SignedString([]byte(g.secret))
+	if err != nil {
+		return "", "", fmt.Errorf("sign token: %w", err)
+	}
+
+	return signed, jti, nil
+}
+
+// GenerateWithJTI creates a new JWT token with a specific JTI (for token refresh scenarios).
+func (g *JWTTokenGenerator) GenerateWithJTI(userID uuid.UUID, email string, jti string) (string, error) {
 	now := time.Now()
 
 	claims := Claims{
 		UserID: userID,
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        jti,
 			ExpiresAt: jwt.NewNumericDate(now.Add(g.validity)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
@@ -83,4 +110,14 @@ func (g *JWTTokenGenerator) Validate(tokenString string) (*Claims, error) {
 	}
 
 	return claims, nil
+}
+
+// GetJTI extracts the JTI (JWT ID) from a token without full validation.
+// Useful for checking session validity before full token validation.
+func (g *JWTTokenGenerator) GetJTI(tokenString string) (string, error) {
+	claims, err := g.Validate(tokenString)
+	if err != nil {
+		return "", err
+	}
+	return claims.ID, nil
 }

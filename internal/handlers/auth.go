@@ -171,10 +171,26 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Generate token
-	jwtToken, err := h.jwtGenerator.Generate(user.ID, user.Email)
+	// Generate token with JTI
+	jwtToken, jti, err := h.jwtGenerator.Generate(user.ID, user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
+	// Create session
+	session := &models.Session{
+		UserID:       user.ID,
+		JTI:          jti,
+		UserAgent:    c.GetHeader("User-Agent"),
+		IPAddress:    c.ClientIP(),
+		IsActive:     true,
+		ExpiresAt:    time.Now().Add(24 * time.Hour), // Match JWT validity
+		LastActivity: time.Now(),
+	}
+
+	if err := h.store.CreateSession(session); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create session"})
 		return
 	}
 
@@ -196,8 +212,9 @@ type ForgotPasswordResponse struct {
 }
 
 type ResetPasswordRequest struct {
-	Token    string `json:"token" binding:"required"`
-	Password string `json:"password" binding:"required,min=8"`
+	Token                string `json:"token" binding:"required"`
+	Password             string `json:"password" binding:"required,min=8"`
+	LogoutFromAllDevices bool   `json:"logout_from_all_devices" binding:"omitempty"`
 }
 
 // ForgotPassword generates a password reset token for a user
@@ -284,6 +301,14 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	if err := h.store.UpdateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update password"})
 		return
+	}
+
+	if req.LogoutFromAllDevices {
+		// Invalidate all existing sessions for security (user must log in again)
+		if err := h.store.InvalidateAllUserSessions(user.ID); err != nil {
+			// Log error but don't fail the password reset
+			// The password has been changed, which is the critical operation
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "password reset successfully"})

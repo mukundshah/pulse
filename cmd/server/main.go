@@ -164,7 +164,7 @@ func main() {
 		api.POST("/auth/password/reset/confirm", authHandler.ResetPassword)
 	}
 
-	protected := api.Group("/").Use(middleware.AuthMiddleware(cfg))
+	protected := api.Group("/").Use(middleware.AuthMiddleware(cfg, s))
 
 	{
 		// Account routes

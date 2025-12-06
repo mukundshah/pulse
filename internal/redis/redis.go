@@ -134,3 +134,21 @@ func (c *Client) HealthCheck() error {
 func (c *Client) GetQueueDepth() (int64, error) {
 	return c.client.LLen(c.ctx, "pulse:jobs").Result()
 }
+
+// SetSession stores a session indicator in Redis cache
+func (c *Client) SetSession(jti string, ttl time.Duration) error {
+	key := fmt.Sprintf("session:%s", jti)
+	return c.client.Set(c.ctx, key, "active", ttl).Err()
+}
+
+// GetSession retrieves a session indicator from Redis cache
+func (c *Client) GetSession(jti string) (string, error) {
+	key := fmt.Sprintf("session:%s", jti)
+	return c.client.Get(c.ctx, key).Result()
+}
+
+// DeleteSession removes a session indicator from Redis cache
+func (c *Client) DeleteSession(jti string) error {
+	key := fmt.Sprintf("session:%s", jti)
+	return c.client.Del(c.ctx, key).Err()
+}
