@@ -173,6 +173,13 @@ func main() {
 		protected.PATCH("/account/password", accountHandler.ChangePassword)
 		protected.DELETE("/account", accountHandler.DeleteAccount)
 
+		// Session management routes
+		protected.GET("/auth/sessions", sessionHandler.ListSessions)
+		protected.DELETE("/auth/sessions/current", sessionHandler.RevokeCurrentSession)
+		protected.DELETE("/auth/sessions/:sessionId", sessionHandler.RevokeSession)
+		protected.DELETE("/auth/sessions/batch", sessionHandler.RevokeSessions)
+		protected.DELETE("/auth/sessions/all", sessionHandler.RevokeAllSessions)
+
 		// Project routes - specific routes first to avoid conflicts
 		protected.POST("/projects", projectHandler.CreateProject)
 		protected.GET("/projects", projectHandler.ListProjects)
