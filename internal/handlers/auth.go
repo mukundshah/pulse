@@ -16,12 +16,13 @@ import (
 )
 
 type AuthHandler struct {
-	store              *store.Store
-	config             *config.Config
-	hasher             *hasher.Argon2Hasher
-	jwtGenerator       *token.JWTTokenGenerator
-	passwordResetToken *token.PasswordResetTokenGenerator
-	emailService       *email.Service
+	store                  *store.Store
+	config                 *config.Config
+	hasher                 *hasher.Argon2Hasher
+	jwtGenerator           *token.JWTTokenGenerator
+	passwordResetToken     *token.PasswordResetTokenGenerator
+	emailVerificationToken *token.EmailVerificationTokenGenerator
+	emailService           *email.Service
 }
 
 func NewAuthHandler(s *store.Store, cfg *config.Config, emailService *email.Service) *AuthHandler {
@@ -38,13 +39,19 @@ func NewAuthHandler(s *store.Store, cfg *config.Config, emailService *email.Serv
 		Timeout: time.Duration(cfg.PasswordResetTimeout) * time.Second,
 	})
 
+	emailVerificationGen := token.NewEmailVerificationTokenGenerator(token.EmailVerificationConfig{
+		Secret:  cfg.JWTSecret,
+		Timeout: 7 * 24 * time.Hour, // 7 days
+	})
+
 	return &AuthHandler{
-		store:              s,
-		config:             cfg,
-		hasher:             hasher,
-		jwtGenerator:       jwtGen,
-		passwordResetToken: passwordResetGen,
-		emailService:       emailService,
+		store:                  s,
+		config:                 cfg,
+		hasher:                 hasher,
+		jwtGenerator:           jwtGen,
+		passwordResetToken:     passwordResetGen,
+		emailVerificationToken: emailVerificationGen,
+		emailService:           emailService,
 	}
 }
 
@@ -62,6 +69,10 @@ type LoginRequest struct {
 type AuthResponse struct {
 	Token string       `json:"token"`
 	User  *models.User `json:"user"`
+}
+
+type RegisterResponse struct {
+	Message string `json:"message"`
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
@@ -102,19 +113,15 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	// Generate token
-	jwtToken, err := h.jwtGenerator.Generate(user.ID, user.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
-		return
-	}
+	// Generate email verification token
+	verificationToken := h.emailVerificationToken.Generate(user.Email)
 
-	// Don't return password hash
-	user.PasswordHash = ""
+	// Send verification email asynchronously
+	h.emailService.SendEmailVerificationAsync(user.Email, verificationToken)
 
-	c.JSON(http.StatusCreated, AuthResponse{
-		Token: jwtToken,
-		User:  user,
+	// Return success message (don't authenticate yet)
+	c.JSON(http.StatusCreated, RegisterResponse{
+		Message: "Registration successful. Please check your email to verify your account.",
 	})
 }
 
@@ -135,6 +142,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	// Check if user is active
 	if !user.IsActive {
 		c.JSON(http.StatusForbidden, gin.H{"error": "account is inactive"})
+		return
+	}
+
+	// Check if email is verified
+	if !user.EmailVerified {
+		c.JSON(http.StatusForbidden, gin.H{"error": "email not verified. Please check your email for verification link."})
 		return
 	}
 
@@ -274,4 +287,90 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "password reset successfully"})
+}
+
+type VerifyEmailRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+// VerifyEmail verifies a user's email address using an HMAC-based token
+// The email is extracted from the token itself, so it doesn't need to be provided.
+func (h *AuthHandler) VerifyEmail(c *gin.Context) {
+	var req VerifyEmailRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Extract email from token
+	email, err := h.emailVerificationToken.GetEmailFromToken(req.Token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
+		return
+	}
+
+	// Validate token (this also checks expiration)
+	if !h.emailVerificationToken.ValidateWithEmail(req.Token) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid or expired verification token"})
+		return
+	}
+
+	// Get user by email
+	user, err := h.store.GetUserByEmail(email)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	// Check if already verified
+	if user.EmailVerified {
+		c.JSON(http.StatusOK, gin.H{"message": "email already verified"})
+		return
+	}
+
+	// Mark email as verified
+	user.EmailVerified = true
+	user.UpdatedAt = time.Now()
+	if err := h.store.UpdateUser(user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify email"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "email verified successfully"})
+}
+
+type ResendVerificationRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+// ResendVerificationEmail resends the email verification link
+func (h *AuthHandler) ResendVerificationEmail(c *gin.Context) {
+	var req ResendVerificationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get user by email
+	user, err := h.store.GetUserByEmail(req.Email)
+	if err != nil {
+		// Don't reveal if user exists or not (security best practice)
+		c.JSON(http.StatusOK, gin.H{"message": "if the email exists and is not verified, a verification link has been sent"})
+		return
+	}
+
+	// Check if already verified
+	if user.EmailVerified {
+		c.JSON(http.StatusOK, gin.H{"message": "email already verified"})
+		return
+	}
+
+	// Generate new verification token
+	verificationToken := h.emailVerificationToken.Generate(user.Email)
+
+	// Send verification email asynchronously
+	h.emailService.SendEmailVerificationAsync(user.Email, verificationToken)
+
+	// Always return success to avoid revealing if user exists
+	c.JSON(http.StatusOK, gin.H{"message": "if the email exists and is not verified, a verification link has been sent"})
 }

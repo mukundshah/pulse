@@ -115,3 +115,43 @@ func (s *Service) SendPasswordResetEmailAsync(to, resetToken string) {
 		}
 	}()
 }
+
+// SendEmailVerification sends an email verification email synchronously
+func (s *Service) SendEmailVerification(to, email, verificationToken string) error {
+	// Build verification URL - email is included in the token, so only token is needed
+	// Format: /auth/verify-email?token={token}
+	verificationURL := fmt.Sprintf("%s/auth/verify-email?token=%s", s.config.FrontendURL, verificationToken)
+
+	// Prepare template data
+	data := map[string]interface{}{
+		"VerificationURL": verificationURL,
+		"Email":           email,
+		"Token":           verificationToken,
+	}
+
+	// Render HTML template
+	var htmlBuf bytes.Buffer
+	if err := s.tmpl.ExecuteTemplate(&htmlBuf, "email_verification.html", data); err != nil {
+		return fmt.Errorf("failed to render HTML template: %w", err)
+	}
+
+	// Render text template
+	var textBuf bytes.Buffer
+	if err := s.tmpl.ExecuteTemplate(&textBuf, "email_verification.txt", data); err != nil {
+		return fmt.Errorf("failed to render text template: %w", err)
+	}
+
+	subject := "Verify Your Email Address"
+
+	return s.backend.SendEmail(to, subject, htmlBuf.String(), textBuf.String())
+}
+
+// SendEmailVerificationAsync sends an email verification email asynchronously in a goroutine
+// Errors are logged but not returned to the caller
+func (s *Service) SendEmailVerificationAsync(to, verificationToken string) {
+	go func() {
+		if err := s.SendEmailVerification(to, to, verificationToken); err != nil {
+			log.Printf("Failed to send email verification to %s: %v", to, err)
+		}
+	}()
+}

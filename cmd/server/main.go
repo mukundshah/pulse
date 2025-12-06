@@ -158,6 +158,8 @@ func main() {
 		// Auth routes
 		api.POST("/auth/register", authHandler.Register)
 		api.POST("/auth/login", authHandler.Login)
+		api.POST("/auth/verify-email", authHandler.VerifyEmail)
+		api.POST("/auth/resend-verification", authHandler.ResendVerificationEmail)
 		api.POST("/auth/password/reset", authHandler.ForgotPassword)
 		api.POST("/auth/password/reset/confirm", authHandler.ResetPassword)
 	}
