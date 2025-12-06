@@ -70,6 +70,26 @@ services:
       - pulse-network
     restart: unless-stopped
 
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: pulse-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pulse-network
+    restart: unless-stopped
+
   postgres:
     image: postgres:18-alpine
     container_name: pulse-postgres
