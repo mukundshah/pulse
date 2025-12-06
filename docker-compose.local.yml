@@ -25,6 +25,24 @@ services:
       PORT: 8080
     ports:
       - "8080:8080"
+    develop:
+      watch:
+        - action: sync
+          path: ./cmd
+          target: /app/cmd
+        - action: sync
+          path: ./internal
+          target: /app/internal
+        - action: sync
+          path: ./specs
+          target: /app/specs
+        - action: sync
+          path: ./templates
+          target: /app/templates
+        - action: rebuild
+          path: ./go.mod
+        - action: rebuild
+          path: ./go.sum
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,6 +67,18 @@ services:
       CLICKHOUSE_DSN: clickhouse://pulse:password@clickhouse:9000/default
     ports:
       - "8081:8081"
+    develop:
+      watch:
+        - action: sync
+          path: ./cmd
+          target: /app/cmd
+        - action: sync
+          path: ./internal
+          target: /app/internal
+        - action: rebuild
+          path: ./go.mod
+        - action: rebuild
+          path: ./go.sum
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,9 +104,42 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.web
+      target: development
     container_name: pulse-web
     ports:
       - "3000:3000"
+    command: pnpm dev
+    environment:
+      - NODE_ENV=development
+    develop:
+      watch:
+        - action: sync
+          path: ./web
+          target: /app/web
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .nuxt/
+        - action: sync
+          path: ./public
+          target: /app/public
+          initial_sync: true
+        - action: sync
+          path: ./nuxt.config.ts
+          target: /app/nuxt.config.ts
+        - action: sync
+          path: ./tsconfig.json
+          target: /app/tsconfig.json
+        - action: sync
+          path: ./components.json
+          target: /app/components.json
+        - action: sync
+          path: ./eslint.config.mjs
+          target: /app/eslint.config.mjs
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./pnpm-lock.yaml
     depends_on:
       server:
         condition: service_started
