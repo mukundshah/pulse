@@ -18,16 +18,16 @@ paths:
               properties:
                 name:
                   type: string
-                  example: "John Doe"
+                  example: John Doe
                 email:
                   type: string
                   format: email
-                  example: "john.doe@example.com"
+                  example: john.doe@example.com
                 password:
                   type: string
                   format: password
                   minLength: 8
-                  example: "securepassword123"
+                  example: securepassword123
       responses:
         '201':
           description: User registered successfully
@@ -67,11 +67,11 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: "john.doe@example.com"
+                  example: john.doe@example.com
                 password:
                   type: string
                   format: password
-                  example: "securepassword123"
+                  example: securepassword123
       responses:
         '200':
           description: Login successful
@@ -131,7 +131,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "password changed successfully"
+                    example: password changed successfully
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -159,7 +159,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: "john.doe@example.com"
+                  example: john.doe@example.com
       responses:
         '200':
           description: Password reset token generated (in production, sent via email)
@@ -170,7 +170,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "password reset token generated"
+                    example: password reset token generated
                   token:
                     type: string
                     description: Password reset token (only returned in development)
@@ -214,7 +214,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "password reset successfully"
+                    example: password reset successfully
         '400':
           $ref: '#/components/responses/Error'
         '401':
