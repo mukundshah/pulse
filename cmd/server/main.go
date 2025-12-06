@@ -14,6 +14,7 @@ import (
 	"pulse/internal/clickhouse"
 	"pulse/internal/config"
 	"pulse/internal/db"
+	"pulse/internal/email"
 	"pulse/internal/handlers"
 	"pulse/internal/middleware"
 	"pulse/internal/redis"
@@ -25,6 +26,12 @@ func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
+	}
+
+	// Initialize email service
+	emailService, err := email.NewService(cfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize email service: %v", err)
 	}
 
 	// Connect to database
@@ -66,7 +73,7 @@ func main() {
 	checkHandler := handlers.NewCheckHandler(s)
 	checkRunHandler := handlers.NewCheckRunHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
-	authHandler := handlers.NewAuthHandler(s, cfg)
+	authHandler := handlers.NewAuthHandler(s, cfg, emailService)
 	invitesHandler := handlers.NewInvitesHandler(s)
 	membersHandler := handlers.NewMembersHandler(s)
 

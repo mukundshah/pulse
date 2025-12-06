@@ -10,6 +10,7 @@ import (
 	"pulse/internal/auth/hasher"
 	"pulse/internal/auth/token"
 	"pulse/internal/config"
+	"pulse/internal/email"
 	"pulse/internal/middleware"
 	"pulse/internal/models"
 	"pulse/internal/store"
@@ -21,9 +22,10 @@ type AuthHandler struct {
 	hasher             *hasher.Argon2Hasher
 	jwtGenerator       *token.JWTTokenGenerator
 	passwordResetToken *token.PasswordResetTokenGenerator
+	emailService       *email.Service
 }
 
-func NewAuthHandler(s *store.Store, cfg *config.Config) *AuthHandler {
+func NewAuthHandler(s *store.Store, cfg *config.Config, emailService *email.Service) *AuthHandler {
 
 	hasher := hasher.NewArgon2Hasher()
 
@@ -43,6 +45,7 @@ func NewAuthHandler(s *store.Store, cfg *config.Config) *AuthHandler {
 		hasher:             hasher,
 		jwtGenerator:       jwtGen,
 		passwordResetToken: passwordResetGen,
+		emailService:       emailService,
 	}
 }
 
@@ -183,7 +186,6 @@ type ForgotPasswordRequest struct {
 
 type ForgotPasswordResponse struct {
 	Message string `json:"message"`
-	Token   string `json:"token"` // In production, this should be sent via email, not returned
 }
 
 type ResetPasswordRequest struct {
@@ -271,12 +273,11 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 		Email:        user.Email,
 	})
 
-	// In production, send token via email
-	// For now, return it in the response (remove this in production!)
-	c.JSON(http.StatusOK, ForgotPasswordResponse{
-		Message: "password reset token generated",
-		Token:   resetToken,
-	})
+	// Send password reset email asynchronously (non-blocking)
+	h.emailService.SendPasswordResetEmailAsync(user.Email, resetToken)
+
+	// Always return success to avoid revealing if user exists (security best practice)
+	c.JSON(http.StatusOK, gin.H{"message": "if the email exists, a password reset link has been sent"})
 }
 
 // ResetPassword resets a user's password using a reset token
