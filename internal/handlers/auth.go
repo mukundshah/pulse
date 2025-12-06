@@ -173,8 +173,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 type ChangePasswordRequest struct {
-	OldPassword string `json:"old_password" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required,min=8"`
+	CurrentPassword string `json:"current_password" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required,min=8"`
 }
 
 type ForgotPasswordRequest struct {
@@ -213,7 +213,7 @@ func (h *AuthHandler) ChangePassword(c *gin.Context) {
 	}
 
 	// Verify old password
-	ok, err := h.hasher.Verify(req.OldPassword, user.PasswordHash)
+	ok, err := h.hasher.Verify(req.CurrentPassword, user.PasswordHash)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify password"})
 		return

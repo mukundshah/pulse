@@ -109,18 +109,18 @@ paths:
             schema:
               type: object
               required:
-                - old_password
+                - current_password
                 - new_password
               properties:
-                old_password:
+                current_password:
                   type: string
                   format: password
-                  example: "oldpassword123"
+                  example: oldpassword123
                 new_password:
                   type: string
                   format: password
                   minLength: 8
-                  example: "newpassword123"
+                  example: newpassword123
       responses:
         '200':
           description: Password changed successfully
