@@ -77,6 +77,7 @@ func main() {
 	accountHandler := handlers.NewAccountHandler(s)
 	invitesHandler := handlers.NewInvitesHandler(s)
 	membersHandler := handlers.NewMembersHandler(s)
+	sessionHandler := handlers.NewSessionHandler(s)
 
 	r.GET("/docs/:version", (func(c *gin.Context) {
 		version := c.Param("version")
