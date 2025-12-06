@@ -1,0 +1,174 @@
+paths:
+  /v1/account/me:
+    get:
+      operationId: getCurrentUser
+      summary: Get current user information
+      description: Returns the authenticated user's profile information.
+      tags:
+        - Account
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/account/profile:
+    put:
+      operationId: updateProfile
+      summary: Update user profile
+      description: Updates the authenticated user's profile information (name and email). If the email is changed, it will be marked as unverified and a verification email will need to be sent.
+      tags:
+        - Account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+              properties:
+                name:
+                  type: string
+                  description: Full name of the user
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  description: Email address (if changed, will require verification)
+                  example: john.doe@example.com
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          description: Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/account/password:
+    patch:
+      operationId: changePassword
+      summary: Change password
+      description: Changes the authenticated user's password. Requires the current password for verification.
+      tags:
+        - Account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - current_password
+                - new_password
+              properties:
+                current_password:
+                  type: string
+                  format: password
+                  description: Current password for verification
+                  example: oldpassword123
+                new_password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: New password (minimum 8 characters)
+                  example: newpassword123
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: password changed successfully
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          description: Invalid current password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/account:
+    delete:
+      operationId: deleteAccount
+      summary: Delete (deactivate) account
+      description: Deactivates the authenticated user's account. Requires password confirmation. This action cannot be undone.
+      tags:
+        - Account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  format: password
+                  description: User's password for confirmation
+                  example: securepassword123
+      responses:
+        '200':
+          description: Account deactivated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: account deactivated successfully
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          description: Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'

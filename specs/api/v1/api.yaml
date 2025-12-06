@@ -12,4 +12,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT token obtained from /auth/login or /auth/register
+      description: JWT token obtained from /auth/login after email verification

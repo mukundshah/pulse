@@ -3,6 +3,7 @@ paths:
     post:
       operationId: registerUser
       summary: Register a new user
+      description: Creates a new user account. An email verification link will be sent to the provided email address. The user must verify their email before they can log in.
       tags:
         - Authentication
       requestBody:
@@ -30,17 +31,15 @@ paths:
                   example: securepassword123
       responses:
         '201':
-          description: User registered successfully
+          description: User registered successfully. Verification email sent.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token:
+                  message:
                     type: string
-                    description: JWT authentication token
-                  user:
-                    $ref: '#/components/schemas/User'
+                    example: Registration successful. Please check your email to verify your account.
         '400':
           $ref: '#/components/responses/Error'
         '409':
@@ -52,6 +51,7 @@ paths:
     post:
       operationId: loginUser
       summary: Login with email and password
+      description: Authenticates a user and returns a JWT token. The user's email must be verified before login is allowed.
       tags:
         - Authentication
       requestBody:
@@ -90,18 +90,21 @@ paths:
         '401':
           $ref: '#/components/responses/Error'
         '403':
-          $ref: '#/components/responses/Error'
+          description: Email not verified or account inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
 
-  /v1/auth/password/change:
+  /v1/auth/verify-email:
     post:
-      operationId: changePassword
-      summary: Change password (authenticated users)
+      operationId: verifyEmail
+      summary: Verify email address
+      description: Verifies a user's email address using the verification token sent to their email. The email is extracted from the token itself.
       tags:
         - Authentication
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -109,21 +112,15 @@ paths:
             schema:
               type: object
               required:
-                - current_password
-                - new_password
+                - token
               properties:
-                current_password:
+                token:
                   type: string
-                  format: password
-                  example: oldpassword123
-                new_password:
-                  type: string
-                  format: password
-                  minLength: 8
-                  example: newpassword123
+                  description: Email verification token (contains email and signature)
+                  example: dXNlckBleGFtcGxlLmNvbS1hYmMxMjM=
       responses:
         '200':
-          description: Password changed successfully
+          description: Email verified successfully
           content:
             application/json:
               schema:
@@ -131,20 +128,19 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: password changed successfully
+                    example: email verified successfully
         '400':
-          $ref: '#/components/responses/Error'
-        '401':
           $ref: '#/components/responses/Error'
         '404':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
 
-  /v1/auth/password/reset:
+  /v1/auth/resend-verification:
     post:
-      operationId: requestPasswordReset
-      summary: Request password reset
+      operationId: resendVerificationEmail
+      summary: Resend email verification link
+      description: Resends the email verification link to the user's email address.
       tags:
         - Authentication
       requestBody:
@@ -162,7 +158,7 @@ paths:
                   example: john.doe@example.com
       responses:
         '200':
-          description: Password reset token generated (in production, sent via email)
+          description: Verification email sent (if email exists and is not verified)
           content:
             application/json:
               schema:
@@ -170,19 +166,17 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: password reset token generated
-                  token:
-                    type: string
-                    description: Password reset token (only returned in development)
+                    example: if the email exists and is not verified, a verification link has been sent
         '400':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
 
-  /v1/auth/password/reset/confirm:
+  /v1/auth/password/reset:
     post:
-      operationId: resetPassword
-      summary: Reset password using reset token
+      operationId: requestPasswordReset
+      summary: Request password reset
+      description: Sends a password reset token to the user's email address.
       tags:
         - Authentication
       requestBody:
@@ -193,12 +187,48 @@ paths:
               type: object
               required:
                 - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+      responses:
+        '200':
+          description: Password reset email sent (if email exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: if the email exists, a password reset link has been sent
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/auth/password/reset/confirm:
+    post:
+      operationId: resetPassword
+      summary: Reset password using reset token
+      description: Resets the user's password using the reset token. The user ID is extracted from the token itself.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
                 - token
-                - new_password
+                - password
               properties:
                 token:
                   type: string
-                  example: reset-token-here
+                  description: Password reset token (contains user ID and signature)
+                  example: dXNlci1pZC1hYmMxMjM=
                 password:
                   type: string
                   format: password
@@ -220,6 +250,205 @@ paths:
         '401':
           $ref: '#/components/responses/Error'
         '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/auth/sessions:
+    get:
+      operationId: listSessions
+      summary: List all active sessions
+      description: Returns all active sessions for the current authenticated user. The current session is marked with `is_current: true`.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of active sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Session'
+        '401':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: revokeAllSessions
+      summary: Revoke all other sessions
+      description: Revokes all sessions for the current user except the current session making the request.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All other sessions revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: all other sessions revoked successfully
+                  revoked_count:
+                    type: integer
+                    example: 3
+        '401':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/auth/sessions/current:
+    delete:
+      operationId: revokeCurrentSession
+      summary: Revoke current session
+      description: Revokes the current session, effectively logging out the user.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current session revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: session revoked successfully
+        '401':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/auth/sessions/{sessionId}:
+    delete:
+      operationId: revokeSession
+      summary: Revoke a specific session
+      description: Revokes a specific session by its ID. The session must belong to the current user.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the session to revoke
+      responses:
+        '200':
+          description: Session revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: session revoked successfully
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/auth/sessions/batch:
+    delete:
+      operationId: revokeSessions
+      summary: Revoke multiple sessions
+      description: Revokes multiple sessions by their IDs. The current session cannot be revoked through this endpoint.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_ids
+              properties:
+                session_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  minItems: 1
+                  example: ["550e8400-e29b-41d4-a716-446655440000", "660e8400-e29b-41d4-a716-446655440001"]
+      responses:
+        '200':
+          description: Batch revocation completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: batch revocation completed
+                  revoked_count:
+                    type: integer
+                    example: 2
+                  total_count:
+                    type: integer
+                    example: 3
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    description: List of errors for sessions that could not be revoked
+                    example: ["cannot revoke current session: 550e8400-e29b-41d4-a716-446655440000"]
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/auth/sessions/all:
+    delete:
+      operationId: revokeAllSessionsAlt
+      summary: Revoke all other sessions (alternative endpoint)
+      description: Alternative endpoint to revoke all sessions except the current one. Same as DELETE /auth/sessions.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All other sessions revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: all other sessions revoked successfully
+                  revoked_count:
+                    type: integer
+                    example: 3
+        '401':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'

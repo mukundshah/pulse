@@ -1,0 +1,44 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the session
+    example: "550e8400-e29b-41d4-a716-446655440000"
+  user_agent:
+    type: string
+    description: User agent string from the client
+    example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    nullable: true
+  ip_address:
+    type: string
+    description: IP address of the client
+    example: "192.168.1.1"
+    nullable: true
+  is_active:
+    type: boolean
+    description: Whether the session is currently active
+    default: true
+  is_current:
+    type: boolean
+    description: Whether this is the current session making the request
+    default: false
+  expires_at:
+    type: string
+    format: date-time
+    description: Timestamp when the session expires
+  last_activity:
+    type: string
+    format: date-time
+    description: Timestamp of the last activity on this session
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the session was created
+required:
+  - id
+  - is_active
+  - is_current
+  - expires_at
+  - last_activity
+  - created_at
