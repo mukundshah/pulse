@@ -1,0 +1,139 @@
+services:
+  migrator:
+    image: ${PULSE_IMAGE_PREFIX:-ghcr.io/mukundshah/pulse}-migrator:${PULSE_VERSION:-latest}
+    container_name: pulse-migrator
+    environment:
+      DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pulse-network
+    restart: "no"
+
+  server:
+    image: ${PULSE_IMAGE_PREFIX:-ghcr.io/mukundshah/pulse}-server:${PULSE_VERSION:-latest}
+    container_name: pulse-server
+    environment:
+      DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
+      REDIS_URL: redis://valkey:6379
+      CLICKHOUSE_DSN: clickhouse://pulse:password@clickhouse:9000/default
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    networks:
+      - pulse-network
+    restart: unless-stopped
+
+  worker:
+    image: ${PULSE_IMAGE_PREFIX:-ghcr.io/mukundshah/pulse}-worker:${PULSE_VERSION:-latest}
+    container_name: pulse-worker
+    environment:
+      DATABASE_URL: postgres://pulse:password@postgres:5432/pulse?sslmode=disable
+      REDIS_URL: redis://valkey:6379
+      CLICKHOUSE_DSN: clickhouse://pulse:password@clickhouse:9000/default
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+      server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pulse-network
+    restart: unless-stopped
+
+  web:
+    image: ${PULSE_IMAGE_PREFIX:-ghcr.io/mukundshah/pulse}-web:${PULSE_VERSION:-latest}
+    container_name: pulse-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pulse-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: pulse-postgres
+    environment:
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pulse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pulse-network
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    container_name: pulse-valkey
+    volumes:
+      - valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pulse-network
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.11-alpine
+    container_name: pulse-clickhouse
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: pulse
+      CLICKHOUSE_PASSWORD: password
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "127.0.0.1:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pulse-network
+
+volumes:
+  postgres_data:
+  valkey_data:
+  clickhouse_data:
+
+networks:
+  pulse-network:
+    driver: bridge
