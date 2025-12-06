@@ -1,0 +1,48 @@
+# Build stage
+FROM node:24-alpine AS builder
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies with cache mount
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# Copy source code
+COPY nuxt.config.ts tsconfig.json components.json eslint.config.mjs ./
+COPY web/ ./web/
+COPY public/ ./public/
+
+# Build the application
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    --mount=type=cache,target=/app/.nuxt \
+    pnpm run build
+
+# Runtime stage
+FROM node:24-alpine
+
+RUN apk --no-cache add ca-certificates tzdata && \
+    addgroup -g 1000 pulse && \
+    adduser -D -u 1000 -G pulse pulse
+
+WORKDIR /app
+
+# Copy built application from builder
+COPY --from=builder /app/.output ./.output
+
+# Change ownership
+RUN chown -R pulse:pulse /app
+
+# Switch to non-root user
+USER pulse
+
+# Expose port
+EXPOSE 3000
+
+# Run the application
+CMD ["node", ".output/server/index.mjs"]
