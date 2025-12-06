@@ -23,8 +23,44 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     --mount=type=cache,target=/app/.nuxt \
     pnpm run build
 
+# Development stage
+FROM node:24-alpine AS development
+
+RUN apk --no-cache add ca-certificates tzdata curl && \
+    addgroup -g 1000 pulse && \
+    adduser -D -u 1000 -G pulse pulse
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# Copy source code (will be overridden by watch sync)
+COPY nuxt.config.ts tsconfig.json components.json eslint.config.mjs ./
+COPY web/ ./web/
+COPY public/ ./public/
+
+# Change ownership
+RUN chown -R pulse:pulse /app
+
+# Switch to non-root user
+USER pulse
+
+# Expose port
+EXPOSE 3000
+
+# Run dev server (will be overridden by compose command)
+CMD ["pnpm", "dev"]
+
 # Runtime stage
-FROM node:24-alpine
+FROM node:24-alpine AS production
 
 RUN apk --no-cache add ca-certificates tzdata && \
     addgroup -g 1000 pulse && \
