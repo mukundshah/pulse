@@ -151,7 +151,7 @@ func main() {
 		api.POST("/auth/register", authHandler.Register)
 		api.POST("/auth/login", authHandler.Login)
 		api.POST("/auth/password/reset", authHandler.ForgotPassword)
-		api.POST("/auth/password/reset/done", authHandler.ResetPassword)
+		api.POST("/auth/password/reset/confirm", authHandler.ResetPassword)
 	}
 
 	protected := api.Group("/").Use(middleware.AuthMiddleware(cfg))

@@ -25,7 +25,7 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $pulseAPI('/v1/auth/password/reset/done', {
+  await $pulseAPI('/v1/auth/password/reset/confirm', {
     method: 'POST',
     body: { ...data, token: route.params.token?.toString() ?? '' },
   })
