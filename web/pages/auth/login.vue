@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { z } from 'zod'
 import { toast } from 'vue-sonner'
+import { z } from 'zod'
 
-const {$api} = useNuxtApp()
+const { $api } = useNuxtApp()
 
 useHead({
   title: 'Sign in',
@@ -73,7 +73,7 @@ const onSubmit = handleSubmit(async (data) => {
                   <FormLabel>Password</FormLabel>
                   <NuxtLink
                     class="text-sm text-muted-foreground hover:text-foreground"
-                    to="/auth/forgot-password"
+                    to="/auth/password/forgot"
                   >
                     Forgot password?
                   </NuxtLink>
