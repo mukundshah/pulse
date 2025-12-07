@@ -57,7 +57,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: "john.doe@example.com"
+                  example: john.doe@example.com
       responses:
         '201':
           description: Invitation created successfully
@@ -95,7 +95,7 @@ paths:
               properties:
                 token:
                   type: string
-                  example: "invitation-token-here"
+                  example: invitation-token-here
       responses:
         '200':
           description: Invitation accepted successfully
@@ -106,11 +106,11 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "invitation accepted"
+                    example: invitation accepted
                   project_id:
                     type: string
                     format: uuid
-                    example: "550e8400-e29b-41d4-a716-446655440000"
+                    example: 550e8400-e29b-41d4-a716-446655440000
         '400':
           $ref: '#/components/responses/Error'
         '401':

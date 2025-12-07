@@ -4,22 +4,22 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the project member
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   project_id:
     type: string
     format: uuid
     description: ID of the project
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   user_id:
     type: string
     format: uuid
     description: ID of the user
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   role:
     type: string
     enum: [admin, member, viewer]
     description: Role of the user in the project
-    example: "member"
+    example: member
   created_at:
     type: string
     format: date-time

@@ -4,15 +4,15 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the region
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   name:
     type: string
     description: Name of the region
-    example: "Asia Pacific"
+    example: Asia Pacific
   code:
     type: string
     description: Unique code for the region
-    example: "apac"
+    example: apac
   created_at:
     type: string
     format: date-time
@@ -27,4 +27,3 @@ required:
   - code
   - created_at
   - updated_at
-

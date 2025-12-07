@@ -4,16 +4,16 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the tag
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   name:
     type: string
     description: Name of the tag
-    example: "production"
+    example: production
   project_id:
     type: string
     format: uuid
     description: ID of the project this tag belongs to
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   created_at:
     type: string
     format: date-time

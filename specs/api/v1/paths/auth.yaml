@@ -258,7 +258,7 @@ paths:
     get:
       operationId: listSessions
       summary: List all active sessions
-      description: Returns all active sessions for the current authenticated user. The current session is marked with `is_current: true`.
+      description: Returns all active sessions for the current authenticated user.
       tags:
         - Authentication
       security:
@@ -394,7 +394,7 @@ paths:
                     type: string
                     format: uuid
                   minItems: 1
-                  example: ["550e8400-e29b-41d4-a716-446655440000", "660e8400-e29b-41d4-a716-446655440001"]
+                  example: [550e8400-e29b-41d4-a716-446655440000, 660e8400-e29b-41d4-a716-446655440001]
       responses:
         '200':
           description: Batch revocation completed
@@ -417,7 +417,7 @@ paths:
                     items:
                       type: string
                     description: List of errors for sessions that could not be revoked
-                    example: ["cannot revoke current session: 550e8400-e29b-41d4-a716-446655440000"]
+                    example: ['cannot revoke current session: 550e8400-e29b-41d4-a716-446655440000']
         '400':
           $ref: '#/components/responses/Error'
         '401':

@@ -4,11 +4,11 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the project
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   name:
     type: string
     description: Name of the project
-    example: "My Project"
+    example: My Project
   created_at:
     type: string
     format: date-time

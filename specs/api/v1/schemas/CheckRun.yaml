@@ -4,12 +4,12 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the check run
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   status:
     type: string
     enum: [success, fail, timeout, error, unknown]
     description: Status of the check run
-    example: "success"
+    example: success
   response_status:
     type: integer
     description: HTTP response status code
@@ -60,4 +60,3 @@ required:
   - check_id
   - created_at
   - updated_at
-

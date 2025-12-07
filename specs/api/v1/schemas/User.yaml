@@ -4,16 +4,16 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the user
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   name:
     type: string
     description: Full name of the user
-    example: "John Doe"
+    example: John Doe
   email:
     type: string
     format: email
     description: Email address of the user
-    example: "john.doe@example.com"
+    example: john.doe@example.com
   email_verified:
     type: boolean
     description: Whether the user's email has been verified

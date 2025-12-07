@@ -4,16 +4,16 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the session
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   user_agent:
     type: string
     description: User agent string from the client
-    example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    example: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
     nullable: true
   ip_address:
     type: string
     description: IP address of the client
-    example: "192.168.1.1"
+    example: 192.168.1.1
     nullable: true
   is_active:
     type: boolean

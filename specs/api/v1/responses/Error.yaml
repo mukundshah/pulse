@@ -3,6 +3,6 @@ properties:
   error:
     type: string
     description: Error message
-    example: "Resource not found"
+    example: Resource not found
 required:
   - error

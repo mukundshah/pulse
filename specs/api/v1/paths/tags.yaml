@@ -72,7 +72,7 @@ paths:
               properties:
                 name:
                   type: string
-                  example: "production"
+                  example: production
       responses:
         '201':
           description: Tag created successfully

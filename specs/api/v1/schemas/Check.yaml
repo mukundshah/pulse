@@ -4,11 +4,11 @@ properties:
     type: string
     format: uuid
     description: Unique identifier for the check
-    example: "550e8400-e29b-41d4-a716-446655440000"
+    example: 550e8400-e29b-41d4-a716-446655440000
   name:
     type: string
     description: Name of the check
-    example: "API Health Check"
+    example: API Health Check
   is_enabled:
     type: boolean
     description: Whether the check is enabled
@@ -21,16 +21,16 @@ properties:
     type: string
     enum: [http, tcp, dns, browser, heartbeat]
     description: Type of check to perform
-    example: "http"
+    example: http
   url:
     type: string
     description: URL or endpoint to check
-    example: "https://api.example.com/health"
+    example: 'https://api.example.com/health'
   method:
     type: string
     description: HTTP method to use
-    default: "GET"
-    example: "GET"
+    default: GET
+    example: GET
   headers:
     type: object
     additionalProperties: true
@@ -78,7 +78,7 @@ properties:
     type: string
     enum: [success, fail, timeout, error, unknown]
     description: Status of the last check run
-    default: "unknown"
+    default: unknown
   last_run_at:
     type: string
     format: date-time
