@@ -175,8 +175,8 @@ func main() {
 		protected.DELETE("/account", accountHandler.DeleteAccount)
 
 		// Session management routes
+		protected.DELETE("/auth/session", sessionHandler.RevokeCurrentSession)
 		protected.GET("/auth/sessions", sessionHandler.ListSessions)
-		protected.DELETE("/auth/sessions/current", sessionHandler.RevokeCurrentSession)
 		protected.DELETE("/auth/sessions/:sessionId", sessionHandler.RevokeSession)
 		protected.DELETE("/auth/sessions/batch", sessionHandler.RevokeSessions)
 		protected.DELETE("/auth/sessions/all", sessionHandler.RevokeAllSessions)

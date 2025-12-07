@@ -306,7 +306,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /v1/auth/sessions/current:
+  /v1/auth/session:
     delete:
       operationId: revokeCurrentSession
       summary: Revoke current session
