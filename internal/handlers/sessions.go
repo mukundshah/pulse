@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -28,6 +29,61 @@ type SessionResponse struct {
 	ExpiresAt    string    `json:"expires_at"`
 	LastActivity string    `json:"last_activity"`
 	CreatedAt    string    `json:"created_at"`
+}
+
+// ValidateSessionResponse represents the response for session validation
+type ValidateSessionResponse struct {
+	Valid   bool   `json:"valid"`
+	Expires string `json:"expires"`
+}
+
+// ValidateSession validates if the current token/session is still authenticated and valid
+// GET /auth/session
+// This endpoint is protected by AuthMiddleware, so if it's reached, the token is valid.
+// It additionally checks that the session is active and not expired.
+func (h *SessionHandler) ValidateSession(c *gin.Context) {
+	_, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
+		return
+	}
+
+	// Get JTI from context
+	jti, exists := c.Get("jti")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid session"})
+		return
+	}
+	jtiStr, ok := jti.(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid session"})
+		return
+	}
+
+	// Get session to verify it's still active and not expired
+	session, err := h.store.GetSessionByJTI(jtiStr)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "session not found"})
+		return
+	}
+
+	// Check if session is active
+	if !session.IsActive {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "session is inactive"})
+		return
+	}
+
+	// Check if session has expired
+	if time.Now().After(session.ExpiresAt) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "session has expired"})
+		return
+	}
+
+	// Session is valid
+	c.JSON(http.StatusOK, ValidateSessionResponse{
+		Valid:   true,
+		Expires: session.ExpiresAt.Format("2006-01-02T15:04:05Z07:00"),
+	})
 }
 
 // ListSessions returns all active sessions for the current user
@@ -185,7 +241,7 @@ func (h *SessionHandler) RevokeSessions(c *gin.Context) {
 	}
 
 	response := gin.H{
-		"message":      "batch revocation completed",
+		"message":       "batch revocation completed",
 		"revoked_count": revokedCount,
 		"total_count":   len(req.SessionIDs),
 	}

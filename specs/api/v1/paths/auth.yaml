@@ -307,6 +307,35 @@ paths:
           $ref: '#/components/responses/Error'
 
   /v1/auth/session:
+    get:
+      operationId: validateSession
+      summary: Validate current session
+      description: Validates if the current token/session is still authenticated and valid. Returns the validation status and expiration time.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Session validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    description: Whether the session is valid
+                    example: true
+                  expires:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the session expires
+                    example: 2024-01-01T12:00:00Z
+        '401':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
     delete:
       operationId: revokeCurrentSession
       summary: Revoke current session
