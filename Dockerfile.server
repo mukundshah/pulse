@@ -37,7 +37,7 @@ COPY --from=builder /app/specs ./specs
 COPY --from=builder /app/templates ./templates
 
 # Set environment variables
-ENV API_SPEC_DIR=/app/specs
+ENV API_SPEC_DIR=/app/specs/api
 ENV TEMPLATES_DIR=/app/templates
 
 # Change ownership
