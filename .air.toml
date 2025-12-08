@@ -5,4 +5,4 @@ tmp_dir = "tmp"
 
 [build]
 include_file = ['.env']
-exclude_dir = ["bin", "tmp", "vendor", "build", "node_modules"]
+exclude_dir = ["bin", "tmp", "vendor", "build", "node_modules", "web"]
