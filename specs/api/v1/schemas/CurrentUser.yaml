@@ -1,0 +1,25 @@
+type: object
+properties:
+  name:
+    type: string
+    description: Full name of the user
+    example: John Doe
+  email:
+    type: string
+    format: email
+    description: Email address of the user
+    example: john.doe@example.com
+  initials:
+    type: string
+    description: User's initials derived from their name
+    example: JD
+  avatar_url:
+    type: string
+    format: uri
+    description: Gravatar avatar URL for the user
+    example: https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?d=identicon&s=200
+required:
+  - name
+  - email
+  - initials
+  - avatar_url

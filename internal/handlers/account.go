@@ -1,8 +1,13 @@
 package handlers
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/gin-gonic/gin"
 
@@ -24,6 +29,54 @@ func NewAccountHandler(s *store.Store) *AccountHandler {
 	}
 }
 
+// computeInitials extracts initials from a name
+func computeInitials(name string) string {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return ""
+	}
+
+	words := strings.Fields(name)
+	if len(words) == 0 {
+		return ""
+	}
+
+	var initials strings.Builder
+
+	// First letter of first word
+	if len(words[0]) > 0 {
+		firstRune := []rune(words[0])[0]
+		if unicode.IsLetter(firstRune) {
+			initials.WriteRune(unicode.ToUpper(firstRune))
+		}
+	}
+
+	// First letter of last word (if different from first word)
+	if len(words) > 1 && len(words[len(words)-1]) > 0 {
+		lastRune := []rune(words[len(words)-1])[0]
+		if unicode.IsLetter(lastRune) {
+			initials.WriteRune(unicode.ToUpper(lastRune))
+		}
+	}
+
+	result := initials.String()
+	if result == "" && len(name) > 0 {
+		// Fallback: use first character if no letters found
+		firstRune := []rune(name)[0]
+		return strings.ToUpper(string(firstRune))
+	}
+
+	return result
+}
+
+// getGravatarURL generates a Gravatar URL from an email address
+func getGravatarURL(email string) string {
+	email = strings.ToLower(strings.TrimSpace(email))
+	hash := md5.Sum([]byte(email))
+	hashHex := hex.EncodeToString(hash[:])
+	return fmt.Sprintf("https://www.gravatar.com/avatar/%s?d=identicon&s=200", hashHex)
+}
+
 // GetCurrentUser returns the current authenticated user's information
 func (h *AccountHandler) GetCurrentUser(c *gin.Context) {
 	userID, exists := middleware.GetUserID(c)
@@ -39,10 +92,15 @@ func (h *AccountHandler) GetCurrentUser(c *gin.Context) {
 		return
 	}
 
-	// Don't return password hash
-	user.PasswordHash = ""
+	initials := computeInitials(user.Name)
+	avatarURL := getGravatarURL(user.Email)
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{
+		"name":          user.Name,
+		"email":         user.Email,
+		"initials":      initials,
+		"avatar_url":    avatarURL,
+	})
 }
 
 type ChangePasswordRequest struct {
