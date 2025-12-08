@@ -166,8 +166,12 @@ export const useEmailManagement = ({ namespace }: { namespace?: string } = {}) =
     throw new NotImplementedError()
   }
 
-  const verifyEmail = async (data: unknown) => {
-    throw new NotImplementedError()
+  const verifyEmail = async (data: PulseAPIRequestBody<'verifyEmail'>) => {
+    const response = await $pulseAPI('/v1/auth/verify-email', {
+      method: 'POST',
+      body: data,
+    })
+    return response
   }
 
   return {
