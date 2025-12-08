@@ -4,7 +4,7 @@ import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
-const { $pulseAPI } = useNuxtApp()
+const { requestPasswordReset } = usePasswordManagement()
 
 useHead({
   title: 'Forgot password',
@@ -19,10 +19,7 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $pulseAPI('/v1/auth/password/reset', {
-    method: 'POST',
-    body: data,
-  })
+  await requestPasswordReset(data)
   toast('Password reset link sent to your email')
 })
 </script>

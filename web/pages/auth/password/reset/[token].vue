@@ -10,7 +10,7 @@ useHead({
 
 const route = useRoute()
 
-const { $pulseAPI } = useNuxtApp()
+const { resetPassword } = usePasswordManagement()
 
 const resetPasswordSchema = z.object({
   password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 'Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
@@ -25,10 +25,7 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $pulseAPI('/v1/auth/password/reset/confirm', {
-    method: 'POST',
-    body: { ...data, token: route.params.token?.toString() ?? '' },
-  })
+  await resetPassword({ ...data, token: route.params.token?.toString() ?? '' })
   toast('Password reset successfully')
   await navigateTo('/auth/login')
 })

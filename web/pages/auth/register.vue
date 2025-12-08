@@ -4,7 +4,7 @@ import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
-const { $pulseAPI } = useNuxtApp()
+const { signup } = useAuth()
 
 useHead({
   title: 'Create account',
@@ -25,10 +25,8 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await $pulseAPI('/v1/auth/register', {
-    method: 'POST',
-    body: data,
-  })
+  await signup(data)
+
   toast('Account created successfully')
   await navigateTo('/auth/login')
 })
