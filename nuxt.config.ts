@@ -43,7 +43,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/**': { appLayout: 'app', robots: false, auth: { required: true } },
     '/auth/login': { robots: true },
-    '/auth/**': { appLayout: 'auth', robots: false, auth: { required: false, redirectIfLoggedIn: true } },
+    '/auth/**': { appLayout: 'auth', robots: false, auth: { required: false, redirectIfLoggedIn: '/dashboard' } },
     '/': { appLayout: 'site', robots: true, auth: { required: false } },
     '/terms': { appLayout: 'site', robots: true, auth: { required: false } },
     '/privacy': { appLayout: 'site', robots: true, auth: { required: false } },
