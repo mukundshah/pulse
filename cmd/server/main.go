@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"path/filepath"
+	"time"
 
 	scalargo "github.com/bdpiprava/scalar-go"
 	scalarLoader "github.com/bdpiprava/scalar-go/loader"
@@ -66,7 +67,13 @@ func main() {
 
 	// Setup routes
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3001"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(s)
