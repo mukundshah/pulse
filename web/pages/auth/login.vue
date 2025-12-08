@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
 const { login } = useAuth()
+const { requestEmailVerification } = useEmailManagement()
 
 useHead({
   title: 'Sign in',
@@ -20,12 +22,40 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  await login(data)
-
-  toast('Welcome back!', {
-    description: 'You are now logged in',
-  })
-  await navigateTo('/dashboard')
+  try {
+    await login(data)
+    toast('Welcome back!', {
+      description: 'You are now logged in',
+    })
+    await navigateTo('/dashboard')
+  } catch (error: unknown) {
+    // Handle 403 - email not verified
+    if ((error as FetchError)?.status === 403) {
+      toast.error('Email not verified', {
+        description: 'Please verify your email address before signing in.',
+        action: {
+          label: 'Resend verification email',
+          onClick: async () => {
+            try {
+              await requestEmailVerification({ email: data.email })
+              toast.success('Verification email sent', {
+                description: 'Please check your inbox for the verification link.',
+              })
+            } catch (resendError: unknown) {
+              toast.error('Failed to send verification email', {
+                description: (resendError as FetchError)?.message || 'Please try again later.',
+              })
+            }
+          },
+        },
+      })
+    } else {
+      // Handle other errors
+      toast.error('Sign in failed', {
+        description: (error as FetchError)?.message || 'Invalid credentials. Please try again.',
+      })
+    }
+  }
 })
 </script>
 
