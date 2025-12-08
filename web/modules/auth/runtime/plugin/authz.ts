@@ -33,7 +33,7 @@ export default defineNuxtPlugin({
         const { isAuthenticated, isOnboarded } = useAuth({ namespace: authNamespace })
         const { hasAnyRole, hasAnyPermission } = usePermissions({ namespace: authNamespace })
 
-        if (redirectIfLoggedIn && isAuthenticated.value) {
+        if (typeof redirectIfLoggedIn === 'string' && redirectIfLoggedIn && isAuthenticated.value) {
           return navigateTo({ path: redirectIfLoggedIn }, { redirectCode: 302 })
         }
 
