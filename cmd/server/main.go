@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"log"
+	"net/http"
 	"path/filepath"
 	"time"
 
@@ -229,8 +229,15 @@ func main() {
 		protected.POST("/invites/accept", invitesHandler.AcceptInvite)
 	}
 
-	log.Printf("Server starting on port %s", cfg.Port)
-	if err := r.Run(":" + cfg.Port); err != nil {
+	var err error
+	if filepath.IsAbs(cfg.Port) {
+		log.Printf("Server starting on unix socket unix:/%s", cfg.Port)
+		err = r.RunUnix(cfg.Port)
+	} else {
+		log.Printf("Server starting on TCP port :%s", cfg.Port)
+		err = r.Run(":" + cfg.Port)
+	}
+	if err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
