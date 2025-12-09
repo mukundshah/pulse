@@ -88,9 +88,9 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    autocomplete="email"
                     placeholder="you@example.com"
                     type="email"
-                    autocomplete="email"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -110,10 +110,9 @@ const onSubmit = handleSubmit(async (data) => {
                   </NuxtLink>
                 </div>
                 <FormControl>
-                  <Input
-                    placeholder="••••••••"
-                    type="password"
+                  <PasswordInput
                     autocomplete="current-password"
+                    placeholder="••••••••"
                     v-bind="componentField"
                   />
                 </FormControl>

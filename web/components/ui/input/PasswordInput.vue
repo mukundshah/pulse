@@ -5,8 +5,7 @@ import { useVModel } from '@vueuse/core'
 import { EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
 
-import { cn } from '@/utils/style'
-import Input from './Input.vue'
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 
 defineOptions({
   inheritAttrs: false,
@@ -35,22 +34,25 @@ const toggleVisibility = () => {
 </script>
 
 <template>
-  <div class="relative">
-    <Input
+  <InputGroup>
+    <InputGroupInput
       v-model="modelValue"
-      :class="cn('pe-9', props.class)"
+      :class="cn('', props.class)"
       :type="isVisible ? 'text' : 'password'"
       v-bind="$attrs"
     />
-
-    <Button
-      size="icon"
-      variant="ghost"
-      :class="cn('absolute inset-y-0 end-0', props.class)"
-      @click="toggleVisibility"
-    >
-      <EyeIcon v-if="isVisible" aria-hidden="true" :size="16" />
-      <EyeOffIcon v-else aria-hidden="true" :size="16" />
-    </Button>
-  </div>
+    <InputGroupAddon align="inline-end" class="pr-2">
+      <InputGroupButton
+        aria-label="Toggle password visibility"
+        class="rounded-sm"
+        size="icon-sm"
+        title="Toggle password visibility"
+        type="button"
+        @click="toggleVisibility"
+      >
+        <EyeIcon v-if="isVisible" aria-hidden="true" :size="16" />
+        <EyeOffIcon v-else aria-hidden="true" :size="16" />
+      </InputGroupButton>
+    </InputGroupAddon>
+  </InputGroup>
 </template>

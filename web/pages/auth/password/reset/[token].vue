@@ -59,10 +59,9 @@ const onSubmit = handleSubmit(async (data) => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     autocomplete="new-password"
                     placeholder="••••••••"
-                    type="password"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -74,10 +73,9 @@ const onSubmit = handleSubmit(async (data) => {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     autocomplete="new-password"
                     placeholder="••••••••"
-                    type="password"
                     v-bind="componentField"
                   />
                 </FormControl>
