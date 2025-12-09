@@ -238,7 +238,7 @@ export const usePasswordManagement = ({ namespace }: { namespace?: string } = {}
   }
 }
 
-export const usePermissions = ({ namespace }: { namespace?: string } = {}) => {
+export const usePermissions = ({ namespace = 'default' }: { namespace?: string } = {}) => {
   const { $pulseAPI } = useNuxtApp()
   const { token } = useAuth({ namespace })
 
