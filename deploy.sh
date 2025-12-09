@@ -21,6 +21,7 @@ cd $APP_DIR
 
 echo "Installing/Updating Go dependencies..."
 go mod download
+go mod tidy
 
 echo "Building server binary..."
 go build -o $BUILD_DIR/server cmd/server/main.go
