@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -117,7 +118,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	verificationToken := h.emailVerificationToken.Generate(user.Email)
 
 	// Send verification email asynchronously
-	h.emailService.SendEmailVerificationAsync(user.Email, verificationToken)
+	h.emailService.SendEmailVerificationAsync(context.Background(), user.Email, verificationToken)
 
 	// Return success message (don't authenticate yet)
 	c.JSON(http.StatusCreated, RegisterResponse{
@@ -248,7 +249,7 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	})
 
 	// Send password reset email asynchronously (non-blocking)
-	h.emailService.SendPasswordResetEmailAsync(user.Email, resetToken)
+	h.emailService.SendPasswordResetEmailAsync(context.Background(), user.Email, resetToken)
 
 	// Always return success to avoid revealing if user exists (security best practice)
 	c.JSON(http.StatusOK, gin.H{"message": "if the email exists, a password reset link has been sent"})
@@ -394,7 +395,7 @@ func (h *AuthHandler) ResendVerificationEmail(c *gin.Context) {
 	verificationToken := h.emailVerificationToken.Generate(user.Email)
 
 	// Send verification email asynchronously
-	h.emailService.SendEmailVerificationAsync(user.Email, verificationToken)
+	h.emailService.SendEmailVerificationAsync(context.Background(), user.Email, verificationToken)
 
 	// Always return success to avoid revealing if user exists
 	c.JSON(http.StatusOK, gin.H{"message": "if the email exists and is not verified, a verification link has been sent"})
