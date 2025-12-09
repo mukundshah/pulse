@@ -53,13 +53,6 @@ export default defineNuxtConfig({
 
   css: ['assets/css/tailwind.css'],
 
-  api: {
-    protected: true,
-    trailingSlash: true,
-    authorizationHeader: 'Authorization',
-    tokenPrefix: 'Bearer ',
-  },
-
   colorMode: {
     classSuffix: '',
   },
