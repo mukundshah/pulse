@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"log"
 	"path/filepath"
 	"time"
@@ -90,7 +91,7 @@ func main() {
 		version := c.Param("version")
 
 		if version != "v1" {
-			c.JSON(404, gin.H{
+			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Unsupported version",
 			})
 			return
@@ -111,13 +112,13 @@ func main() {
 			}),
 		)
 		if err != nil {
-			c.JSON(500, gin.H{
+			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 			return
 		}
 
-		c.Data(200, "text/html", []byte(html))
+		c.Data(http.StatusOK, "text/html", []byte(html))
 	}))
 
 	r.GET("/docs/:version/openapi.:format", (func(c *gin.Context) {
@@ -125,7 +126,7 @@ func main() {
 		format := c.Param("format")
 
 		if version != "v1" {
-			c.JSON(404, gin.H{
+			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Unsupported version",
 			})
 			return
@@ -134,7 +135,7 @@ func main() {
 		spec, err := scalarLoader.Load(filepath.Join(cfg.APISpecDir, version))
 
 		if err != nil {
-			c.JSON(500, gin.H{
+			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 			return
@@ -142,11 +143,11 @@ func main() {
 
 		switch format {
 		case "json":
-			c.JSON(200, spec)
+			c.JSON(http.StatusOK, spec)
 		case "yaml", "yml":
-			c.YAML(200, spec)
+			c.YAML(http.StatusOK, spec)
 		default:
-			c.JSON(404, gin.H{
+			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Unsupported format",
 			})
 			return
@@ -154,7 +155,7 @@ func main() {
 	}))
 
 	r.GET("/health", (func(c *gin.Context) {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"status": "ok",
 		})
 	}))

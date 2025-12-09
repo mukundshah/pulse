@@ -85,7 +85,7 @@ func main() {
 	// chClient can be nil, health handler should handle it
 	healthRouter := gin.Default()
 	healthRouter.GET("/health", (func(c *gin.Context) {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"status": "ok",
 		})
 	}))
