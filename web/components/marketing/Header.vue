@@ -1,5 +1,11 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+
+const THEME_ICONS = {
+  light: 'lucide:sun',
+  dark: 'lucide:moon',
+  system: 'lucide:monitor',
+} as const
 </script>
 
 <template>
@@ -28,25 +34,24 @@ const colorMode = useColorMode()
       <div class="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-          <Button size="icon" variant="ghost" class="-mr-2">
-            <Icon class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" name="lucide:moon" />
-            <Icon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" name="lucide:sun" />
-            <span class="sr-only">Toggle theme</span>
-          </Button>
+            <Button class="-mr-2" size="icon" variant="ghost">
+              <Icon class="h-4 w-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
+              <span class="sr-only">Toggle theme</span>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-          <DropdownMenuItem @click="colorMode.preference = 'light'">
-            <Icon name="lucide:sun" class="h-4 w-4" />
-            Light
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="colorMode.preference = 'dark'">
-            <Icon name="lucide:moon" class="h-4 w-4" />
-            Dark
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="colorMode.preference = 'system'">
-            <Icon name="lucide:monitor" class="h-4 w-4" />
-            System
-          </DropdownMenuItem>
+            <DropdownMenuItem @click="colorMode.preference = 'light'">
+              <Icon class="h-4 w-4" :name="THEME_ICONS.light" />
+              Light
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="colorMode.preference = 'dark'">
+              <Icon class="h-4 w-4" :name="THEME_ICONS.dark" />
+              Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="colorMode.preference = 'system'">
+              <Icon class="h-4 w-4" :name="THEME_ICONS.system" />
+              System
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button as-child size="sm" variant="ghost">
