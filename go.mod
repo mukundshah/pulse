@@ -14,6 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/spf13/viper v1.21.0
+	github.com/wneessen/go-mail v0.7.2
 	golang.org/x/crypto v0.45.0
 	gorm.io/datatypes v1.2.7
 	gorm.io/driver/postgres v1.6.0
