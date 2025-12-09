@@ -6,6 +6,12 @@ const THEME_ICONS = {
   dark: 'lucide:moon',
   system: 'lucide:monitor',
 } as const
+
+const { isAuthenticated, logout } = useAuth()
+
+const handleLogout = async () => {
+  await logout()
+}
 </script>
 
 <template>
@@ -13,7 +19,7 @@ const THEME_ICONS = {
     <div class="bg-foreground text-background">
       <div class="container py-2">
         <p class="text-center text-xs tracking-wide font-medium flex items-center justify-center gap-2">
-          <Icon name="lucide:alert-triangle" class="h-4 w-4" /> The contents shown are dummy data and for illustration purposes only.
+          <Icon class="h-4 w-4" name="lucide:alert-triangle" /> The contents shown are dummy data and for illustration purposes only.
         </p>
       </div>
     </div>
@@ -54,16 +60,28 @@ const THEME_ICONS = {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <template v-if="!isAuthenticated">
         <Button as-child size="sm" variant="ghost">
           <NuxtLink to="/auth/login">
             Sign in
           </NuxtLink>
         </Button>
         <Button as-child size="sm">
-          <NuxtLink to="/auth/login">
+          <NuxtLink to="/auth/register">
             Get started
           </NuxtLink>
         </Button>
+        </template>
+        <template v-else>
+          <Button size="sm" @click="handleLogout" variant="ghost">
+            Logout
+          </Button>
+          <Button as-child size="sm" variant="outline">
+            <NuxtLink to="/dashboard">
+              Dashboard
+            </NuxtLink>
+          </Button>
+        </template>
       </div>
     </div>
   </header>
