@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	scalargo "github.com/bdpiprava/scalar-go"
@@ -229,14 +232,35 @@ func main() {
 		protected.POST("/invites/accept", invitesHandler.AcceptInvite)
 	}
 
+	var network, address string
 	if filepath.IsAbs(cfg.Port) {
-		log.Printf("Server starting on unix socket unix:/%s", cfg.Port)
-		err = r.RunUnix(cfg.Port)
+		network = "unix"
+		address = cfg.Port
+
+		if _, err := os.Stat(address); err == nil {
+			if err := os.Remove(address); err != nil {
+				log.Printf("Warning: Failed to remove existing socket file: %v", err)
+			}
+		}
 	} else {
-		log.Printf("Server starting on TCP port :%s", cfg.Port)
-		err = r.Run(":" + cfg.Port)
+		network = "tcp"
+		address = ":" + cfg.Port
 	}
+
+	listener, err := net.Listen(network, address)
 	if err != nil {
+		log.Fatalf("Failed to create listener: %v", err)
+	}
+
+	addrString := listener.Addr().String()
+	if network == "unix" {
+		os.Chmod(addrString, 0777)
+		log.Printf("Listening on %s://%s", network, strings.TrimPrefix(addrString, "/"))
+	} else {
+		log.Printf("Listening on %s://%s", network, addrString)
+	}
+
+	if err := r.RunListener(listener); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
