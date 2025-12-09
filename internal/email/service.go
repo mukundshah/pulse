@@ -171,9 +171,13 @@ func (s *Service) SendEmailVerification(ctx context.Context, to, email, verifica
 
 // SendEmailVerificationAsync sends an email verification email asynchronously in a goroutine
 // Errors are logged but not returned to the caller
-func (s *Service) SendEmailVerificationAsync(to, verificationToken string) {
+func (s *Service) SendEmailVerificationAsync(ctx context.Context, to, verificationToken string) {
 	go func() {
-		if err := s.SendEmailVerification(to, to, verificationToken); err != nil {
+		// Create a new context with timeout for the background operation
+		bgCtx, cancel := context.WithTimeout(context.Background(), EmailSendTimeout)
+		defer cancel()
+
+		if err := s.SendEmailVerification(bgCtx, to, to, verificationToken); err != nil {
 			log.Printf("Failed to send email verification to %s: %v", to, err)
 		}
 	}()
