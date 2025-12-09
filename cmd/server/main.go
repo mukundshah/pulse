@@ -229,7 +229,6 @@ func main() {
 		protected.POST("/invites/accept", invitesHandler.AcceptInvite)
 	}
 
-	var err error
 	if filepath.IsAbs(cfg.Port) {
 		log.Printf("Server starting on unix socket unix:/%s", cfg.Port)
 		err = r.RunUnix(cfg.Port)
