@@ -105,7 +105,7 @@ func (s *Service) SendPasswordResetEmail(ctx context.Context, to, resetToken str
 		return fmt.Errorf("failed to render text template: %w", err)
 	}
 
-	subject := "Reset Your Password"
+	subject := "Password Reset Request"
 
 	emailMsg := &Email{
 		To:       to,
