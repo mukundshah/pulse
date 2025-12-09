@@ -54,6 +54,9 @@ func loadTemplates() (*template.Template, error) {
 		"safeHTML": func(s string) template.HTML {
 			return template.HTML(s)
 		},
+		"now": func() time.Time {
+			return time.Now()
+		},
 	})
 
 	// Find all template files
