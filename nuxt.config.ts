@@ -87,6 +87,20 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    optimizeDeps: {
+      include: [
+        '@vee-validate/zod',
+        '@vueuse/core',
+        'class-variance-authority',
+        'clsx',
+        'lucide-vue-next',
+        'reka-ui',
+        'tailwind-merge',
+        'vee-validate',
+        'vue-sonner',
+        'zod',
+      ],
+    },
   },
 
   nitro: {
