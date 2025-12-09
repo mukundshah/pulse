@@ -2,15 +2,22 @@ package email
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"log"
 	"path/filepath"
+	"time"
 
 	"pulse/internal/config"
 )
 
-// Service handles email sending with template rendering
+const (
+	// EmailSendTimeout is the maximum time to wait for an email to send
+	EmailSendTimeout = 30 * time.Second
+)
+
+// Service provides email sending functionality
 type Service struct {
 	backend Backend
 	tmpl    *template.Template
@@ -18,19 +25,12 @@ type Service struct {
 }
 
 // NewService creates a new email service
-// Uses EMAIL_BACKEND URL to determine which backend to use
 func NewService(cfg *config.Config) (*Service, error) {
-	backendURL := cfg.EmailURL
-	if backendURL == "" {
-		backendURL = "consolemail://"
-	}
 
-	backend, err := NewBackendFromURL(backendURL, cfg.EmailFrom)
+	backend, err := NewBackendFromURL(cfg.EmailURL, cfg.EmailFrom)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create email backend: %w", err)
 	}
-
-	log.Printf("Email service: Using backend %s", backendURL)
 
 	// Load email templates
 	tmpl, err := loadTemplates()
@@ -79,13 +79,14 @@ func loadTemplates() (*template.Template, error) {
 }
 
 // SendPasswordResetEmail sends a password reset email synchronously
-func (s *Service) SendPasswordResetEmail(to, resetToken string) error {
+func (s *Service) SendPasswordResetEmail(ctx context.Context, to, resetToken string) error {
 	// Build reset URL
 	resetURL := fmt.Sprintf("%s/auth/password/reset/%s", s.config.FrontendURL, resetToken)
 
 	// Prepare template data
 	data := map[string]interface{}{
 		"ResetURL": resetURL,
+		"Email":    to,
 		"Token":    resetToken,
 	}
 
@@ -101,23 +102,35 @@ func (s *Service) SendPasswordResetEmail(to, resetToken string) error {
 		return fmt.Errorf("failed to render text template: %w", err)
 	}
 
-	subject := "Password Reset Request"
+	subject := "Reset Your Password"
 
-	return s.backend.SendEmail(to, subject, htmlBuf.String(), textBuf.String())
+	emailMsg := &Email{
+		To:       to,
+		Subject:  subject,
+		HTMLBody: htmlBuf.String(),
+		TextBody: textBuf.String(),
+	}
+
+	return s.backend.SendEmail(ctx, emailMsg)
 }
 
 // SendPasswordResetEmailAsync sends a password reset email asynchronously in a goroutine
 // Errors are logged but not returned to the caller
-func (s *Service) SendPasswordResetEmailAsync(to, resetToken string) {
+func (s *Service) SendPasswordResetEmailAsync(ctx context.Context, to, resetToken string) {
 	go func() {
-		if err := s.SendPasswordResetEmail(to, resetToken); err != nil {
+		// Create a new context with timeout for the background operation
+		// Don't use the parent context as it might be cancelled before email sends
+		bgCtx, cancel := context.WithTimeout(context.Background(), EmailSendTimeout)
+		defer cancel()
+
+		if err := s.SendPasswordResetEmail(bgCtx, to, resetToken); err != nil {
 			log.Printf("Failed to send password reset email to %s: %v", to, err)
 		}
 	}()
 }
 
 // SendEmailVerification sends an email verification email synchronously
-func (s *Service) SendEmailVerification(to, email, verificationToken string) error {
+func (s *Service) SendEmailVerification(ctx context.Context, to, email, verificationToken string) error {
 	// Build verification URL - email is included in the token, so only token is needed
 	// Format: /auth/verify-email?token={token}
 	verificationURL := fmt.Sprintf("%s/auth/verify-email?token=%s", s.config.FrontendURL, verificationToken)
@@ -143,7 +156,14 @@ func (s *Service) SendEmailVerification(to, email, verificationToken string) err
 
 	subject := "Verify Your Email Address"
 
-	return s.backend.SendEmail(to, subject, htmlBuf.String(), textBuf.String())
+	emailMsg := &Email{
+		To:       to,
+		Subject:  subject,
+		HTMLBody: htmlBuf.String(),
+		TextBody: textBuf.String(),
+	}
+
+	return s.backend.SendEmail(ctx, emailMsg)
 }
 
 // SendEmailVerificationAsync sends an email verification email asynchronously in a goroutine
