@@ -53,6 +53,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    autocomplete="email"
                     placeholder="you@example.com"
                     type="email"
                     v-bind="componentField"

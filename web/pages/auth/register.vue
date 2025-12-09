@@ -61,6 +61,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
+                    autocomplete="name"
                     placeholder="John Doe"
                     type="text"
                     v-bind="componentField"
@@ -75,6 +76,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    autocomplete="email"
                     placeholder="you@example.com"
                     type="email"
                     v-bind="componentField"
@@ -89,6 +91,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
+                    autocomplete="new-password"
                     placeholder="••••••••"
                     type="password"
                     v-bind="componentField"
@@ -103,6 +106,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input
+                    autocomplete="new-password"
                     placeholder="••••••••"
                     type="password"
                     v-bind="componentField"

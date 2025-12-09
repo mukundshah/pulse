@@ -90,6 +90,7 @@ const onSubmit = handleSubmit(async (data) => {
                   <Input
                     placeholder="you@example.com"
                     type="email"
+                    autocomplete="email"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -112,6 +113,7 @@ const onSubmit = handleSubmit(async (data) => {
                   <Input
                     placeholder="••••••••"
                     type="password"
+                    autocomplete="current-password"
                     v-bind="componentField"
                   />
                 </FormControl>
