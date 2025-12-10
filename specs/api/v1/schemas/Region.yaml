@@ -13,6 +13,11 @@ properties:
     type: string
     description: Unique code for the region
     example: apac
+  flag:
+    type: string
+    description: Flag emoji or code representing the region
+    example: 🇸🇬
+    maxLength: 10
   created_at:
     type: string
     format: date-time

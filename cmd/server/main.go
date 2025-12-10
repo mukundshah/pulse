@@ -84,6 +84,7 @@ func main() {
 	checkHandler := handlers.NewCheckHandler(s)
 	checkRunHandler := handlers.NewCheckRunHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
+	regionHandler := handlers.NewRegionHandler(s)
 	authHandler := handlers.NewAuthHandler(s, cfg, emailService)
 	accountHandler := handlers.NewAccountHandler(s)
 	invitesHandler := handlers.NewInvitesHandler(s)
@@ -230,6 +231,9 @@ func main() {
 
 		// Invite routes
 		protected.POST("/invites/accept", invitesHandler.AcceptInvite)
+
+		// Region routes
+		protected.GET("/regions", regionHandler.ListRegions)
 	}
 
 	var network, address string
