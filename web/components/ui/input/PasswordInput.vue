@@ -6,6 +6,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
+import { cn } from '@/utils/style'
 
 defineOptions({
   inheritAttrs: false,
@@ -44,7 +45,7 @@ const toggleVisibility = () => {
     <InputGroupAddon align="inline-end" class="pr-2">
       <InputGroupButton
         aria-label="Toggle password visibility"
-        class="rounded-sm"
+        class="rounded-sm rounded-l-none"
         size="icon-sm"
         title="Toggle password visibility"
         type="button"
