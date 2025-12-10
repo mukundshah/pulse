@@ -12,3 +12,11 @@ func (s *Store) ListRegions() ([]models.Region, error) {
 	}
 	return regions, nil
 }
+
+func (s *Store) GetRegionByCode(code string) (*models.Region, error) {
+	var region models.Region
+	if err := s.db.Where("code = ?", code).First(&region).Error; err != nil {
+		return nil, err
+	}
+	return &region, nil
+}
