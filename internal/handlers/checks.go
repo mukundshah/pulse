@@ -41,6 +41,7 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		Port             *int           `json:"port"`
 		Secure           *bool          `json:"secure"`
 		Method           string         `json:"method"`
+		Path             string         `json:"path"`
 		Headers          datatypes.JSON `json:"headers"`
 		QueryParams      datatypes.JSON `json:"query_params"`
 		Body             datatypes.JSON `json:"body"`
@@ -80,6 +81,7 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		Type:             checkType,
 		Host:             req.Host,
 		Method:           req.Method,
+		Path:             req.Path,
 		Headers:          req.Headers,
 		QueryParams:      req.QueryParams,
 		Body:             req.Body,
@@ -101,6 +103,9 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	// Set defaults
 	if check.Method == "" {
 		check.Method = "GET"
+	}
+	if check.Path == "" {
+		check.Path = "/"
 	}
 
 	// Handle Port and Secure
@@ -233,6 +238,7 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 		Port             *int           `json:"port"`
 		Secure           *bool          `json:"secure"`
 		Method           string         `json:"method"`
+		Path             string         `json:"path"`
 		Headers          datatypes.JSON `json:"headers"`
 		QueryParams      datatypes.JSON `json:"query_params"`
 		Body             datatypes.JSON `json:"body"`
@@ -267,6 +273,9 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	}
 	if req.Host != "" {
 		check.Host = req.Host
+	}
+	if req.Path != "" {
+		check.Path = req.Path
 	}
 	if req.Port != nil {
 		check.Port = *req.Port

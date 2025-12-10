@@ -41,6 +41,11 @@ properties:
     description: HTTP method to use
     default: GET
     example: GET
+  path:
+    type: string
+    description: URL path to check
+    default: /
+    example: /health
   headers:
     type: object
     additionalProperties: true

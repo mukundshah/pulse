@@ -28,6 +28,7 @@ type Check struct {
 	Port        int            `gorm:"default:80" json:"port"`
 	Secure      bool           `gorm:"default:false" json:"secure"`
 	Method      string         `gorm:"not null;default:GET" json:"method"`
+	Path        string         `gorm:"not null;default:/" json:"path"`
 	Headers     datatypes.JSON `gorm:"type:jsonb" json:"headers"`
 	QueryParams datatypes.JSON `gorm:"type:jsonb" json:"query_params"`
 	Body        datatypes.JSON `gorm:"type:jsonb" json:"body"`
