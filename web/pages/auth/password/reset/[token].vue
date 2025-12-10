@@ -86,10 +86,9 @@ const onSubmit = handleSubmit(async (data) => {
             <Button
               class="w-full"
               type="submit"
-              :disabled="isSubmitting"
+              :loading="isSubmitting"
             >
-              <span v-if="isSubmitting">Resetting password...</span>
-              <span v-else>Reset password</span>
+              Reset password
             </Button>
           </form>
         </CardContent>

@@ -117,10 +117,9 @@ const onSubmit = handleSubmit(async (data) => {
             <Button
               class="w-full"
               type="submit"
-              :disabled="isSubmitting"
+              :loading="isSubmitting"
             >
-              <span v-if="isSubmitting">Creating account...</span>
-              <span v-else>Create account</span>
+              Create account
             </Button>
           </form>
         </CardContent>
