@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"gorm.io/datatypes"
@@ -56,8 +57,16 @@ func executeHTTPCheck(check *models.Check, startTime time.Time) Result {
 		Timeout: timeout,
 	}
 
+	url := url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%d", check.Host, check.Port),
+	}
+	if check.Secure {
+		url.Scheme = "https"
+	}
+
 	// Create request
-	req, err := http.NewRequest(check.Method, check.URL, nil)
+	req, err := http.NewRequest(check.Method, url.String(), nil)
 	if err != nil {
 		return Result{
 			Status:  models.CheckRunStatusError,

@@ -8,6 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type IPVersionType string
+
+const (
+	IPVersionTypeIPv4 IPVersionType = "ipv4"
+	IPVersionTypeIPv6 IPVersionType = "ipv6"
+)
+
 type Check struct {
 	ID   uuid.UUID `gorm:"type:uuid;primaryKey;default:uuidv7()" json:"id"`
 	Name string    `gorm:"not null" json:"name"`
@@ -17,9 +24,17 @@ type Check struct {
 
 	Type CheckType `gorm:"not null;default:http" json:"type"`
 
-	URL     string         `gorm:"not null" json:"url"`
-	Method  string         `gorm:"not null;default:GET" json:"method"`
-	Headers datatypes.JSON `gorm:"type:jsonb" json:"headers"`
+	Host        string         `gorm:"not null" json:"host"` // could be a domain or an IP address
+	Port        int            `gorm:"default:80" json:"port"`
+	Secure      bool           `gorm:"default:false" json:"secure"`
+	Method      string         `gorm:"not null;default:GET" json:"method"`
+	Headers     datatypes.JSON `gorm:"type:jsonb" json:"headers"`
+	QueryParams datatypes.JSON `gorm:"type:jsonb" json:"query_params"`
+	Body        datatypes.JSON `gorm:"type:jsonb" json:"body"`
+	IPVersion   IPVersionType  `gorm:"not null;default:ipv4" json:"ip_version"`
+
+	SSLVerification bool `gorm:"default:true" json:"ssl_verification"`
+	FollowRedirects bool `gorm:"default:true" json:"follow_redirects"`
 
 	PlaywrightScript *string        `gorm:"type:text" json:"playwright_script,omitempty"`
 	Assertions       datatypes.JSON `gorm:"type:jsonb" json:"assertions"`

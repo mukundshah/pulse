@@ -22,10 +22,20 @@ properties:
     enum: [http, tcp, dns, browser, heartbeat]
     description: Type of check to perform
     example: http
-  url:
+  host:
     type: string
-    description: URL or endpoint to check
-    example: 'https://api.example.com/health'
+    description: Hostname or IP address to check
+    example: api.example.com
+  port:
+    type: integer
+    description: Port number
+    default: 80
+    example: 443
+  secure:
+    type: boolean
+    description: Whether to use HTTPS/TLS
+    default: false
+    example: true
   method:
     type: string
     description: HTTP method to use
@@ -35,6 +45,30 @@ properties:
     type: object
     additionalProperties: true
     description: Custom headers to send with the request
+  query_params:
+    type: object
+    additionalProperties: true
+    description: Query parameters to include in the request
+  body:
+    type: object
+    additionalProperties: true
+    description: Request body (for POST, PUT, PATCH requests)
+  ip_version:
+    type: string
+    enum: [ipv4, ipv6]
+    description: IP version to use for the request
+    default: ipv4
+    example: ipv4
+  ssl_verification:
+    type: boolean
+    description: Whether to verify SSL certificates
+    default: true
+    example: true
+  follow_redirects:
+    type: boolean
+    description: Whether to follow HTTP redirects
+    default: true
+    example: true
   playwright_script:
     type: string
     nullable: true
@@ -118,7 +152,7 @@ required:
   - id
   - name
   - type
-  - url
+  - host
   - method
   - interval_seconds
   - project_id

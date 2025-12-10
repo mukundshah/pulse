@@ -37,9 +37,16 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	var req struct {
 		Name             string         `json:"name" binding:"required"`
 		Type             string         `json:"type" binding:"required"`
-		URL              string         `json:"url" binding:"required"`
+		Host             string         `json:"host" binding:"required"`
+		Port             *int           `json:"port"`
+		Secure           *bool          `json:"secure"`
 		Method           string         `json:"method"`
 		Headers          datatypes.JSON `json:"headers"`
+		QueryParams      datatypes.JSON `json:"query_params"`
+		Body             datatypes.JSON `json:"body"`
+		IPVersion        string         `json:"ip_version"`
+		SSLVerification  *bool          `json:"ssl_verification"`
+		FollowRedirects  *bool          `json:"follow_redirects"`
 		PlaywrightScript *string        `json:"playwright_script,omitempty"`
 		Assertions       datatypes.JSON `json:"assertions"`
 		ExpectedStatus   int            `json:"expected_status"`
@@ -71,9 +78,12 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	check := &models.Check{
 		Name:             req.Name,
 		Type:             checkType,
-		URL:              req.URL,
+		Host:             req.Host,
 		Method:           req.Method,
 		Headers:          req.Headers,
+		QueryParams:      req.QueryParams,
+		Body:             req.Body,
+		IPVersion:        models.IPVersionType(req.IPVersion),
 		PlaywrightScript: req.PlaywrightScript,
 		Assertions:       req.Assertions,
 		ExpectedStatus:   req.ExpectedStatus,
@@ -91,6 +101,41 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	// Set defaults
 	if check.Method == "" {
 		check.Method = "GET"
+	}
+
+	// Handle Port and Secure
+	if req.Port != nil {
+		check.Port = *req.Port
+	} else {
+		// Default port based on secure flag
+		if req.Secure != nil && *req.Secure {
+			check.Port = 443
+		} else {
+			check.Port = 80
+		}
+	}
+
+	if req.Secure != nil {
+		check.Secure = *req.Secure
+	} else {
+		// Default secure based on port
+		check.Secure = check.Port == 443
+	}
+
+	if req.SSLVerification != nil {
+		check.SSLVerification = *req.SSLVerification
+	} else {
+		check.SSLVerification = true // default
+	}
+
+	if req.FollowRedirects != nil {
+		check.FollowRedirects = *req.FollowRedirects
+	} else {
+		check.FollowRedirects = true // default
+	}
+
+	if check.IPVersion == "" {
+		check.IPVersion = models.IPVersionTypeIPv4
 	}
 	if check.ExpectedStatus == 0 {
 		check.ExpectedStatus = 200
@@ -184,9 +229,16 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	var req struct {
 		Name             string         `json:"name"`
 		Type             string         `json:"type"`
-		URL              string         `json:"url"`
+		Host             string         `json:"host"`
+		Port             *int           `json:"port"`
+		Secure           *bool          `json:"secure"`
 		Method           string         `json:"method"`
 		Headers          datatypes.JSON `json:"headers"`
+		QueryParams      datatypes.JSON `json:"query_params"`
+		Body             datatypes.JSON `json:"body"`
+		IPVersion        string         `json:"ip_version"`
+		SSLVerification  *bool          `json:"ssl_verification"`
+		FollowRedirects  *bool          `json:"follow_redirects"`
 		PlaywrightScript *string        `json:"playwright_script,omitempty"`
 		Assertions       datatypes.JSON `json:"assertions"`
 		ExpectedStatus   int            `json:"expected_status"`
@@ -213,14 +265,41 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 		checkType := models.CheckType(req.Type)
 		check.Type = checkType
 	}
-	if req.URL != "" {
-		check.URL = req.URL
+	if req.Host != "" {
+		check.Host = req.Host
+	}
+	if req.Port != nil {
+		check.Port = *req.Port
+		// Auto-set secure based on port if secure not explicitly provided
+		if req.Secure == nil {
+			check.Secure = *req.Port == 443
+		} else {
+			check.Secure = *req.Secure
+		}
+	}
+	if req.Secure != nil && req.Port == nil {
+		check.Secure = *req.Secure
 	}
 	if req.Method != "" {
 		check.Method = req.Method
 	}
 	if req.Headers != nil {
 		check.Headers = req.Headers
+	}
+	if req.QueryParams != nil {
+		check.QueryParams = req.QueryParams
+	}
+	if req.Body != nil {
+		check.Body = req.Body
+	}
+	if req.IPVersion != "" {
+		check.IPVersion = models.IPVersionType(req.IPVersion)
+	}
+	if req.SSLVerification != nil {
+		check.SSLVerification = *req.SSLVerification
+	}
+	if req.FollowRedirects != nil {
+		check.FollowRedirects = *req.FollowRedirects
 	}
 	if req.PlaywrightScript != nil {
 		check.PlaywrightScript = req.PlaywrightScript
