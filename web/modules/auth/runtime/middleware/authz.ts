@@ -20,57 +20,57 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const { isAuthenticated, isOnboarded } = useAuth({ namespace: authNamespace })
   const { hasAnyRole, hasAnyPermission } = usePermissions({ namespace: authNamespace })
 
-  if (typeof redirectIfLoggedIn === 'string' && redirectIfLoggedIn && isAuthenticated.value) {
-    return navigateTo({ path: redirectIfLoggedIn }, { redirectCode: 302 })
-  }
+  // if (typeof redirectIfLoggedIn === 'string' && redirectIfLoggedIn && isAuthenticated.value) {
+  //   return navigateTo({ path: redirectIfLoggedIn }, { redirectCode: 302 })
+  // }
 
-  if (!authRequired) {
-    return
-  }
+  // if (!authRequired) {
+  //   return
+  // }
 
-  if (!isAuthenticated.value) {
-    return navigateTo(
-      {
-        path: loginRoute,
-        query: { next: to.fullPath },
-      },
-      {
-        redirectCode: 302,
-      },
-    )
-  }
+  // if (!isAuthenticated.value) {
+  //   return navigateTo(
+  //     {
+  //       path: loginRoute,
+  //       query: { next: to.fullPath },
+  //     },
+  //     {
+  //       redirectCode: 302,
+  //     },
+  //   )
+  // }
 
-  if (!isOnboarded.value && config.onboarding.enabled) {
-    if (typeof config.onboarding.route === 'string' && config.onboarding.route === to.fullPath) {
-      return
-    }
+  // if (!isOnboarded.value && config.onboarding.enabled) {
+  //   if (typeof config.onboarding.route === 'string' && config.onboarding.route === to.fullPath) {
+  //     return
+  //   }
 
-    if (typeof config.onboarding.route === 'object' && config.onboarding.route.name === to.name) {
-      return
-    }
+  //   if (typeof config.onboarding.route === 'object' && config.onboarding.route.name === to.name) {
+  //     return
+  //   }
 
-    return navigateTo(config.onboarding.route)
-  }
+  //   return navigateTo(config.onboarding.route)
+  // }
 
-  if (routeRoles && hasAnyRole(routeRoles)) {
-    return
-  }
+  // if (routeRoles && hasAnyRole(routeRoles)) {
+  //   return
+  // }
 
-  if (routePermissions && hasAnyPermission(routePermissions)) {
-    return
-  }
+  // if (routePermissions && hasAnyPermission(routePermissions)) {
+  //   return
+  // }
 
-  if (!routeRoles && !routePermissions && isAuthenticated.value) {
-    return
-  }
+  // if (!routeRoles && !routePermissions && isAuthenticated.value) {
+  //   return
+  // }
 
-  if (from.fullPath !== to.fullPath && from.path !== loginRoute) {
-    return navigateTo(from)
-  }
+  // if (from.fullPath !== to.fullPath && from.path !== loginRoute) {
+  //   return navigateTo(from)
+  // }
 
-  if (!redirectIfNotAllowed) {
-    return abortNavigation({ statusCode: 403 })
-  }
+  // if (!redirectIfNotAllowed) {
+  //   return abortNavigation({ statusCode: 403 })
+  // }
 
-  return navigateTo({ path: redirectIfNotAllowed }, { redirectCode: 302 })
+  // return navigateTo({ path: redirectIfNotAllowed }, { redirectCode: 302 })
 })

@@ -8,6 +8,6 @@ export default defineNuxtPlugin({
     const authNamespace = route.meta?.auth?.namespace
 
     const { syncAuthenticationStatus } = useAuth({ namespace: authNamespace })
-    useAsyncData('auth-state', () => syncAuthenticationStatus())
+    // useAsyncData('auth-state', () => syncAuthenticationStatus())
   },
 })
