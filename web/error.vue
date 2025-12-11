@@ -3,7 +3,7 @@ import type { NuxtError } from '#app'
 
 const props = defineProps<{ error: NuxtError }>()
 
-const {isAuthenticated} = useAuth()
+const { isAuthenticated } = useAuth()
 
 const errorMessage = computed(() => {
   if (props.error.statusMessage) {
@@ -24,7 +24,7 @@ const handleTryAgain = () => {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center p-4">
+  <div class="flex flex-col min-h-screen items-center justify-center p-4">
     <div class="w-full max-w-lg text-center">
       <div class="mb-12">
         <h1 class="mb-3 text-6xl font-light tracking-tight text-foreground/60">
@@ -46,5 +46,15 @@ const handleTryAgain = () => {
         </Button>
       </div>
     </div>
+    <DevOnly>
+      <div class="mt-4 max-w-7xl overflow-x-auto mx-auto">
+        <h2 class="text-sm font-medium">
+          Error stack
+        </h2>
+        <pre class="text-xs">
+            {{ error.stack }}
+          </pre>
+      </div>
+    </DevOnly>
   </div>
 </template>
