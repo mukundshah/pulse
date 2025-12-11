@@ -53,6 +53,7 @@ const onClickWrapper = async (event: MouseEvent) => {
     :as-child="asChild"
     :class="cn(buttonVariants({ variant, size }), props.class)"
     :disabled="props.disabled || isLoading"
+    :type="props.type"
     @click="onClickWrapper"
   >
     <slot name="loading">
