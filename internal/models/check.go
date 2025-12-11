@@ -1,18 +1,14 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-)
-
-type IPVersionType string
-
-const (
-	IPVersionTypeIPv4 IPVersionType = "ipv4"
-	IPVersionTypeIPv6 IPVersionType = "ipv6"
 )
 
 type Check struct {
@@ -29,8 +25,8 @@ type Check struct {
 	Secure      bool           `gorm:"default:false" json:"secure"`
 	Method      string         `gorm:"not null;default:GET" json:"method"`
 	Path        string         `gorm:"not null;default:/" json:"path"`
-	Headers     datatypes.JSON `gorm:"type:jsonb" json:"headers"`
 	QueryParams datatypes.JSON `gorm:"type:jsonb" json:"query_params"`
+	Headers     datatypes.JSON `gorm:"type:jsonb" json:"headers"`
 	Body        datatypes.JSON `gorm:"type:jsonb" json:"body"`
 	IPVersion   IPVersionType  `gorm:"not null;default:ipv4" json:"ip_version"`
 
@@ -39,15 +35,28 @@ type Check struct {
 
 	PlaywrightScript *string        `gorm:"type:text" json:"playwright_script,omitempty"`
 	Assertions       datatypes.JSON `gorm:"type:jsonb" json:"assertions"`
-	ExpectedStatus   int            `gorm:"default:200" json:"expected_status"`
-	ShouldFail       bool           `gorm:"default:false" json:"should_fail"`
 
 	PreScript  *string `gorm:"type:text" json:"pre_script,omitempty"`
 	PostScript *string `gorm:"type:text" json:"post_script,omitempty"`
 
-	TimeoutMs       int `gorm:"default:10000" json:"timeout_ms"`
-	IntervalSeconds int `gorm:"not null" json:"interval_seconds"`
-	AlertThreshold  int `gorm:"not null;default:3" json:"alert_threshold"`
+	Interval string `gorm:"not null;default:'10m'" json:"interval"`
+
+	DegradedThreshold     int      `gorm:"not null" json:"degraded_threshold"`
+	DegradedThresholdUnit UnitType `gorm:"type:varchar(2);default:'ms'" json:"degraded_threshold_unit"`
+	FailedThreshold       int      `gorm:"not null" json:"failed_threshold"`
+	FailedThresholdUnit   UnitType `gorm:"type:varchar(2);default:'ms'" json:"failed_threshold_unit"`
+
+	Retries             RetryType        `gorm:"type:varchar(20);default:'none'" json:"retries"`
+	RetriesCount        *int             `json:"retries_count,omitempty"`
+	RetriesDelay        *int             `json:"retries_delay,omitempty"`
+	RetriesDelayUnit    *UnitType        `json:"retries_delay_unit,omitempty"`
+	RetriesFactor       *float64         `json:"retries_factor,omitempty"`
+	RetriesJitter       *RetryJitterType `json:"retries_jitter,omitempty"`
+	RetriesJitterFactor *float64         `json:"retries_jitter_factor,omitempty"`
+	RetriesMaxDelay     *int             `json:"retries_max_delay,omitempty"`
+	RetriesMaxDelayUnit *UnitType        `json:"retries_max_delay_unit,omitempty"`
+	RetriesTimeout      *int             `json:"retries_timeout,omitempty"`
+	RetriesTimeoutUnit  *UnitType        `json:"retries_timeout_unit,omitempty"`
 
 	LastStatus CheckRunStatus `gorm:"type:varchar(20);default:'unknown'" json:"last_status"`
 	LastRunAt  *time.Time     `json:"last_run_at,omitempty"`
@@ -62,4 +71,35 @@ type Check struct {
 
 	Tags    []Tag    `gorm:"many2many:check_tags;" json:"tags,omitempty"`
 	Regions []Region `gorm:"many2many:check_regions;" json:"regions,omitempty"`
+}
+
+// ParseIntervalToSeconds converts an interval string (e.g., "10m", "5s", "1h") to seconds
+func ParseIntervalToSeconds(interval string) (int, error) {
+	if interval == "" {
+		return 0, fmt.Errorf("interval cannot be empty")
+	}
+
+	// Get the last character (unit) and the number part
+	if len(interval) < 2 {
+		return 0, fmt.Errorf("invalid interval format: %s", interval)
+	}
+
+	unit := strings.ToLower(interval[len(interval)-1:])
+	numberStr := interval[:len(interval)-1]
+
+	number, err := strconv.Atoi(numberStr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid interval format: %s", interval)
+	}
+
+	switch unit {
+	case "s":
+		return number, nil
+	case "m":
+		return number * 60, nil
+	case "h":
+		return number * 3600, nil
+	default:
+		return 0, fmt.Errorf("unknown interval unit: %s (supported: s, m, h)", unit)
+	}
 }

@@ -19,3 +19,35 @@ const (
 	CheckRunStatusError   CheckRunStatus = "error"
 	CheckRunStatusUnknown CheckRunStatus = "unknown"
 )
+
+type IPVersionType string
+
+const (
+	IPVersionTypeIPv4 IPVersionType = "ipv4"
+	IPVersionTypeIPv6 IPVersionType = "ipv6"
+)
+
+type RetryType string
+
+const (
+	RetryTypeNone        RetryType = "none"
+	RetryTypeFixed       RetryType = "fixed"
+	RetryTypeLinear      RetryType = "linear"
+	RetryTypeExponential RetryType = "exponential"
+)
+
+type RetryJitterType string
+
+const (
+	RetryJitterTypeNone         RetryJitterType = "none"
+	RetryJitterTypeFull         RetryJitterType = "full"
+	RetryJitterTypeEqual        RetryJitterType = "equal"
+	RetryJitterTypeDecorrelated RetryJitterType = "decorrelated"
+)
+
+type UnitType string
+
+const (
+	UnitTypeMs UnitType = "ms"
+	UnitTypeS  UnitType = "s"
+)

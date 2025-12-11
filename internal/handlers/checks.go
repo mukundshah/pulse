@@ -35,32 +35,43 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	}
 
 	var req struct {
-		Name             string         `json:"name" binding:"required"`
-		Type             string         `json:"type" binding:"required"`
-		Host             string         `json:"host" binding:"required"`
-		Port             *int           `json:"port"`
-		Secure           *bool          `json:"secure"`
-		Method           string         `json:"method"`
-		Path             string         `json:"path"`
-		Headers          datatypes.JSON `json:"headers"`
-		QueryParams      datatypes.JSON `json:"query_params"`
-		Body             datatypes.JSON `json:"body"`
-		IPVersion        string         `json:"ip_version"`
-		SSLVerification  *bool          `json:"ssl_verification"`
-		FollowRedirects  *bool          `json:"follow_redirects"`
-		PlaywrightScript *string        `json:"playwright_script,omitempty"`
-		Assertions       datatypes.JSON `json:"assertions"`
-		ExpectedStatus   int            `json:"expected_status"`
-		ShouldFail       bool           `json:"should_fail"`
-		PreScript        *string        `json:"pre_script,omitempty"`
-		PostScript       *string        `json:"post_script,omitempty"`
-		TimeoutMs        int            `json:"timeout_ms"`
-		IntervalSeconds  int            `json:"interval_seconds" binding:"required"`
-		AlertThreshold   int            `json:"alert_threshold"`
-		IsEnabled        bool           `json:"is_enabled"`
-		IsMuted          bool           `json:"is_muted"`
-		TagIDs           []uuid.UUID    `json:"tag_ids,omitempty"`
-		RegionIDs        []uuid.UUID    `json:"region_ids,omitempty"`
+		Name                  string         `json:"name" binding:"required"`
+		Type                  string         `json:"type" binding:"required"`
+		Host                  string         `json:"host" binding:"required"`
+		Port                  *int           `json:"port"`
+		Secure                *bool          `json:"secure"`
+		Method                string         `json:"method"`
+		Path                  string         `json:"path"`
+		QueryParams           datatypes.JSON `json:"query_params"`
+		Headers               datatypes.JSON `json:"headers"`
+		Body                  datatypes.JSON `json:"body"`
+		IPVersion             string         `json:"ip_version"`
+		SSLVerification       *bool          `json:"ssl_verification"`
+		FollowRedirects       *bool          `json:"follow_redirects"`
+		PlaywrightScript      *string        `json:"playwright_script,omitempty"`
+		Assertions            datatypes.JSON `json:"assertions"`
+		PreScript             *string        `json:"pre_script,omitempty"`
+		PostScript            *string        `json:"post_script,omitempty"`
+		Interval              string         `json:"interval" binding:"required"`
+		DegradedThreshold     int            `json:"degraded_threshold"`
+		DegradedThresholdUnit string         `json:"degraded_threshold_unit"`
+		FailedThreshold       int            `json:"failed_threshold"`
+		FailedThresholdUnit   string         `json:"failed_threshold_unit"`
+		Retries               string         `json:"retries"`
+		RetriesCount          *int           `json:"retries_count,omitempty"`
+		RetriesDelay          *int           `json:"retries_delay,omitempty"`
+		RetriesDelayUnit      *string        `json:"retries_delay_unit,omitempty"`
+		RetriesFactor         *float64       `json:"retries_factor,omitempty"`
+		RetriesJitter         *string        `json:"retries_jitter,omitempty"`
+		RetriesJitterFactor   *float64       `json:"retries_jitter_factor,omitempty"`
+		RetriesMaxDelay       *int           `json:"retries_max_delay,omitempty"`
+		RetriesMaxDelayUnit   *string        `json:"retries_max_delay_unit,omitempty"`
+		RetriesTimeout        *int           `json:"retries_timeout,omitempty"`
+		RetriesTimeoutUnit    *string        `json:"retries_timeout_unit,omitempty"`
+		IsEnabled             bool           `json:"is_enabled"`
+		IsMuted               bool           `json:"is_muted"`
+		TagIDs                []uuid.UUID    `json:"tag_ids,omitempty"`
+		RegionIDs             []uuid.UUID    `json:"region_ids,omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -77,27 +88,38 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	}
 
 	check := &models.Check{
-		Name:             req.Name,
-		Type:             checkType,
-		Host:             req.Host,
-		Method:           req.Method,
-		Path:             req.Path,
-		Headers:          req.Headers,
-		QueryParams:      req.QueryParams,
-		Body:             req.Body,
-		IPVersion:        models.IPVersionType(req.IPVersion),
-		PlaywrightScript: req.PlaywrightScript,
-		Assertions:       req.Assertions,
-		ExpectedStatus:   req.ExpectedStatus,
-		ShouldFail:       req.ShouldFail,
-		PreScript:        req.PreScript,
-		PostScript:       req.PostScript,
-		TimeoutMs:        req.TimeoutMs,
-		IntervalSeconds:  req.IntervalSeconds,
-		AlertThreshold:   req.AlertThreshold,
-		IsEnabled:        req.IsEnabled,
-		IsMuted:          req.IsMuted,
-		ProjectID:        projectID,
+		Name:                  req.Name,
+		Type:                  checkType,
+		Host:                  req.Host,
+		Method:                req.Method,
+		Path:                  req.Path,
+		QueryParams:           req.QueryParams,
+		Headers:               req.Headers,
+		Body:                  req.Body,
+		IPVersion:             models.IPVersionType(req.IPVersion),
+		PlaywrightScript:      req.PlaywrightScript,
+		Assertions:            req.Assertions,
+		PreScript:             req.PreScript,
+		PostScript:            req.PostScript,
+		Interval:              req.Interval,
+		DegradedThreshold:     req.DegradedThreshold,
+		DegradedThresholdUnit: models.UnitType(req.DegradedThresholdUnit),
+		FailedThreshold:       req.FailedThreshold,
+		FailedThresholdUnit:   models.UnitType(req.FailedThresholdUnit),
+		Retries:               models.RetryType(req.Retries),
+		RetriesCount:          req.RetriesCount,
+		RetriesDelay:          req.RetriesDelay,
+		RetriesDelayUnit:      (*models.UnitType)(req.RetriesDelayUnit),
+		RetriesFactor:         req.RetriesFactor,
+		RetriesJitter:         (*models.RetryJitterType)(req.RetriesJitter),
+		RetriesJitterFactor:   req.RetriesJitterFactor,
+		RetriesMaxDelay:       req.RetriesMaxDelay,
+		RetriesMaxDelayUnit:   (*models.UnitType)(req.RetriesMaxDelayUnit),
+		RetriesTimeout:        req.RetriesTimeout,
+		RetriesTimeoutUnit:    (*models.UnitType)(req.RetriesTimeoutUnit),
+		IsEnabled:             req.IsEnabled,
+		IsMuted:               req.IsMuted,
+		ProjectID:             projectID,
 	}
 
 	// Set defaults
@@ -142,14 +164,23 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	if check.IPVersion == "" {
 		check.IPVersion = models.IPVersionTypeIPv4
 	}
-	if check.ExpectedStatus == 0 {
-		check.ExpectedStatus = 200
+	if check.Interval == "" {
+		check.Interval = "10m"
 	}
-	if check.TimeoutMs == 0 {
-		check.TimeoutMs = 10000
+	if check.DegradedThreshold == 0 {
+		check.DegradedThreshold = 3000
 	}
-	if check.AlertThreshold == 0 {
-		check.AlertThreshold = 3
+	if check.DegradedThresholdUnit == "" {
+		check.DegradedThresholdUnit = models.UnitTypeMs
+	}
+	if check.FailedThreshold == 0 {
+		check.FailedThreshold = 5000
+	}
+	if check.FailedThresholdUnit == "" {
+		check.FailedThresholdUnit = models.UnitTypeMs
+	}
+	if check.Retries == "" {
+		check.Retries = models.RetryTypeNone
 	}
 	if !req.IsEnabled {
 		check.IsEnabled = true
@@ -232,30 +263,41 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	}
 
 	var req struct {
-		Name             string         `json:"name"`
-		Type             string         `json:"type"`
-		Host             string         `json:"host"`
-		Port             *int           `json:"port"`
-		Secure           *bool          `json:"secure"`
-		Method           string         `json:"method"`
-		Path             string         `json:"path"`
-		Headers          datatypes.JSON `json:"headers"`
-		QueryParams      datatypes.JSON `json:"query_params"`
-		Body             datatypes.JSON `json:"body"`
-		IPVersion        string         `json:"ip_version"`
-		SSLVerification  *bool          `json:"ssl_verification"`
-		FollowRedirects  *bool          `json:"follow_redirects"`
-		PlaywrightScript *string        `json:"playwright_script,omitempty"`
-		Assertions       datatypes.JSON `json:"assertions"`
-		ExpectedStatus   int            `json:"expected_status"`
-		ShouldFail       bool           `json:"should_fail"`
-		PreScript        *string        `json:"pre_script,omitempty"`
-		PostScript       *string        `json:"post_script,omitempty"`
-		TimeoutMs        int            `json:"timeout_ms"`
-		IntervalSeconds  int            `json:"interval_seconds"`
-		AlertThreshold   int            `json:"alert_threshold"`
-		IsEnabled        *bool          `json:"is_enabled"`
-		IsMuted          *bool          `json:"is_muted"`
+		Name                  string         `json:"name"`
+		Type                  string         `json:"type"`
+		Host                  string         `json:"host"`
+		Port                  *int           `json:"port"`
+		Secure                *bool          `json:"secure"`
+		Method                string         `json:"method"`
+		Path                  string         `json:"path"`
+		QueryParams           datatypes.JSON `json:"query_params"`
+		Headers               datatypes.JSON `json:"headers"`
+		Body                  datatypes.JSON `json:"body"`
+		IPVersion             string         `json:"ip_version"`
+		SSLVerification       *bool          `json:"ssl_verification"`
+		FollowRedirects       *bool          `json:"follow_redirects"`
+		PlaywrightScript      *string        `json:"playwright_script,omitempty"`
+		Assertions            datatypes.JSON `json:"assertions"`
+		PreScript             *string        `json:"pre_script,omitempty"`
+		PostScript            *string        `json:"post_script,omitempty"`
+		Interval              string         `json:"interval"`
+		DegradedThreshold     *int           `json:"degraded_threshold"`
+		DegradedThresholdUnit *string        `json:"degraded_threshold_unit"`
+		FailedThreshold       *int           `json:"failed_threshold"`
+		FailedThresholdUnit   *string        `json:"failed_threshold_unit"`
+		Retries               *string        `json:"retries"`
+		RetriesCount          *int           `json:"retries_count,omitempty"`
+		RetriesDelay          *int           `json:"retries_delay,omitempty"`
+		RetriesDelayUnit      *string        `json:"retries_delay_unit,omitempty"`
+		RetriesFactor         *float64       `json:"retries_factor,omitempty"`
+		RetriesJitter         *string        `json:"retries_jitter,omitempty"`
+		RetriesJitterFactor   *float64       `json:"retries_jitter_factor,omitempty"`
+		RetriesMaxDelay       *int           `json:"retries_max_delay,omitempty"`
+		RetriesMaxDelayUnit   *string        `json:"retries_max_delay_unit,omitempty"`
+		RetriesTimeout        *int           `json:"retries_timeout,omitempty"`
+		RetriesTimeoutUnit    *string        `json:"retries_timeout_unit,omitempty"`
+		IsEnabled             *bool          `json:"is_enabled"`
+		IsMuted               *bool          `json:"is_muted"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -316,24 +358,59 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	if req.Assertions != nil {
 		check.Assertions = req.Assertions
 	}
-	if req.ExpectedStatus != 0 {
-		check.ExpectedStatus = req.ExpectedStatus
-	}
-	check.ShouldFail = req.ShouldFail
 	if req.PreScript != nil {
 		check.PreScript = req.PreScript
 	}
 	if req.PostScript != nil {
 		check.PostScript = req.PostScript
 	}
-	if req.TimeoutMs != 0 {
-		check.TimeoutMs = req.TimeoutMs
+	if req.Interval != "" {
+		check.Interval = req.Interval
 	}
-	if req.IntervalSeconds != 0 {
-		check.IntervalSeconds = req.IntervalSeconds
+	if req.DegradedThreshold != nil {
+		check.DegradedThreshold = *req.DegradedThreshold
 	}
-	if req.AlertThreshold != 0 {
-		check.AlertThreshold = req.AlertThreshold
+	if req.DegradedThresholdUnit != nil {
+		check.DegradedThresholdUnit = models.UnitType(*req.DegradedThresholdUnit)
+	}
+	if req.FailedThreshold != nil {
+		check.FailedThreshold = *req.FailedThreshold
+	}
+	if req.FailedThresholdUnit != nil {
+		check.FailedThresholdUnit = models.UnitType(*req.FailedThresholdUnit)
+	}
+	if req.Retries != nil {
+		check.Retries = models.RetryType(*req.Retries)
+	}
+	if req.RetriesCount != nil {
+		check.RetriesCount = req.RetriesCount
+	}
+	if req.RetriesDelay != nil {
+		check.RetriesDelay = req.RetriesDelay
+	}
+	if req.RetriesDelayUnit != nil {
+		check.RetriesDelayUnit = (*models.UnitType)(req.RetriesDelayUnit)
+	}
+	if req.RetriesFactor != nil {
+		check.RetriesFactor = req.RetriesFactor
+	}
+	if req.RetriesJitter != nil {
+		check.RetriesJitter = (*models.RetryJitterType)(req.RetriesJitter)
+	}
+	if req.RetriesJitterFactor != nil {
+		check.RetriesJitterFactor = req.RetriesJitterFactor
+	}
+	if req.RetriesMaxDelay != nil {
+		check.RetriesMaxDelay = req.RetriesMaxDelay
+	}
+	if req.RetriesMaxDelayUnit != nil {
+		check.RetriesMaxDelayUnit = (*models.UnitType)(req.RetriesMaxDelayUnit)
+	}
+	if req.RetriesTimeout != nil {
+		check.RetriesTimeout = req.RetriesTimeout
+	}
+	if req.RetriesTimeoutUnit != nil {
+		check.RetriesTimeoutUnit = (*models.UnitType)(req.RetriesTimeoutUnit)
 	}
 	if req.IsEnabled != nil {
 		check.IsEnabled = *req.IsEnabled

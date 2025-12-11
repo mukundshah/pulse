@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"pulse/internal/models"
 	"pulse/internal/redis"
 	"pulse/internal/store"
 )
@@ -62,8 +63,13 @@ func (s *Scheduler) poller() {
 					continue
 				}
 
-				// Update next_run_at
-				nextRun := time.Now().Add(time.Duration(check.IntervalSeconds) * time.Second)
+				// Parse interval to seconds and update next_run_at
+				intervalSeconds, err := models.ParseIntervalToSeconds(check.Interval)
+				if err != nil {
+					log.Printf("Error parsing interval for check %s: %v", check.ID, err)
+					continue
+				}
+				nextRun := time.Now().Add(time.Duration(intervalSeconds) * time.Second)
 				if err := s.store.UpdateCheckStatus(check.ID, nextRun, string(check.LastStatus)); err != nil {
 					log.Printf("Error updating check status for %s: %v", check.ID, err)
 				}

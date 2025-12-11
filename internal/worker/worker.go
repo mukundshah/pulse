@@ -126,8 +126,13 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 	// Process alerts
 	w.alerter.ProcessCheckResult(check, result)
 
-	// Update check status
-	nextRun := time.Now().Add(time.Duration(check.IntervalSeconds) * time.Second)
+	// Parse interval to seconds and update check status
+	intervalSeconds, err := models.ParseIntervalToSeconds(check.Interval)
+	if err != nil {
+		log.Printf("Worker %d: Error parsing interval for check %s: %v", workerID, checkID, err)
+		intervalSeconds = 600 // Default to 10 minutes if parsing fails
+	}
+	nextRun := time.Now().Add(time.Duration(intervalSeconds) * time.Second)
 	lastStatus := string(result.Status)
 	if err := w.store.UpdateCheckStatus(checkID, nextRun, lastStatus); err != nil {
 		log.Printf("Worker %d: Error updating check status for %s: %v", workerID, checkID, err)

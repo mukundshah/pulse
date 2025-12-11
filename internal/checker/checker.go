@@ -48,11 +48,8 @@ func Execute(check *models.Check) Result {
 }
 
 func executeHTTPCheck(check *models.Check, startTime time.Time) Result {
-	// Create HTTP client with timeout
-	timeout := time.Duration(check.TimeoutMs) * time.Millisecond
-	if timeout == 0 {
-		timeout = 10 * time.Second
-	}
+	// Create HTTP client with timeout (default 10 seconds)
+	timeout := 30 * time.Second
 	client := &http.Client{
 		Timeout: timeout,
 	}
@@ -116,19 +113,10 @@ func executeHTTPCheck(check *models.Check, startTime time.Time) Result {
 	// Read response body (limited to prevent memory issues)
 	bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 1024*1024)) // 1MB limit
 
-	// Determine status based on response
+	// Determine status based on response (default to success for 2xx status codes)
 	status := models.CheckRunStatusSuccess
-	if resp.StatusCode != check.ExpectedStatus {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		status = models.CheckRunStatusFail
-	}
-
-	// If ShouldFail is true, invert the status
-	if check.ShouldFail {
-		if status == models.CheckRunStatusSuccess {
-			status = models.CheckRunStatusFail
-		} else {
-			status = models.CheckRunStatusSuccess
-		}
 	}
 
 	// Process assertions if provided

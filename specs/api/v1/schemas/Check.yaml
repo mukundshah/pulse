@@ -82,15 +82,6 @@ properties:
     type: object
     additionalProperties: true
     description: Assertions to validate the response
-  expected_status:
-    type: integer
-    description: Expected HTTP status code
-    default: 200
-    example: 200
-  should_fail:
-    type: boolean
-    description: Whether the check should intentionally fail (for testing)
-    default: false
   pre_script:
     type: string
     nullable: true
@@ -99,20 +90,91 @@ properties:
     type: string
     nullable: true
     description: Script to run after the check
-  timeout_ms:
+  interval:
+    type: string
+    description: Interval between checks (e.g., "5s", "10m", "1h")
+    default: "10m"
+    example: "10m"
+  degraded_threshold:
     type: integer
-    description: Timeout in milliseconds
-    default: 10000
-    example: 10000
-  interval_seconds:
+    description: Response time threshold for degraded status
+    example: 3000
+  degraded_threshold_unit:
+    type: string
+    enum: [ms, s]
+    description: Unit for degraded threshold
+    default: ms
+    example: ms
+  failed_threshold:
     type: integer
-    description: Interval between checks in seconds
-    example: 60
-  alert_threshold:
+    description: Response time threshold for failed status
+    example: 5000
+  failed_threshold_unit:
+    type: string
+    enum: [ms, s]
+    description: Unit for failed threshold
+    default: ms
+    example: ms
+  retries:
+    type: string
+    enum: [none, fixed, linear, exponential]
+    description: Retry strategy
+    default: none
+    example: none
+  retries_count:
     type: integer
-    description: Number of consecutive failures before alerting
-    default: 3
+    nullable: true
+    description: Number of retries
     example: 3
+  retries_delay:
+    type: integer
+    nullable: true
+    description: Delay between retries
+    example: 200
+  retries_delay_unit:
+    type: string
+    enum: [ms, s]
+    nullable: true
+    description: Unit for retry delay
+    example: ms
+  retries_factor:
+    type: number
+    nullable: true
+    description: Factor for linear/exponential retries
+    example: 2.0
+  retries_jitter:
+    type: string
+    enum: [none, full, equal, decorrelated]
+    nullable: true
+    description: Jitter type for exponential retries
+    example: full
+  retries_jitter_factor:
+    type: number
+    nullable: true
+    description: Jitter factor
+    example: 1.0
+  retries_max_delay:
+    type: integer
+    nullable: true
+    description: Maximum delay between retries
+    example: 5000
+  retries_max_delay_unit:
+    type: string
+    enum: [ms, s]
+    nullable: true
+    description: Unit for max delay
+    example: ms
+  retries_timeout:
+    type: integer
+    nullable: true
+    description: Timeout for retries
+    example: 15000
+  retries_timeout_unit:
+    type: string
+    enum: [ms, s]
+    nullable: true
+    description: Unit for retry timeout
+    example: ms
   last_status:
     type: string
     enum: [success, fail, timeout, error, unknown]
@@ -159,7 +221,7 @@ required:
   - type
   - host
   - method
-  - interval_seconds
+  - interval
   - project_id
   - created_at
   - updated_at
