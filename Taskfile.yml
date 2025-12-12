@@ -1,8 +1,14 @@
-version: '3'
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+output: prefixed
 
 vars:
-  PORT_API: '8080'
-  PORT_WEB: '3001'
+  PORT_API: "8080"
+  PORT_WEB: "3001"
+
+dotenv:
+  - .env
 
 tasks:
   default:
@@ -19,26 +25,25 @@ tasks:
   dev:api:
     desc: Run Go server with hot reload on port 8080
     env:
-      PORT: '{{.PORT_API}}'
+      PORT: "{{.PORT_API}}"
     cmds:
       - go tool air --build.cmd="go build -o tmp/pulse-server cmd/server/main.go" --build.bin="tmp/pulse-server"
 
   dev:web:
     desc: Run web frontend with pnpm dev on port 3001
     env:
-      PORT: '{{.PORT_WEB}}'
+      PORT: "{{.PORT_WEB}}"
     cmds:
       - pnpm dev
 
   dev:all:
     desc: Run both API and web in parallel (like Procfile)
-    cmds:
-      - task: dev:api
-      - task: dev:web
-    parallel: true
+    deps:
+      - dev:api
+      - dev:web
 
   # Run tasks (without hot reload)
-  run:
+  run:api:
     desc: Run Go server directly
     cmds:
       - go run cmd/server/main.go
@@ -49,7 +54,7 @@ tasks:
       - go run cmd/worker/main.go
 
   # Build tasks
-  build:
+  build:api:
     desc: Build server binary
     cmds:
       - mkdir -p build
@@ -61,11 +66,17 @@ tasks:
       - mkdir -p build
       - go build -o build/worker cmd/worker/main.go
 
+  build:web:
+    desc: Build web
+    cmds:
+      - pnpm build
+
   build:all:
     desc: Build both server and worker binaries
-    cmds:
-      - task: build
-      - task: build:worker
+    deps:
+      - build:api
+      - build:worker
+      - build:web
 
   # Worker development tasks
   dev:worker:
@@ -79,16 +90,47 @@ tasks:
     cmds:
       - go test ./...
 
+  # Database migration tasks
+  db:migrate:
+    desc: Run all pending database migrations
+    cmds:
+      - go run cmd/db/migrate.go up
+
+  db:migrate:to:
+    desc: "Migrate to a specific migration ID (usage: task db:migrate:to <migration-id>)"
+    cmds:
+      - go run cmd/db/migrate.go up {{.CLI_ARGS}}
+
+  db:rollback:
+    desc: Rollback the last migration
+    cmds:
+      - go run cmd/db/migrate.go down
+
+  db:rollback:to:
+    desc: "Rollback to a specific migration ID (usage: task db:rollback:to <migration-id>)"
+    cmds:
+      - go run cmd/db/migrate.go down {{.CLI_ARGS}}
+
   # Docker tasks
-  docker:up:
-    desc: Start docker compose infrastructure
+  docker:infra:up:
+    desc: Start docker compose infrastructure (postgres, valkey, clickhouse)
     cmds:
       - docker compose -f docker-compose.infrastructure.yml up -d
 
-  docker:down:
+  docker:infra:down:
     desc: Stop docker compose infrastructure
     cmds:
       - docker compose -f docker-compose.infrastructure.yml down
+
+  docker:up:
+    desc: Start full docker compose stack (includes server, worker, web, migrator)
+    cmds:
+      - docker compose up -d
+
+  docker:down:
+    desc: Stop full docker compose stack
+    cmds:
+      - docker compose down
 
   # Cleanup tasks
   clean:
