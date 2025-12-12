@@ -1,14 +1,15 @@
 package migrations
 
 import (
-	"pulse/internal/models"
-
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 )
 
 func init() {
-	regions := []models.Region{
+	regions := []struct {
+		Name string
+		Code string
+	}{
 		{Name: "Asia Pacific", Code: "apac"},
 	}
 
@@ -16,13 +17,12 @@ func init() {
 		ID: "202512042142_seed_regions",
 		Migrate: func(tx *gorm.DB) error {
 			for _, region := range regions {
-				var existing models.Region
-				err := tx.Where("code = ?", region.Code).First(&existing).Error
-				if err == gorm.ErrRecordNotFound {
-					if err := tx.Create(&region).Error; err != nil {
-						return err
-					}
-				} else if err != nil {
+				// Insert with ON CONFLICT DO NOTHING to avoid duplicates
+				if err := tx.Exec(`
+					INSERT INTO regions (name, code, created_at, updated_at)
+					VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+					ON CONFLICT (code) DO NOTHING
+				`, region.Name, region.Code).Error; err != nil {
 					return err
 				}
 			}
@@ -30,7 +30,7 @@ func init() {
 		},
 		Rollback: func(tx *gorm.DB) error {
 			for _, region := range regions {
-				if err := tx.Where("code = ?", region.Code).Delete(&models.Region{}).Error; err != nil {
+				if err := tx.Exec("DELETE FROM regions WHERE code = ?", region.Code).Error; err != nil {
 					return err
 				}
 			}
