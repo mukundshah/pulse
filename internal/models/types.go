@@ -51,3 +51,23 @@ const (
 	UnitTypeMs UnitType = "ms"
 	UnitTypeS  UnitType = "s"
 )
+
+type DNSRecordType string
+
+const (
+	DNSRecordTypeA     DNSRecordType = "A"
+	DNSRecordTypeAAAA  DNSRecordType = "AAAA"
+	DNSRecordTypeCNAME DNSRecordType = "CNAME"
+	DNSRecordTypeMX    DNSRecordType = "MX"
+	DNSRecordTypeNS    DNSRecordType = "NS"
+	DNSRecordTypeSOA   DNSRecordType = "SOA"
+	DNSRecordTypeSRV   DNSRecordType = "SRV"
+	DNSRecordTypeTXT   DNSRecordType = "TXT"
+)
+
+type DNSResolverProtocolType string
+
+const (
+	DNSResolverProtocolUDP DNSResolverProtocolType = "udp"
+	DNSResolverProtocolTCP DNSResolverProtocolType = "tcp"
+)

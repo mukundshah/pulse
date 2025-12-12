@@ -73,6 +73,10 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		ShouldFail            bool           `json:"should_fail"`
 		TagIDs                []uuid.UUID    `json:"tag_ids,omitempty"`
 		RegionIDs             []uuid.UUID    `json:"region_ids,omitempty"`
+		DNSRecordType         *string        `json:"dns_record_type,omitempty"`
+		DNSResolver           *string        `json:"dns_resolver,omitempty"`
+		DNSResolverPort       *int           `json:"dns_resolver_port,omitempty"`
+		DNSResolverProtocol   *string        `json:"dns_resolver_protocol,omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -122,6 +126,20 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		IsMuted:               req.IsMuted,
 		ShouldFail:            req.ShouldFail,
 		ProjectID:             projectID,
+	}
+
+	// Handle DNS fields
+	if req.DNSRecordType != nil {
+		check.DNSRecordType = (*models.DNSRecordType)(req.DNSRecordType)
+	}
+	if req.DNSResolver != nil {
+		check.DNSResolver = req.DNSResolver
+	}
+	if req.DNSResolverPort != nil {
+		check.DNSResolverPort = req.DNSResolverPort
+	}
+	if req.DNSResolverProtocol != nil {
+		check.DNSResolverProtocol = (*models.DNSResolverProtocolType)(req.DNSResolverProtocol)
 	}
 
 	// Set defaults
@@ -301,6 +319,10 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 		IsEnabled             *bool          `json:"is_enabled"`
 		IsMuted               *bool          `json:"is_muted"`
 		ShouldFail            *bool          `json:"should_fail"`
+		DNSRecordType         *string        `json:"dns_record_type,omitempty"`
+		DNSResolver           *string        `json:"dns_resolver,omitempty"`
+		DNSResolverPort       *int           `json:"dns_resolver_port,omitempty"`
+		DNSResolverProtocol   *string        `json:"dns_resolver_protocol,omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -423,6 +445,18 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	}
 	if req.ShouldFail != nil {
 		check.ShouldFail = *req.ShouldFail
+	}
+	if req.DNSRecordType != nil {
+		check.DNSRecordType = (*models.DNSRecordType)(req.DNSRecordType)
+	}
+	if req.DNSResolver != nil {
+		check.DNSResolver = req.DNSResolver
+	}
+	if req.DNSResolverPort != nil {
+		check.DNSResolverPort = req.DNSResolverPort
+	}
+	if req.DNSResolverProtocol != nil {
+		check.DNSResolverProtocol = (*models.DNSResolverProtocolType)(req.DNSResolverProtocol)
 	}
 
 	if err := h.store.UpdateCheck(check); err != nil {

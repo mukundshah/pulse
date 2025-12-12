@@ -59,6 +59,11 @@ type Check struct {
 	RetriesTimeout      *int             `json:"retries_timeout,omitempty"`
 	RetriesTimeoutUnit  *UnitType        `json:"retries_timeout_unit,omitempty"`
 
+	DNSRecordType       *DNSRecordType           `json:"dns_record_type,omitempty"`
+	DNSResolver         *string                  `json:"dns_resolver,omitempty"`
+	DNSResolverPort     *int                     `json:"dns_resolver_port,omitempty"`
+	DNSResolverProtocol *DNSResolverProtocolType `json:"dns_resolver_protocol,omitempty"`
+
 	LastStatus CheckRunStatus `gorm:"type:varchar(20);default:'unknown'" json:"last_status"`
 	LastRunAt  *time.Time     `json:"last_run_at,omitempty"`
 	NextRunAt  *time.Time     `json:"next_run_at,omitempty"`

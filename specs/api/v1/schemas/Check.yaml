@@ -196,6 +196,28 @@ properties:
     nullable: true
     description: Unit for retry timeout
     example: ms
+  dns_record_type:
+    type: string
+    enum: [A, AAAA, CNAME, MX, NS, SOA, SRV, TXT]
+    nullable: true
+    description: DNS record type to query
+    example: A
+  dns_resolver:
+    type: string
+    nullable: true
+    description: DNS resolver IP address
+    example: 1.1.1.1
+  dns_resolver_port:
+    type: integer
+    nullable: true
+    description: DNS resolver port
+    example: 53
+  dns_resolver_protocol:
+    type: string
+    enum: [udp, tcp]
+    nullable: true
+    description: DNS resolver protocol
+    example: udp
   last_status:
     type: string
     enum: [success, fail, timeout, error, unknown]

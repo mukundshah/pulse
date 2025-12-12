@@ -164,6 +164,24 @@ paths:
                 should_fail:
                   type: boolean
                   nullable: true
+                dns_record_type:
+                  type: string
+                  enum: [A, AAAA, CNAME, MX, NS, SOA, SRV, TXT]
+                  nullable: true
+                  description: DNS record type to query
+                dns_resolver:
+                  type: string
+                  nullable: true
+                  description: DNS resolver IP address
+                dns_resolver_port:
+                  type: integer
+                  nullable: true
+                  description: DNS resolver port
+                dns_resolver_protocol:
+                  type: string
+                  enum: [udp, tcp]
+                  nullable: true
+                  description: DNS resolver protocol
       responses:
         '200':
           description: Check updated successfully
