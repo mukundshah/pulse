@@ -77,6 +77,22 @@ export const IP_VERSIONS = [
   'ipv6',
 ] as const
 
+export const DNS_RECORD_TYPES = [
+  'A',
+  'AAAA',
+  'CNAME',
+  'MX',
+  'NS',
+  'SOA',
+  'SRV',
+  'TXT',
+] as const
+
+export const DNS_RESOLVER_PROTOCOLS = [
+  'udp',
+  'tcp',
+] as const
+
 export const ASSERTION_SOURCES = [
   'status_code',
   'response_body',
