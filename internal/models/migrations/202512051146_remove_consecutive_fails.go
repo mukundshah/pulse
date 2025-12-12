@@ -9,11 +9,15 @@ func init() {
 	RegisterMigration(&gormigrate.Migration{
 		ID: "202512051146_remove_consecutive_fails",
 		Migrate: func(tx *gorm.DB) error {
-			// return tx.Migrator().DropColumn(&models.Check{}, "consecutive_fails")
+			if err := tx.Exec("ALTER TABLE checks DROP COLUMN consecutive_fails").Error; err != nil {
+				return err
+			}
 			return nil
 		},
 		Rollback: func(tx *gorm.DB) error {
-			// return tx.Migrator().AddColumn(&models.Check{}, "consecutive_fails")
+			if err := tx.Exec("ALTER TABLE checks ADD COLUMN consecutive_fails INTEGER NOT NULL DEFAULT 0").Error; err != nil {
+				return err
+			}
 			return nil
 		},
 	})
