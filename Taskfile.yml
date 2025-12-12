@@ -1,0 +1,98 @@
+version: '3'
+
+vars:
+  PORT_API: '8080'
+  PORT_WEB: '3001'
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # Development tasks
+  dev:
+    desc: Run Go server with hot reload (air)
+    cmds:
+      - go tool air --build.cmd="go build -o tmp/pulse-server cmd/server/main.go" --build.bin="tmp/pulse-server"
+
+  dev:api:
+    desc: Run Go server with hot reload on port 8080
+    env:
+      PORT: '{{.PORT_API}}'
+    cmds:
+      - go tool air --build.cmd="go build -o tmp/pulse-server cmd/server/main.go" --build.bin="tmp/pulse-server"
+
+  dev:web:
+    desc: Run web frontend with pnpm dev on port 3001
+    env:
+      PORT: '{{.PORT_WEB}}'
+    cmds:
+      - pnpm dev
+
+  dev:all:
+    desc: Run both API and web in parallel (like Procfile)
+    cmds:
+      - task: dev:api
+      - task: dev:web
+    parallel: true
+
+  # Run tasks (without hot reload)
+  run:
+    desc: Run Go server directly
+    cmds:
+      - go run cmd/server/main.go
+
+  run:worker:
+    desc: Run Go worker directly
+    cmds:
+      - go run cmd/worker/main.go
+
+  # Build tasks
+  build:
+    desc: Build server binary
+    cmds:
+      - mkdir -p build
+      - go build -o build/server cmd/server/main.go
+
+  build:worker:
+    desc: Build worker binary
+    cmds:
+      - mkdir -p build
+      - go build -o build/worker cmd/worker/main.go
+
+  build:all:
+    desc: Build both server and worker binaries
+    cmds:
+      - task: build
+      - task: build:worker
+
+  # Worker development tasks
+  dev:worker:
+    desc: Run Go worker with hot reload (air)
+    cmds:
+      - go tool air --build.cmd="go build -o tmp/pulse-worker cmd/worker/main.go" --build.bin="tmp/pulse-worker"
+
+  # Test tasks
+  test:
+    desc: Run all Go tests
+    cmds:
+      - go test ./...
+
+  # Docker tasks
+  docker:up:
+    desc: Start docker compose infrastructure
+    cmds:
+      - docker compose -f docker-compose.infrastructure.yml up -d
+
+  docker:down:
+    desc: Stop docker compose infrastructure
+    cmds:
+      - docker compose -f docker-compose.infrastructure.yml down
+
+  # Cleanup tasks
+  clean:
+    desc: Remove build and tmp directories
+    cmds:
+      - rm -rf build
+      - rm -rf tmp
