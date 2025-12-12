@@ -195,8 +195,8 @@ paths:
               required:
                 - name
                 - type
-                - url
-                - interval_seconds
+                - host
+                - interval
               properties:
                 name:
                   type: string
@@ -205,43 +205,114 @@ paths:
                   type: string
                   enum: [http, tcp, dns, browser, heartbeat]
                   example: http
-                url:
+                host:
                   type: string
-                  example: 'https://api.example.com/health'
+                  example: api.example.com
+                port:
+                  type: integer
+                  nullable: true
+                secure:
+                  type: boolean
+                  nullable: true
                 method:
                   type: string
                   default: GET
                   example: GET
+                path:
+                  type: string
+                  example: /health
+                query_params:
+                  type: object
+                  additionalProperties: true
                 headers:
                   type: object
                   additionalProperties: true
+                body:
+                  type: object
+                  additionalProperties: true
+                ip_version:
+                  type: string
+                ssl_verification:
+                  type: boolean
+                  nullable: true
+                follow_redirects:
+                  type: boolean
+                  nullable: true
                 playwright_script:
                   type: string
                   nullable: true
                 assertions:
-                  type: object
-                  additionalProperties: true
-                expected_status:
-                  type: integer
-                  default: 200
-                should_fail:
-                  type: boolean
-                  default: false
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      source:
+                        type: string
+                        enum: [status_code, response_body, response_headers, response_time_ms]
+                      property:
+                        type: string
+                        nullable: true
+                      comparison:
+                        type: string
+                        enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+                      target:
+                        type: string
+                    required:
+                      - source
+                      - comparison
+                      - target
+                  description: Assertions to validate the response
                 pre_script:
                   type: string
                   nullable: true
                 post_script:
                   type: string
                   nullable: true
-                timeout_ms:
+                interval:
+                  type: string
+                  example: 10m
+                degraded_threshold:
                   type: integer
-                  default: 10000
-                interval_seconds:
+                degraded_threshold_unit:
+                  type: string
+                failed_threshold:
                   type: integer
-                  example: 60
-                alert_threshold:
+                failed_threshold_unit:
+                  type: string
+                retries:
+                  type: string
+                retries_count:
                   type: integer
-                  default: 3
+                  nullable: true
+                retries_delay:
+                  type: integer
+                  nullable: true
+                retries_delay_unit:
+                  type: string
+                  nullable: true
+                retries_factor:
+                  type: number
+                  format: float
+                  nullable: true
+                retries_jitter:
+                  type: string
+                  nullable: true
+                retries_jitter_factor:
+                  type: number
+                  format: float
+                  nullable: true
+                retries_max_delay:
+                  type: integer
+                  nullable: true
+                retries_max_delay_unit:
+                  type: string
+                  nullable: true
+                retries_timeout:
+                  type: integer
+                  nullable: true
+                retries_timeout_unit:
+                  type: string
+                  nullable: true
                 is_enabled:
                   type: boolean
                   default: true

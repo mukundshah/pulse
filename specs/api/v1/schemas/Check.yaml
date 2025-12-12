@@ -79,8 +79,25 @@ properties:
     nullable: true
     description: Playwright script for browser checks
   assertions:
-    type: object
-    additionalProperties: true
+    type: array
+    items:
+      type: object
+      properties:
+        source:
+          type: string
+          enum: [status_code, response_body, response_headers, response_time_ms]
+        property:
+          type: string
+          nullable: true
+        comparison:
+          type: string
+          enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+        target:
+          type: string
+      required:
+        - source
+        - comparison
+        - target
     description: Assertions to validate the response
   pre_script:
     type: string
@@ -93,8 +110,8 @@ properties:
   interval:
     type: string
     description: Interval between checks (e.g., "5s", "10m", "1h")
-    default: "10m"
-    example: "10m"
+    default: 10m
+    example: 10m
   degraded_threshold:
     type: integer
     description: Response time threshold for degraded status

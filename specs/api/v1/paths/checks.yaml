@@ -47,39 +47,120 @@ paths:
                 type:
                   type: string
                   enum: [http, tcp, dns, browser, heartbeat]
-                url:
+                host:
                   type: string
+                port:
+                  type: integer
+                  nullable: true
+                secure:
+                  type: boolean
+                  nullable: true
                 method:
                   type: string
+                path:
+                  type: string
+                query_params:
+                  type: object
+                  additionalProperties: true
                 headers:
                   type: object
                   additionalProperties: true
+                body:
+                  type: object
+                  additionalProperties: true
+                ip_version:
+                  type: string
+                ssl_verification:
+                  type: boolean
+                  nullable: true
+                follow_redirects:
+                  type: boolean
+                  nullable: true
                 playwright_script:
                   type: string
                   nullable: true
                 assertions:
-                  type: object
-                  additionalProperties: true
-                expected_status:
-                  type: integer
-                should_fail:
-                  type: boolean
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      source:
+                        type: string
+                        enum: [status_code, response_body, response_headers, response_time_ms]
+                      property:
+                        type: string
+                        nullable: true
+                      comparison:
+                        type: string
+                        enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+                      target:
+                        type: string
+                    required:
+                      - source
+                      - comparison
+                      - target
+                  description: Assertions to validate the response
                 pre_script:
                   type: string
                   nullable: true
                 post_script:
                   type: string
                   nullable: true
-                timeout_ms:
+                interval:
+                  type: string
+                degraded_threshold:
                   type: integer
-                interval_seconds:
+                  nullable: true
+                degraded_threshold_unit:
+                  type: string
+                  nullable: true
+                failed_threshold:
                   type: integer
-                alert_threshold:
+                  nullable: true
+                failed_threshold_unit:
+                  type: string
+                  nullable: true
+                retries:
+                  type: string
+                  nullable: true
+                retries_count:
                   type: integer
+                  nullable: true
+                retries_delay:
+                  type: integer
+                  nullable: true
+                retries_delay_unit:
+                  type: string
+                  nullable: true
+                retries_factor:
+                  type: number
+                  format: float
+                  nullable: true
+                retries_jitter:
+                  type: string
+                  nullable: true
+                retries_jitter_factor:
+                  type: number
+                  format: float
+                  nullable: true
+                retries_max_delay:
+                  type: integer
+                  nullable: true
+                retries_max_delay_unit:
+                  type: string
+                  nullable: true
+                retries_timeout:
+                  type: integer
+                  nullable: true
+                retries_timeout_unit:
+                  type: string
+                  nullable: true
                 is_enabled:
                   type: boolean
+                  nullable: true
                 is_muted:
                   type: boolean
+                  nullable: true
       responses:
         '200':
           description: Check updated successfully
