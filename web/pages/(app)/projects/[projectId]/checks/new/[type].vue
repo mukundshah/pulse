@@ -258,6 +258,8 @@ useHead({
   title: `New ${TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP]}`,
 })
 
+const { data: regions, pending: isLoadingRegions, error: regionsFetchError } = await useLazyPulseAPI('/v1/regions')
+
 const { handleSubmit, isSubmitting, values } = useForm({
   validationSchema: toTypedSchema(schema),
   initialValues: getDefaultValues(type as keyof typeof TYPE_TITLE_MAP),
@@ -381,15 +383,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <FieldError v-if="errors.length" :errors="errors" />
               </Field>
             </VeeField>
-            <VeeField v-slot="{ field, errors }" name="region_ids">
-              <Field :data-invalid="!!errors.length">
-                <FieldLabel for="region_ids">
-                  Regions
-                </FieldLabel>
-                <Input id="region_ids" v-bind="field" :aria-invalid="!!errors.length" />
-                <FieldError v-if="errors.length" :errors="errors" />
-              </Field>
-            </VeeField>
+
             <FieldGroup class="flex flex-row gap-4">
               <VeeField v-slot="{ field, errors }" name="is_enabled">
                 <Field class="w-fit" orientation="horizontal">
@@ -1490,6 +1484,65 @@ const onSubmit = handleSubmit(async (data) => {
               </template>
             </template>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <FieldGroup>
+            <VeeField v-slot="{ field, errors }" name="region_ids">
+              <FieldSet class="gap-4">
+                <FieldLegend>Regions</FieldLegend>
+                <FieldDescription class="line-clamp-1">
+                  Select the regions where this check will run.
+                </FieldDescription>
+                <FieldGroup class="flex flex-row flex-wrap gap-2 [--radius:9999rem]" data-slot="checkbox-group">
+                  <template v-if="isLoadingRegions">
+                    <Skeleton
+                      v-for="(width, idx) in ['180px', '200px', '150px', '220px', '190px', '160px', '210px', '175px', '205px', '185px']"
+                      :key="`region-skeleton-${idx}`"
+                      class="h-10"
+                      :style="{ width }"
+                    />
+                  </template>
+
+                  <template v-if="regions">
+                    <FieldLabel
+                      v-for="region in regions"
+                      :key="region.id"
+                      class="w-fit!"
+                      :for="`region-${region.id}`"
+                    >
+                      <Field
+                        class="gap-1.5 overflow-hidden px-3! py-1.5! transition-all duration-100 ease-linear group-has-data-[state=checked]/field-label:px-2!"
+                        orientation="horizontal"
+                        :data-invalid="!!errors.length"
+                      >
+                        <Checkbox
+                          :id="`region-${region.id}`"
+                          class="-ml-6 -translate-x-1 rounded-full transition-all duration-100 ease-linear data-[state=checked]:ml-0 data-[state=checked]:translate-x-0"
+                          :aria-invalid="!!errors.length"
+                          :model-value="field.value?.includes(region.id) ?? false"
+                          @update:model-value="(checked: boolean | 'indeterminate') => {
+                            const currentRegions = field.value || []
+                            const newValue = checked
+                              ? [...currentRegions, region.id]
+                              : currentRegions.filter((id: string) => id !== region.id)
+                            field.onChange(newValue)
+                          }"
+                        />
+                        <FieldTitle>{{ region.name }}</FieldTitle>
+                      </Field>
+                    </FieldLabel>
+                  </template>
+
+                  <template v-if="regionsFetchError">
+                    <FieldError :errors="[regionsFetchError.message]" />
+                  </template>
+                </FieldGroup>
+              </FieldSet>
+            </VeeField>
+          </FieldGroup>
         </CardContent>
       </Card>
     </form>
