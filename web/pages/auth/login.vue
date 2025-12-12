@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FetchError } from 'ofetch'
 import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
+import { useForm, Field as VeeField } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
@@ -83,43 +83,38 @@ const onSubmit = handleSubmit(async (data) => {
         </CardHeader>
         <CardContent>
           <form class="flex flex-col gap-y-6" @submit="onSubmit">
-            <FormField v-slot="{ componentField }" name="email">
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
+            <FieldGroup>
+              <VeeField v-slot="{ field, errors }" name="email">
+                <Field :data-invalid="!!errors.length">
+                  <FieldLabel for="email">
+                    Email
+                  </FieldLabel>
                   <Input
+                    id="email"
+                    v-bind="field"
                     autocomplete="email"
                     placeholder="you@example.com"
-                    type="email"
-                    v-bind="componentField"
+                    :aria-invalid="!!errors.length"
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="password">
-              <FormItem>
-                <div class="flex items-center justify-between">
-                  <FormLabel>Password</FormLabel>
-                  <NuxtLink
-                    class="text-sm text-muted-foreground hover:text-foreground"
-                    to="/auth/password/forgot"
-                  >
-                    Forgot password?
-                  </NuxtLink>
-                </div>
-                <FormControl>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field, errors }" name="password">
+                <Field :data-invalid="!!errors.length">
+                  <FieldLabel for="password">
+                    Password
+                  </FieldLabel>
                   <PasswordInput
+                    id="password"
+                    v-bind="field"
                     autocomplete="current-password"
                     placeholder="••••••••"
-                    v-bind="componentField"
+                    :aria-invalid="!!errors.length"
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+            </FieldGroup>
             <Button
               class="w-full"
               type="submit"

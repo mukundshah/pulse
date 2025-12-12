@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
+import { useForm, Field as VeeField } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
@@ -55,33 +55,37 @@ const onSubmit = handleSubmit(async (data) => {
         </CardHeader>
         <CardContent>
           <form class="flex flex-col gap-y-6" @submit="onSubmit">
-            <FormField v-slot="{ componentField }" name="password">
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <PasswordInput
-                    autocomplete="new-password"
-                    placeholder="••••••••"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+            <VeeField v-slot="{ field, errors }" name="password">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="password">
+                  Password
+                </FieldLabel>
+                <PasswordInput
+                  id="password"
+                  v-bind="field"
+                  autocomplete="new-password"
+                  placeholder="••••••••"
+                  :aria-invalid="!!errors.length"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
 
-            <FormField v-slot="{ componentField }" name="confirmPassword">
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <PasswordInput
-                    autocomplete="new-password"
-                    placeholder="••••••••"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+            <VeeField v-slot="{ field, errors }" name="confirmPassword">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="confirmPassword">
+                  Confirm Password
+                </FieldLabel>
+                <PasswordInput
+                  id="confirmPassword"
+                  v-bind="field"
+                  autocomplete="new-password"
+                  placeholder="••••••••"
+                  :aria-invalid="!!errors.length"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
 
             <Button
               class="w-full"

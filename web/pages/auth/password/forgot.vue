@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
+import { useForm, Field as VeeField } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
@@ -48,20 +48,22 @@ const onSubmit = handleSubmit(async (data) => {
         </CardHeader>
         <CardContent>
           <form class="flex flex-col gap-y-6" @submit="onSubmit">
-            <FormField v-slot="{ componentField }" name="email">
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    autocomplete="email"
-                    placeholder="you@example.com"
-                    type="email"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+            <VeeField v-slot="{ field, errors }" name="email">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="email">
+                  Email
+                </FieldLabel>
+                <Input
+                  id="email"
+                  v-bind="field"
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                  type="email"
+                  :aria-invalid="!!errors.length"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
 
             <Button
               class="w-full"
