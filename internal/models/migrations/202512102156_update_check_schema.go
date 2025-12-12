@@ -14,11 +14,6 @@ func init() {
 				return err
 			}
 
-			// Add host column (in case url column didn't exist)
-			if err := tx.Exec("ALTER TABLE checks ADD COLUMN host VARCHAR NOT NULL DEFAULT ''").Error; err != nil {
-				return err
-			}
-
 			// Add port column
 			if err := tx.Exec("ALTER TABLE checks ADD COLUMN port INTEGER DEFAULT 80").Error; err != nil {
 				return err
