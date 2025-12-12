@@ -68,11 +68,11 @@ properties:
     description: IP version to use for the request
     default: ipv4
     example: ipv4
-  ssl_verification:
+  skip_ssl_verification:
     type: boolean
     description: Whether to verify SSL certificates
-    default: true
-    example: true
+    default: false
+    example: false
   follow_redirects:
     type: boolean
     description: Whether to follow HTTP redirects

@@ -232,7 +232,7 @@ paths:
                   additionalProperties: true
                 ip_version:
                   type: string
-                ssl_verification:
+                skip_ssl_verification:
                   type: boolean
                   nullable: true
                 follow_redirects:

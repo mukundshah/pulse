@@ -31,8 +31,8 @@ type Check struct {
 	Body        datatypes.JSON `gorm:"type:jsonb" json:"body"`
 	IPVersion   IPVersionType  `gorm:"not null;default:ipv4" json:"ip_version"`
 
-	SSLVerification bool `gorm:"default:true" json:"ssl_verification"`
-	FollowRedirects bool `gorm:"default:true" json:"follow_redirects"`
+	SkipSSLVerification bool `gorm:"default:false" json:"skip_ssl_verification"`
+	FollowRedirects     bool `gorm:"default:true" json:"follow_redirects"`
 
 	PlaywrightScript *string        `gorm:"type:text" json:"playwright_script,omitempty"`
 	Assertions       datatypes.JSON `gorm:"type:jsonb" json:"assertions"`

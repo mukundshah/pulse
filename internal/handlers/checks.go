@@ -46,7 +46,7 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		Headers               datatypes.JSON `json:"headers"`
 		Body                  datatypes.JSON `json:"body"`
 		IPVersion             string         `json:"ip_version"`
-		SSLVerification       *bool          `json:"ssl_verification"`
+		SkipSSLVerification   *bool          `json:"skip_ssl_verification"`
 		FollowRedirects       *bool          `json:"follow_redirects"`
 		PlaywrightScript      *string        `json:"playwright_script,omitempty"`
 		Assertions            datatypes.JSON `json:"assertions"`
@@ -276,7 +276,7 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 		Headers               datatypes.JSON `json:"headers"`
 		Body                  datatypes.JSON `json:"body"`
 		IPVersion             string         `json:"ip_version"`
-		SSLVerification       *bool          `json:"ssl_verification"`
+		SkipSSLVerification   *bool          `json:"skip_ssl_verification"`
 		FollowRedirects       *bool          `json:"follow_redirects"`
 		PlaywrightScript      *string        `json:"playwright_script,omitempty"`
 		Assertions            datatypes.JSON `json:"assertions"`
