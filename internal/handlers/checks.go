@@ -70,6 +70,7 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		RetriesTimeoutUnit    *string        `json:"retries_timeout_unit,omitempty"`
 		IsEnabled             bool           `json:"is_enabled"`
 		IsMuted               bool           `json:"is_muted"`
+		ShouldFail            bool           `json:"should_fail"`
 		TagIDs                []uuid.UUID    `json:"tag_ids,omitempty"`
 		RegionIDs             []uuid.UUID    `json:"region_ids,omitempty"`
 	}
@@ -119,6 +120,7 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		RetriesTimeoutUnit:    (*models.UnitType)(req.RetriesTimeoutUnit),
 		IsEnabled:             req.IsEnabled,
 		IsMuted:               req.IsMuted,
+		ShouldFail:            req.ShouldFail,
 		ProjectID:             projectID,
 	}
 
@@ -298,6 +300,7 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 		RetriesTimeoutUnit    *string        `json:"retries_timeout_unit,omitempty"`
 		IsEnabled             *bool          `json:"is_enabled"`
 		IsMuted               *bool          `json:"is_muted"`
+		ShouldFail            *bool          `json:"should_fail"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -417,6 +420,9 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	}
 	if req.IsMuted != nil {
 		check.IsMuted = *req.IsMuted
+	}
+	if req.ShouldFail != nil {
+		check.ShouldFail = *req.ShouldFail
 	}
 
 	if err := h.store.UpdateCheck(check); err != nil {

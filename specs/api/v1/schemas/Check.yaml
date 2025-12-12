@@ -17,6 +17,10 @@ properties:
     type: boolean
     description: Whether alerts for this check are muted
     default: false
+  should_fail:
+    type: boolean
+    description: Whether this check should fail
+    default: false
   type:
     type: string
     enum: [http, tcp, dns, browser, heartbeat]

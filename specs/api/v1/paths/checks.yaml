@@ -161,6 +161,9 @@ paths:
                 is_muted:
                   type: boolean
                   nullable: true
+                should_fail:
+                  type: boolean
+                  nullable: true
       responses:
         '200':
           description: Check updated successfully

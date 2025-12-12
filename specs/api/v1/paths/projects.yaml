@@ -319,6 +319,9 @@ paths:
                 is_muted:
                   type: boolean
                   default: false
+                should_fail:
+                  type: boolean
+                  default: false
                 tag_ids:
                   type: array
                   items:

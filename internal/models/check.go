@@ -15,8 +15,9 @@ type Check struct {
 	ID   uuid.UUID `gorm:"type:uuid;primaryKey;default:uuidv7()" json:"id"`
 	Name string    `gorm:"not null" json:"name"`
 
-	IsEnabled bool `gorm:"default:true" json:"is_enabled"`
-	IsMuted   bool `gorm:"default:false" json:"is_muted"`
+	IsEnabled  bool `gorm:"default:true" json:"is_enabled"`
+	IsMuted    bool `gorm:"default:false" json:"is_muted"`
+	ShouldFail bool `gorm:"default:false" json:"should_fail"`
 
 	Type CheckType `gorm:"not null;default:http" json:"type"`
 
