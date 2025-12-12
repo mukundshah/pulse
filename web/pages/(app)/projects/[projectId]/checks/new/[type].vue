@@ -332,486 +332,125 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <div>
-    <form @submit="onSubmit">
-      <div class="space-y-6">
-        <div class="flex flex-row items-center gap-2 justify-between">
-          <h1 class="text-2xl font-bold">
-            New {{ TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP] }}
-          </h1>
-          <Button type="submit" variant="default" :loading="isSubmitting">
-            Create Monitor
-          </Button>
-        </div>
+  <div class="flex flex-col gap-6">
+    <div class="flex flex-row items-center gap-2 justify-between">
+      <h1 class="text-2xl font-bold">
+        New {{ TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP] }}
+      </h1>
+      <Button
+        form="new-check-form"
+        type="submit"
+        variant="default"
+        :loading="isSubmitting"
+      >
+        Create Monitor
+      </Button>
+    </div>
 
-        <VisuallyHidden>
-          <VeeField v-slot="{ field, errors }" name="type">
-            <Field :data-invalid="!!errors.length">
-              <FieldLabel for="type">
-                Type
-              </FieldLabel>
-              <Input id="type" v-bind="field" :aria-invalid="!!errors.length" />
-              <FieldError v-if="errors.length" :errors="errors" />
-            </Field>
-          </VeeField>
-        </VisuallyHidden>
+    <form id="new-check-form" class="flex flex-col gap-6" @submit="onSubmit">
+      <VisuallyHidden>
+        <VeeField v-slot="{ field, errors }" name="type">
+          <Field :data-invalid="!!errors.length">
+            <FieldLabel for="type">
+              Type
+            </FieldLabel>
+            <Input id="type" v-bind="field" :aria-invalid="!!errors.length" />
+            <FieldError v-if="errors.length" :errors="errors" />
+          </Field>
+        </VeeField>
+      </VisuallyHidden>
 
-        <Card>
-          <CardContent>
-            <FieldGroup>
-              <VeeField v-slot="{ field, errors }" name="name">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="name">
-                    Name
-                  </FieldLabel>
-                  <Input id="name" v-bind="field" :aria-invalid="!!errors.length" />
-                  <FieldError v-if="errors.length" :errors="errors" />
+      <Card>
+        <CardContent>
+          <FieldGroup>
+            <VeeField v-slot="{ field, errors }" name="name">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="name">
+                  Name
+                </FieldLabel>
+                <Input id="name" v-bind="field" :aria-invalid="!!errors.length" />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+            <VeeField v-slot="{ field, errors }" name="tag_ids">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="tag_ids">
+                  Tags
+                </FieldLabel>
+                <Input id="tag_ids" v-bind="field" :aria-invalid="!!errors.length" />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+            <VeeField v-slot="{ field, errors }" name="region_ids">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="region_ids">
+                  Regions
+                </FieldLabel>
+                <Input id="region_ids" v-bind="field" :aria-invalid="!!errors.length" />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+            <FieldGroup class="flex flex-row gap-4">
+              <VeeField v-slot="{ field, errors }" name="is_enabled">
+                <Field class="w-fit" orientation="horizontal">
+                  <Checkbox
+                    id="is_enabled"
+                    :aria-invalid="!!errors.length"
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  />
+                  <FieldContent>
+                    <FieldLabel for="is_enabled">
+                      Enabled
+                    </FieldLabel>
+                  </FieldContent>
                 </Field>
               </VeeField>
-              <VeeField v-slot="{ field, errors }" name="tag_ids">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="tag_ids">
-                    Tags
-                  </FieldLabel>
-                  <Input id="tag_ids" v-bind="field" :aria-invalid="!!errors.length" />
-                  <FieldError v-if="errors.length" :errors="errors" />
+              <VeeField v-slot="{ field, errors }" name="is_muted">
+                <Field class="w-fit" orientation="horizontal">
+                  <Checkbox
+                    id="is_muted"
+                    :aria-invalid="!!errors.length"
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  />
+                  <FieldContent>
+                    <FieldLabel for="is_muted">
+                      Muted
+                    </FieldLabel>
+                  </FieldContent>
                 </Field>
               </VeeField>
-              <VeeField v-slot="{ field, errors }" name="region_ids">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="region_ids">
-                    Regions
-                  </FieldLabel>
-                  <Input id="region_ids" v-bind="field" :aria-invalid="!!errors.length" />
-                  <FieldError v-if="errors.length" :errors="errors" />
-                </Field>
-              </VeeField>
-              <FieldGroup class="flex flex-row gap-4">
-                <VeeField v-slot="{ field, errors }" name="is_enabled">
-                  <Field class="w-fit" orientation="horizontal">
-                    <Checkbox
-                      id="is_enabled"
-                      :aria-invalid="!!errors.length"
-                      :model-value="field.value"
-                      :name="field.name"
-                      @update:model-value="field.onChange"
-                    />
-                    <FieldContent>
-                      <FieldLabel for="is_enabled">
-                        Enabled
-                      </FieldLabel>
-                    </FieldContent>
-                  </Field>
-                </VeeField>
-                <VeeField v-slot="{ field, errors }" name="is_muted">
-                  <Field class="w-fit" orientation="horizontal">
-                    <Checkbox
-                      id="is_muted"
-                      :aria-invalid="!!errors.length"
-                      :model-value="field.value"
-                      :name="field.name"
-                      @update:model-value="field.onChange"
-                    />
-                    <FieldContent>
-                      <FieldLabel for="is_muted">
-                        Muted
-                      </FieldLabel>
-                    </FieldContent>
-                  </Field>
-                </VeeField>
-              </FieldGroup>
             </FieldGroup>
-          </CardContent>
-        </Card>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-        <Card v-if="values.type === 'http'">
-          <CardHeader>
-            URL Configuration
-          </CardHeader>
-          <CardContent>
-            <div class="flex flex-col gap-4">
-              <FieldGroup>
-                <div class="flex flex-row gap-2">
-                  <VeeField v-slot="{ field, errors }" name="ip_version">
-                    <Field class="w-fit" :data-invalid="!!errors.length">
-                      <FieldLabel class="sr-only" for="ip_version">
-                        IP Version
-                      </FieldLabel>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                      <Select
-                        :model-value="field.value"
-                        :name="field.name"
-                        @update:model-value="field.onChange"
-                      >
-                        <SelectTrigger
-                          id="ip_version"
-                          :aria-invalid="!!errors.length"
-                        >
-                          <SelectValue placeholder="Select IP Version" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ipv4">
-                            IPv4
-                          </SelectItem>
-                          <SelectItem value="ipv6">
-                            IPv6
-                          </SelectItem>
-                          <SelectItem value="auto">
-                            Auto
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-                  <VeeField v-slot="{ field, errors }" name="method">
-                    <Field class="w-fit" :data-invalid="!!errors.length">
-                      <FieldLabel class="sr-only" for="method">
-                        HTTP Method
-                      </FieldLabel>
-                      <Select
-                        :model-value="field.value"
-                        :name="field.name"
-                        @update:model-value="field.onChange"
-                      >
-                        <SelectTrigger
-                          id="method"
-                          :aria-invalid="!!errors.length"
-                        >
-                          <SelectValue placeholder="Select HTTP Method" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem v-for="method in HTTP_METHODS" :key="method" :value="method">
-                            {{ method }}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-                  <VeeField v-slot="{ field, errors }" name="url">
-                    <Field class="flex-1" :data-invalid="!!errors.length">
-                      <FieldLabel class="sr-only" for="url">
-                        URL
-                      </FieldLabel>
-                      <Input
-                        id="url"
-                        v-bind="field"
-                        placeholder="https://example.com"
-                        :aria-invalid="!!errors.length"
-                      />
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-                </div>
-              </FieldGroup>
-              <FieldGroup>
-                <div class="flex flex-row justify-end gap-4">
-                  <VeeField v-slot="{ field, errors }" name="skip_ssl_verification">
-                    <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
-                      <Checkbox
-                        id="skip_ssl_verification"
-                        :aria-invalid="!!errors.length"
-                        :model-value="field.value"
-                        :name="field.name"
-                        @update:model-value="field.onChange"
-                      />
-                      <FieldContent>
-                        <FieldLabel for="skip_ssl_verification">
-                          Skip SSL verification
-                        </FieldLabel>
-                      </FieldContent>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-
-                  <VeeField v-slot="{ field, errors }" name="follow_redirects">
-                    <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
-                      <Checkbox
-                        id="follow_redirects"
-                        :aria-invalid="!!errors.length"
-                        :model-value="field.value"
-                        :name="field.name"
-                        @update:model-value="field.onChange"
-                      />
-                      <FieldContent>
-                        <FieldLabel for="follow_redirects">
-                          Follow redirects
-                        </FieldLabel>
-                      </FieldContent>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-
-                  <VeeField v-slot="{ field, errors }" name="should_fail">
-                    <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
-                      <Checkbox
-                        id="should_fail"
-                        :aria-invalid="!!errors.length"
-                        :model-value="field.value"
-                        :name="field.name"
-                        @update:model-value="field.onChange"
-                      />
-                      <FieldContent>
-                        <FieldLabel for="should_fail">
-                          Should fail
-                        </FieldLabel>
-                      </FieldContent>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-                </div>
-              </FieldGroup>
-
-              <Separator class="my-4" />
-
-              <div class="flex flex-col gap-4">
-                <VeeFieldArray v-slot="{ fields, push, remove }" name="headers">
-                  <div class="flex flex-row items-center gap-2 justify-between">
-                    <Label>Headers</Label>
-                    <Button
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                      @click="push({ key: '', value: '' })"
-                    >
-                      <Icon name="lucide:plus" />
-                      Add Header
-                    </Button>
-                  </div>
-                  <FieldGroup
-                    v-for="(field, idx) in fields"
-                    :key="field.key"
-                    class="grid gap-4"
-                    :class="fields.length > 1 ? 'grid-cols-[1fr_2fr_auto]' : 'grid-cols-[1fr_2fr]'"
-                  >
-                    <VeeField
-                      v-slot="{ field: keyField, errors: keyErrors }"
-                      :name="`headers[${idx}].key`"
-                    >
-                      <Field :data-invalid="!!keyErrors.length">
-                        <FieldLabel class="sr-only" :for="`headers[${idx}].key`">
-                          Key
-                        </FieldLabel>
-                        <Input
-                          id="`headers[${idx}].key`"
-                          v-bind="keyField"
-                          placeholder="Key"
-                          size="sm"
-                          :aria-invalid="!!keyErrors.length"
-                        />
-                        <FieldError v-if="keyErrors.length" :errors="keyErrors" />
-                      </Field>
-                    </VeeField>
-                    <VeeField
-                      v-slot="{ field: valueField, errors: valueErrors }"
-                      :name="`headers[${idx}].value`"
-                    >
-                      <Field :data-invalid="!!valueErrors.length">
-                        <FieldLabel class="sr-only" :for="`headers[${idx}].value`">
-                          Value
-                        </FieldLabel>
-                        <Input
-                          id="`headers[${idx}].value`"
-                          v-bind="valueField"
-                          placeholder="Value"
-                          size="sm"
-                          :aria-invalid="!!valueErrors.length"
-                        />
-                        <FieldError v-if="valueErrors.length" :errors="valueErrors" />
-                      </Field>
-                    </VeeField>
-                    <Button
-                      v-if="fields.length > 1"
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                      @click="remove(idx)"
-                    >
-                      Remove
-                    </Button>
-                  </FieldGroup>
-                </VeeFieldArray>
-              </div>
-
-              <template v-if="values.type === 'http' && values.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(values.method)">
-                <Separator class="my-4" />
-
-                <div class="flex flex-col gap-4">
-                  <VeeField v-slot="{ field, errors }" name="body">
-                    <Field :data-invalid="!!errors.length">
-                      <FieldLabel for="body">
-                        Body
-                      </FieldLabel>
-                      <Textarea
-                        id="body"
-                        v-bind="field"
-                        class="min-h-[120px]"
-                        :aria-invalid="!!errors.length"
-                      />
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-                </div>
-              </template>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card v-if="values.type === 'http'">
-          <CardContent>
-            <VeeFieldArray v-slot="{ fields, push, remove }" name="assertions">
-              <div class="flex flex-col gap-4">
-                <div class="flex flex-row items-center gap-2 justify-between mb-4">
-                  <h2 class="text-lg font-medium">
-                    Assertions
-                  </h2>
-                  <Button
-                    size="sm"
-                    type="button"
-                    variant="outline"
-                    @click="push({ source: 'status_code', property: '', comparison: 'equals', target: '' })"
-                  >
-                    <Icon name="lucide:plus" />
-                    Add Assertion
-                  </Button>
-                </div>
-
-                <FieldGroup
-                  v-for="(field, idx) in fields"
-                  :key="field.key"
-                  class="grid gap-4"
-                  :class="fields.length > 1 ? 'grid-cols-[180px_1fr_220px_1fr_auto]' : 'grid-cols-[180px_1fr_220px_1fr]'"
-                >
-                  <VeeField
-                    v-slot="{ field: sourceField, errors: sourceErrors }"
-                    :name="`assertions[${idx}].source`"
-                  >
-                    <Field :data-invalid="!!sourceErrors.length">
-                      <FieldLabel class="sr-only" :for="`assertions[${idx}].source`">
-                        Source
-                      </FieldLabel>
-                      <Select
-                        :model-value="sourceField.value"
-                        :name="sourceField.name"
-                        @update:model-value="sourceField.onChange"
-                      >
-                        <SelectTrigger
-                          :id="`assertions[${idx}].source`"
-                          class="w-full"
-                          size="sm"
-                          :aria-invalid="!!sourceErrors.length"
-                        >
-                          <SelectValue placeholder="Select Source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem v-for="source in ASSERTION_SOURCES" :key="source" :value="source">
-                            {{ ASSERTION_PROPERTIES[source as keyof typeof ASSERTION_PROPERTIES].label }}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError v-if="sourceErrors.length" :errors="sourceErrors" />
-                    </Field>
-                  </VeeField>
-                  <VeeField
-                    v-slot="{ field: propertyField, errors: propertyErrors }"
-                    :name="`assertions[${idx}].property`"
-                  >
-                    <Field :data-invalid="!!propertyErrors.length">
-                      <FieldLabel class="sr-only" :for="`assertions[${idx}].property`">
-                        Property
-                      </FieldLabel>
-                      <Input
-                        :id="`assertions[${idx}].property`"
-                        v-bind="propertyField"
-                        placeholder="Property"
-                        size="sm"
-                        :aria-invalid="!!propertyErrors.length"
-                      />
-                      <FieldError v-if="propertyErrors.length" :errors="propertyErrors" />
-                    </Field>
-                  </VeeField>
-                  <VeeField
-                    v-slot="{ field: comparisonField, errors: comparisonErrors }"
-                    :name="`assertions[${idx}].comparison`"
-                  >
-                    <Field :data-invalid="!!comparisonErrors.length">
-                      <FieldLabel class="sr-only" :for="`assertions[${idx}].comparison`">
-                        Comparison
-                      </FieldLabel>
-                      <Select
-                        :model-value="comparisonField.value"
-                        :name="comparisonField.name"
-                        @update:model-value="comparisonField.onChange"
-                      >
-                        <SelectTrigger
-                          :id="`assertions[${idx}].comparison`"
-                          class="w-full"
-                          size="sm"
-                          :aria-invalid="!!comparisonErrors.length"
-                        >
-                          <SelectValue placeholder="Select Comparison" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem v-for="comparison in (ASSERTION_PROPERTIES[values.assertions?.[idx]?.source as keyof typeof ASSERTION_PROPERTIES]!.operators as string[])" :key="comparison" :value="comparison">
-                            {{ comparison.replace(/_/g, ' ') }}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError v-if="comparisonErrors.length" :errors="comparisonErrors" />
-                    </Field>
-                  </VeeField>
-                  <VeeField
-                    v-slot="{ field: targetField, errors: targetErrors }"
-                    :name="`assertions[${idx}].target`"
-                  >
-                    <Field :data-invalid="!!targetErrors.length">
-                      <FieldLabel class="sr-only" :for="`assertions[${idx}].target`">
-                        Target
-                      </FieldLabel>
-                      <Input
-                        :id="`assertions[${idx}].target`"
-                        v-bind="targetField"
-                        placeholder="Target"
-                        size="sm"
-                        :aria-invalid="!!targetErrors.length"
-                      />
-                      <FieldError v-if="targetErrors.length" :errors="targetErrors" />
-                    </Field>
-                  </VeeField>
-                  <Button
-                    v-if="fields.length > 1"
-                    size="sm"
-                    type="button"
-                    variant="outline"
-                    @click="remove(idx)"
-                  >
-                    Remove
-                  </Button>
-                </FieldGroup>
-              </div>
-            </VeeFieldArray>
-          </CardContent>
-        </Card>
-
-        <Card v-if="values.type === 'tcp'">
-          <CardHeader>
-            TCP Configuration
-          </CardHeader>
-          <CardContent>
-            <div class="flex flex-col gap-4">
+      <Card v-if="values.type === 'http'">
+        <CardHeader>
+          URL Configuration
+        </CardHeader>
+        <CardContent>
+          <div class="flex flex-col gap-4">
+            <FieldGroup>
               <div class="flex flex-row gap-2">
                 <VeeField v-slot="{ field, errors }" name="ip_version">
                   <Field class="w-fit" :data-invalid="!!errors.length">
-                    <FieldLabel for="ip_version">
+                    <FieldLabel class="sr-only" for="ip_version">
                       IP Version
                     </FieldLabel>
+                    <FieldError v-if="errors.length" :errors="errors" />
                     <Select
                       :model-value="field.value"
                       :name="field.name"
                       @update:model-value="field.onChange"
                     >
-                      <SelectTrigger id="ip_version" :aria-invalid="!!errors.length">
+                      <SelectTrigger
+                        id="ip_version"
+                        :aria-invalid="!!errors.length"
+                      >
                         <SelectValue placeholder="Select IP Version" />
                       </SelectTrigger>
                       <SelectContent>
@@ -821,44 +460,93 @@ const onSubmit = handleSubmit(async (data) => {
                         <SelectItem value="ipv6">
                           IPv6
                         </SelectItem>
+                        <SelectItem value="auto">
+                          Auto
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
-                <VeeField v-slot="{ field, errors }" name="host">
-                  <Field class="flex-1" :data-invalid="!!errors.length">
-                    <FieldLabel for="host">
-                      Host
+                <VeeField v-slot="{ field, errors }" name="method">
+                  <Field class="w-fit" :data-invalid="!!errors.length">
+                    <FieldLabel class="sr-only" for="method">
+                      HTTP Method
                     </FieldLabel>
-                    <Input
-                      id="host"
-                      v-bind="field"
-                      :aria-invalid="!!errors.length"
-                      :placeholder="values.ip_version === 'ipv6' ? '2001:0db8::1 or example.com' : '192.168.1.1 or example.com'"
-                    />
+                    <Select
+                      :model-value="field.value"
+                      :name="field.name"
+                      @update:model-value="field.onChange"
+                    >
+                      <SelectTrigger
+                        id="method"
+                        :aria-invalid="!!errors.length"
+                      >
+                        <SelectValue placeholder="Select HTTP Method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="method in HTTP_METHODS" :key="method" :value="method">
+                          {{ method }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
-                <VeeField v-slot="{ field, errors }" name="port">
-                  <Field class="w-36" :data-invalid="!!errors.length">
-                    <FieldLabel for="port">
-                      Port
+                <VeeField v-slot="{ field, errors }" name="url">
+                  <Field class="flex-1" :data-invalid="!!errors.length">
+                    <FieldLabel class="sr-only" for="url">
+                      URL
                     </FieldLabel>
                     <Input
-                      id="port"
+                      id="url"
                       v-bind="field"
-                      placeholder="1-65535"
-                      type="number"
+                      placeholder="https://example.com"
                       :aria-invalid="!!errors.length"
-                      :max="65535"
-                      :min="1"
                     />
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
               </div>
-              <div class="flex flex-row gap-4 justify-start">
+            </FieldGroup>
+            <FieldGroup>
+              <div class="flex flex-row justify-end gap-4">
+                <VeeField v-slot="{ field, errors }" name="skip_ssl_verification">
+                  <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
+                    <Checkbox
+                      id="skip_ssl_verification"
+                      :aria-invalid="!!errors.length"
+                      :model-value="field.value"
+                      :name="field.name"
+                      @update:model-value="field.onChange"
+                    />
+                    <FieldContent>
+                      <FieldLabel for="skip_ssl_verification">
+                        Skip SSL verification
+                      </FieldLabel>
+                    </FieldContent>
+                    <FieldError v-if="errors.length" :errors="errors" />
+                  </Field>
+                </VeeField>
+
+                <VeeField v-slot="{ field, errors }" name="follow_redirects">
+                  <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
+                    <Checkbox
+                      id="follow_redirects"
+                      :aria-invalid="!!errors.length"
+                      :model-value="field.value"
+                      :name="field.name"
+                      @update:model-value="field.onChange"
+                    />
+                    <FieldContent>
+                      <FieldLabel for="follow_redirects">
+                        Follow redirects
+                      </FieldLabel>
+                    </FieldContent>
+                    <FieldError v-if="errors.length" :errors="errors" />
+                  </Field>
+                </VeeField>
+
                 <VeeField v-slot="{ field, errors }" name="should_fail">
                   <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
                     <Checkbox
@@ -877,181 +565,695 @@ const onSubmit = handleSubmit(async (data) => {
                   </Field>
                 </VeeField>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </FieldGroup>
 
-        <Card v-if="values.type === 'dns'">
-          <CardHeader>
-            DNS Configuration
-          </CardHeader>
-          <CardContent>
-            <div class="flex flex-col gap-6">
-              <div class="flex flex-row gap-4">
-                <VeeField v-slot="{ field, errors }" name="dns_record_type">
-                  <Field class="w-fit" :data-invalid="!!errors.length">
-                    <FieldLabel for="dns_record_type">
-                      Type
+            <Separator class="my-4" />
+
+            <div class="flex flex-col gap-4">
+              <VeeFieldArray v-slot="{ fields, push, remove }" name="headers">
+                <div class="flex flex-row items-center gap-2 justify-between">
+                  <Label>Headers</Label>
+                  <Button
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                    @click="push({ key: '', value: '' })"
+                  >
+                    <Icon name="lucide:plus" />
+                    Add Header
+                  </Button>
+                </div>
+                <FieldGroup
+                  v-for="(field, idx) in fields"
+                  :key="field.key"
+                  class="grid gap-4"
+                  :class="fields.length > 1 ? 'grid-cols-[1fr_2fr_auto]' : 'grid-cols-[1fr_2fr]'"
+                >
+                  <VeeField
+                    v-slot="{ field: keyField, errors: keyErrors }"
+                    :name="`headers[${idx}].key`"
+                  >
+                    <Field :data-invalid="!!keyErrors.length">
+                      <FieldLabel class="sr-only" :for="`headers[${idx}].key`">
+                        Key
+                      </FieldLabel>
+                      <Input
+                        id="`headers[${idx}].key`"
+                        v-bind="keyField"
+                        placeholder="Key"
+                        size="sm"
+                        :aria-invalid="!!keyErrors.length"
+                      />
+                      <FieldError v-if="keyErrors.length" :errors="keyErrors" />
+                    </Field>
+                  </VeeField>
+                  <VeeField
+                    v-slot="{ field: valueField, errors: valueErrors }"
+                    :name="`headers[${idx}].value`"
+                  >
+                    <Field :data-invalid="!!valueErrors.length">
+                      <FieldLabel class="sr-only" :for="`headers[${idx}].value`">
+                        Value
+                      </FieldLabel>
+                      <Input
+                        id="`headers[${idx}].value`"
+                        v-bind="valueField"
+                        placeholder="Value"
+                        size="sm"
+                        :aria-invalid="!!valueErrors.length"
+                      />
+                      <FieldError v-if="valueErrors.length" :errors="valueErrors" />
+                    </Field>
+                  </VeeField>
+                  <Button
+                    v-if="fields.length > 1"
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                    @click="remove(idx)"
+                  >
+                    Remove
+                  </Button>
+                </FieldGroup>
+              </VeeFieldArray>
+            </div>
+
+            <template v-if="values.type === 'http' && values.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(values.method)">
+              <Separator class="my-4" />
+
+              <div class="flex flex-col gap-4">
+                <VeeField v-slot="{ field, errors }" name="body">
+                  <Field :data-invalid="!!errors.length">
+                    <FieldLabel for="body">
+                      Body
                     </FieldLabel>
-                    <Select
-                      :model-value="field.value"
-                      :name="field.name"
-                      @update:model-value="field.onChange"
-                    >
-                      <SelectTrigger id="ip_version" :aria-invalid="!!errors.length">
-                        <SelectValue placeholder="Select Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem v-for="type in DNS_RECORD_TYPES" :key="type" :value="type">
-                          {{ type.toUpperCase() }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FieldError v-if="errors.length" :errors="errors" />
-                  </Field>
-                </VeeField>
-                <VeeField v-slot="{ field, errors }" name="domain">
-                  <Field class="flex-1" :data-invalid="!!errors.length">
-                    <FieldLabel for="domain">
-                      Domain
-                    </FieldLabel>
-                    <Input
-                      id="domain"
+                    <Textarea
+                      id="body"
                       v-bind="field"
-                      placeholder="example.com"
+                      class="min-h-[120px]"
                       :aria-invalid="!!errors.length"
                     />
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
               </div>
+            </template>
+          </div>
+        </CardContent>
+      </Card>
 
-              <div class="grid grid-cols-4 gap-4">
-                <VeeField v-slot="{ field, errors }" name="dns_resolver">
-                  <Field class="col-span-2" :data-invalid="!!errors.length">
-                    <FieldLabel for="dns_resolver">
-                      DNS Resolver
-                    </FieldLabel>
-                    <Input
-                      id="dns_resolver"
-                      v-bind="field"
-                      placeholder="1.1.1.1"
-                      :aria-invalid="!!errors.length"
-                    />
-                    <FieldError v-if="errors.length" :errors="errors" />
-                  </Field>
-                </VeeField>
-                <VeeField v-slot="{ field, errors }" name="dns_resolver_port">
-                  <Field :data-invalid="!!errors.length">
-                    <FieldLabel for="dns_resolver_port">
-                      Port
-                    </FieldLabel>
-                    <Input
-                      id="dns_resolver_port"
-                      v-bind="field"
-                      placeholder="53"
-                      :aria-invalid="!!errors.length"
-                    />
-                    <FieldError v-if="errors.length" :errors="errors" />
-                  </Field>
-                </VeeField>
-                <VeeField v-slot="{ field, errors }" name="dns_resolver_protocol">
-                  <Field :data-invalid="!!errors.length">
-                    <FieldLabel for="dns_resolver_protocol">
-                      Protocol
+      <Card v-if="values.type === 'http'">
+        <CardContent>
+          <VeeFieldArray v-slot="{ fields, push, remove }" name="assertions">
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-row items-center gap-2 justify-between mb-4">
+                <h2 class="text-lg font-medium">
+                  Assertions
+                </h2>
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  @click="push({ source: 'status_code', property: '', comparison: 'equals', target: '' })"
+                >
+                  <Icon name="lucide:plus" />
+                  Add Assertion
+                </Button>
+              </div>
+
+              <FieldGroup
+                v-for="(field, idx) in fields"
+                :key="field.key"
+                class="grid gap-4"
+                :class="fields.length > 1 ? 'grid-cols-[180px_1fr_220px_1fr_auto]' : 'grid-cols-[180px_1fr_220px_1fr]'"
+              >
+                <VeeField
+                  v-slot="{ field: sourceField, errors: sourceErrors }"
+                  :name="`assertions[${idx}].source`"
+                >
+                  <Field :data-invalid="!!sourceErrors.length">
+                    <FieldLabel class="sr-only" :for="`assertions[${idx}].source`">
+                      Source
                     </FieldLabel>
                     <Select
-                      :model-value="field.value"
-                      :name="field.name"
-                      @update:model-value="field.onChange"
+                      :model-value="sourceField.value"
+                      :name="sourceField.name"
+                      @update:model-value="sourceField.onChange"
                     >
-                      <SelectTrigger id="dns_resolver_protocol" :aria-invalid="!!errors.length">
-                        <SelectValue placeholder="Select Protocol" />
+                      <SelectTrigger
+                        :id="`assertions[${idx}].source`"
+                        class="w-full"
+                        size="sm"
+                        :aria-invalid="!!sourceErrors.length"
+                      >
+                        <SelectValue placeholder="Select Source" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem v-for="protocol in DNS_RESOLVER_PROTOCOLS" :key="protocol" :value="protocol">
-                          {{ protocol.toUpperCase() }}
+                        <SelectItem v-for="source in ASSERTION_SOURCES" :key="source" :value="source">
+                          {{ ASSERTION_PROPERTIES[source as keyof typeof ASSERTION_PROPERTIES].label }}
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FieldError v-if="errors.length" :errors="errors" />
+                    <FieldError v-if="sourceErrors.length" :errors="sourceErrors" />
                   </Field>
                 </VeeField>
-              </div>
+                <VeeField
+                  v-slot="{ field: propertyField, errors: propertyErrors }"
+                  :name="`assertions[${idx}].property`"
+                >
+                  <Field :data-invalid="!!propertyErrors.length">
+                    <FieldLabel class="sr-only" :for="`assertions[${idx}].property`">
+                      Property
+                    </FieldLabel>
+                    <Input
+                      :id="`assertions[${idx}].property`"
+                      v-bind="propertyField"
+                      placeholder="Property"
+                      size="sm"
+                      :aria-invalid="!!propertyErrors.length"
+                    />
+                    <FieldError v-if="propertyErrors.length" :errors="propertyErrors" />
+                  </Field>
+                </VeeField>
+                <VeeField
+                  v-slot="{ field: comparisonField, errors: comparisonErrors }"
+                  :name="`assertions[${idx}].comparison`"
+                >
+                  <Field :data-invalid="!!comparisonErrors.length">
+                    <FieldLabel class="sr-only" :for="`assertions[${idx}].comparison`">
+                      Comparison
+                    </FieldLabel>
+                    <Select
+                      :model-value="comparisonField.value"
+                      :name="comparisonField.name"
+                      @update:model-value="comparisonField.onChange"
+                    >
+                      <SelectTrigger
+                        :id="`assertions[${idx}].comparison`"
+                        class="w-full"
+                        size="sm"
+                        :aria-invalid="!!comparisonErrors.length"
+                      >
+                        <SelectValue placeholder="Select Comparison" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="comparison in (ASSERTION_PROPERTIES[values.assertions?.[idx]?.source as keyof typeof ASSERTION_PROPERTIES]!.operators as string[])" :key="comparison" :value="comparison">
+                          {{ comparison.replace(/_/g, ' ') }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FieldError v-if="comparisonErrors.length" :errors="comparisonErrors" />
+                  </Field>
+                </VeeField>
+                <VeeField
+                  v-slot="{ field: targetField, errors: targetErrors }"
+                  :name="`assertions[${idx}].target`"
+                >
+                  <Field :data-invalid="!!targetErrors.length">
+                    <FieldLabel class="sr-only" :for="`assertions[${idx}].target`">
+                      Target
+                    </FieldLabel>
+                    <Input
+                      :id="`assertions[${idx}].target`"
+                      v-bind="targetField"
+                      placeholder="Target"
+                      size="sm"
+                      :aria-invalid="!!targetErrors.length"
+                    />
+                    <FieldError v-if="targetErrors.length" :errors="targetErrors" />
+                  </Field>
+                </VeeField>
+                <Button
+                  v-if="fields.length > 1"
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  @click="remove(idx)"
+                >
+                  Remove
+                </Button>
+              </FieldGroup>
             </div>
-          </CardContent>
-        </Card>
+          </VeeFieldArray>
+        </CardContent>
+      </Card>
 
-        <Card v-if="values.type === 'browser'">
-          <CardHeader>
-            Scripts
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-6">
-              <VeeField v-slot="{ field, errors }" name="pre_script">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="pre_script">
-                    Pre Script
+      <Card v-if="values.type === 'tcp'">
+        <CardHeader>
+          TCP Configuration
+        </CardHeader>
+        <CardContent>
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-row gap-2">
+              <VeeField v-slot="{ field, errors }" name="ip_version">
+                <Field class="w-fit" :data-invalid="!!errors.length">
+                  <FieldLabel for="ip_version">
+                    IP Version
                   </FieldLabel>
-                  <Textarea
-                    id="pre_script"
+                  <Select
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  >
+                    <SelectTrigger id="ip_version" :aria-invalid="!!errors.length">
+                      <SelectValue placeholder="Select IP Version" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ipv4">
+                        IPv4
+                      </SelectItem>
+                      <SelectItem value="ipv6">
+                        IPv6
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field, errors }" name="host">
+                <Field class="flex-1" :data-invalid="!!errors.length">
+                  <FieldLabel for="host">
+                    Host
+                  </FieldLabel>
+                  <Input
+                    id="host"
                     v-bind="field"
-                    placeholder="Pre-execution script"
-                    rows="4"
                     :aria-invalid="!!errors.length"
+                    :placeholder="values.ip_version === 'ipv6' ? '2001:0db8::1 or example.com' : '192.168.1.1 or example.com'"
                   />
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
-
-              <VeeField v-slot="{ field, errors }" name="playwright_script">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="playwright_script">
-                    Playwright Script
+              <VeeField v-slot="{ field, errors }" name="port">
+                <Field class="w-36" :data-invalid="!!errors.length">
+                  <FieldLabel for="port">
+                    Port
                   </FieldLabel>
-                  <Textarea
-                    id="playwright_script"
+                  <Input
+                    id="port"
                     v-bind="field"
-                    placeholder="Playwright script for browser checks"
-                    rows="4"
+                    placeholder="1-65535"
+                    type="number"
                     :aria-invalid="!!errors.length"
+                    :max="65535"
+                    :min="1"
                   />
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
+            </div>
+            <div class="flex flex-row gap-4 justify-start">
+              <VeeField v-slot="{ field, errors }" name="should_fail">
+                <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
+                  <Checkbox
+                    id="should_fail"
+                    :aria-invalid="!!errors.length"
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  />
+                  <FieldContent>
+                    <FieldLabel for="should_fail">
+                      Should fail
+                    </FieldLabel>
+                  </FieldContent>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-              <VeeField v-slot="{ field, errors }" name="post_script">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="post_script">
-                    Post Script
+      <Card v-if="values.type === 'dns'">
+        <CardHeader>
+          DNS Configuration
+        </CardHeader>
+        <CardContent>
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-row gap-4">
+              <VeeField v-slot="{ field, errors }" name="dns_record_type">
+                <Field class="w-fit" :data-invalid="!!errors.length">
+                  <FieldLabel for="dns_record_type">
+                    Type
                   </FieldLabel>
-                  <Textarea
-                    id="post_script"
+                  <Select
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  >
+                    <SelectTrigger id="ip_version" :aria-invalid="!!errors.length">
+                      <SelectValue placeholder="Select Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem v-for="type in DNS_RECORD_TYPES" :key="type" :value="type">
+                        {{ type.toUpperCase() }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field, errors }" name="domain">
+                <Field class="flex-1" :data-invalid="!!errors.length">
+                  <FieldLabel for="domain">
+                    Domain
+                  </FieldLabel>
+                  <Input
+                    id="domain"
                     v-bind="field"
-                    placeholder="Post-execution script"
-                    rows="4"
+                    placeholder="example.com"
                     :aria-invalid="!!errors.length"
                   />
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            Response Time Limits
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-6">
+            <div class="grid grid-cols-4 gap-4">
+              <VeeField v-slot="{ field, errors }" name="dns_resolver">
+                <Field class="col-span-2" :data-invalid="!!errors.length">
+                  <FieldLabel for="dns_resolver">
+                    DNS Resolver
+                  </FieldLabel>
+                  <Input
+                    id="dns_resolver"
+                    v-bind="field"
+                    placeholder="1.1.1.1"
+                    :aria-invalid="!!errors.length"
+                  />
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field, errors }" name="dns_resolver_port">
+                <Field :data-invalid="!!errors.length">
+                  <FieldLabel for="dns_resolver_port">
+                    Port
+                  </FieldLabel>
+                  <Input
+                    id="dns_resolver_port"
+                    v-bind="field"
+                    placeholder="53"
+                    :aria-invalid="!!errors.length"
+                  />
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field, errors }" name="dns_resolver_protocol">
+                <Field :data-invalid="!!errors.length">
+                  <FieldLabel for="dns_resolver_protocol">
+                    Protocol
+                  </FieldLabel>
+                  <Select
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  >
+                    <SelectTrigger id="dns_resolver_protocol" :aria-invalid="!!errors.length">
+                      <SelectValue placeholder="Select Protocol" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem v-for="protocol in DNS_RESOLVER_PROTOCOLS" :key="protocol" :value="protocol">
+                        {{ protocol.toUpperCase() }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card v-if="values.type === 'browser'">
+        <CardHeader>
+          Scripts
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-6">
+            <VeeField v-slot="{ field, errors }" name="pre_script">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="pre_script">
+                  Pre Script
+                </FieldLabel>
+                <Textarea
+                  id="pre_script"
+                  v-bind="field"
+                  placeholder="Pre-execution script"
+                  rows="4"
+                  :aria-invalid="!!errors.length"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+
+            <VeeField v-slot="{ field, errors }" name="playwright_script">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="playwright_script">
+                  Playwright Script
+                </FieldLabel>
+                <Textarea
+                  id="playwright_script"
+                  v-bind="field"
+                  placeholder="Playwright script for browser checks"
+                  rows="4"
+                  :aria-invalid="!!errors.length"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+
+            <VeeField v-slot="{ field, errors }" name="post_script">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="post_script">
+                  Post Script
+                </FieldLabel>
+                <Textarea
+                  id="post_script"
+                  v-bind="field"
+                  placeholder="Post-execution script"
+                  rows="4"
+                  :aria-invalid="!!errors.length"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          Response Time Limits
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-6">
+            <div class="flex flex-row items-end gap-4">
+              <VeeField v-slot="{ field, errors }" name="degraded_threshold">
+                <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                  <FieldLabel for="degraded_threshold">
+                    Degraded after
+                  </FieldLabel>
+                  <NumberField id="degraded_threshold" v-bind="field">
+                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                      <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
+                      <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                        <ChevronUp class="h-4 w-4" />
+                      </NumberFieldIncrement>
+                      <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                        <ChevronDown class="h-4 w-4" />
+                      </NumberFieldDecrement>
+                    </NumberFieldContent>
+                  </NumberField>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field, errors }" name="degraded_threshold_unit">
+                <Field :data-invalid="!!errors.length">
+                  <FieldLabel class="sr-only" for="degraded_threshold_unit">
+                    Unit
+                  </FieldLabel>
+                  <ToggleGroup
+                    id="degraded_threshold_unit"
+                    v-bind="field"
+                    type="single"
+                    variant="outline"
+                    :aria-invalid="!!errors.length"
+                    :spacing="0"
+                  >
+                    <ToggleGroupItem value="ms">
+                      Milliseconds
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="s">
+                      Seconds
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+            </div>
+            <div class="flex flex-row items-end gap-4">
+              <VeeField v-slot="{ field, errors }" name="failed_threshold">
+                <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                  <FieldLabel for="failed_threshold">
+                    Failed after
+                  </FieldLabel>
+                  <NumberField id="failed_threshold" v-bind="field">
+                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                      <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
+                      <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                        <ChevronUp class="h-4 w-4" />
+                      </NumberFieldIncrement>
+                      <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                        <ChevronDown class="h-4 w-4" />
+                      </NumberFieldDecrement>
+                    </NumberFieldContent>
+                  </NumberField>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+              <VeeField v-slot="{ field: unitField, errors }" name="failed_threshold_unit">
+                <Field :data-invalid="!!errors.length">
+                  <FieldLabel class="sr-only" for="failed_threshold_unit">
+                    Unit
+                  </FieldLabel>
+                  <ToggleGroup
+                    id="failed_threshold_unit"
+                    v-bind="unitField"
+                    type="single"
+                    variant="outline"
+                    :aria-invalid="!!errors.length"
+                  >
+                    <ToggleGroupItem value="ms">
+                      Milliseconds
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="s">
+                      Seconds
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+            </div>
+
+            <p class="text-sm text-muted-foreground">
+              Checks are hard capped at a timeout of 30 seconds, this means the <span class="font-medium">Fail after</span> threshold has a maximum value of 30 seconds.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          Frequency & Retries
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-6">
+            <VeeField v-slot="{ field, errors }" name="interval">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel for="interval">
+                  Interval
+                </FieldLabel>
+                <Slider
+                  class="w-full"
+                  :max="15"
+                  :step="1"
+                  :ticks="INTERVAL_MAPPING"
+                  v-bind="field"
+                />
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+            <VeeField v-slot="{ field, errors }" name="retries">
+              <FieldSet>
+                <FieldLegend>Retries</FieldLegend>
+                <RadioGroup
+                  class="flex flex-row gap-6"
+                  :model-value="field.value"
+                  @update:model-value="field.onChange"
+                >
+                  <FieldLabel for="retries-none">
+                    <Field orientation="horizontal" :data-invalid="!!errors.length">
+                      <FieldContent>
+                        <FieldTitle>None</FieldTitle>
+                      </FieldContent>
+                      <RadioGroupItem
+                        id="retries-none"
+                        value="none"
+                        :aria-invalid="!!errors.length"
+                      />
+                    </Field>
+                  </FieldLabel>
+                  <FieldLabel for="retries-fixed">
+                    <Field orientation="horizontal" :data-invalid="!!errors.length">
+                      <FieldContent>
+                        <FieldTitle>Fixed</FieldTitle>
+                      </FieldContent>
+                      <RadioGroupItem
+                        id="retries-fixed"
+                        value="fixed"
+                        :aria-invalid="!!errors.length"
+                      />
+                    </Field>
+                  </FieldLabel>
+                  <FieldLabel for="retries-linear">
+                    <Field orientation="horizontal" :data-invalid="!!errors.length">
+                      <FieldContent>
+                        <FieldTitle>Linear</FieldTitle>
+                      </FieldContent>
+                      <RadioGroupItem
+                        id="retries-linear"
+                        value="linear"
+                        :aria-invalid="!!errors.length"
+                      />
+                    </Field>
+                  </FieldLabel>
+                  <FieldLabel for="retries-exponential">
+                    <Field orientation="horizontal" :data-invalid="!!errors.length">
+                      <FieldContent>
+                        <FieldTitle>Exponential</FieldTitle>
+                      </FieldContent>
+                      <RadioGroupItem
+                        id="retries-exponential"
+                        value="exponential"
+                        :aria-invalid="!!errors.length"
+                      />
+                    </Field>
+                  </FieldLabel>
+                </RadioGroup>
+                <FieldError v-if="errors.length" :errors="errors" />
+              </FieldSet>
+            </VeeField>
+
+            <template v-if="values.retries !== 'none'">
+              <VeeField v-slot="{ field, errors }" name="retries_count">
+                <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                  <FieldLabel for="retries_count">
+                    Number of retries
+                  </FieldLabel>
+                  <NumberField id="retries_count" v-bind="field">
+                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                      <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
+                      <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                        <ChevronUp class="h-4 w-4" />
+                      </NumberFieldIncrement>
+                      <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                        <ChevronDown class="h-4 w-4" />
+                      </NumberFieldDecrement>
+                    </NumberFieldContent>
+                  </NumberField>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
+
               <div class="flex flex-row items-end gap-4">
-                <VeeField v-slot="{ field, errors }" name="degraded_threshold">
+                <VeeField v-slot="{ field, errors }" name="retries_delay">
                   <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                    <FieldLabel for="degraded_threshold">
-                      Degraded after
+                    <FieldLabel for="retries_delay">
+                      Delay between retries
                     </FieldLabel>
-                    <NumberField id="degraded_threshold" v-bind="field">
+                    <NumberField id="retries_delay" v-bind="field">
                       <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                         <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                         <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1065,13 +1267,13 @@ const onSubmit = handleSubmit(async (data) => {
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
-                <VeeField v-slot="{ field, errors }" name="degraded_threshold_unit">
+                <VeeField v-slot="{ field, errors }" name="retries_delay_unit">
                   <Field :data-invalid="!!errors.length">
-                    <FieldLabel class="sr-only" for="degraded_threshold_unit">
+                    <FieldLabel class="sr-only" for="retries_delay_unit">
                       Unit
                     </FieldLabel>
                     <ToggleGroup
-                      id="degraded_threshold_unit"
+                      id="retries_delay_unit"
                       v-bind="field"
                       type="single"
                       variant="outline"
@@ -1089,13 +1291,14 @@ const onSubmit = handleSubmit(async (data) => {
                   </Field>
                 </VeeField>
               </div>
-              <div class="flex flex-row items-end gap-4">
-                <VeeField v-slot="{ field, errors }" name="failed_threshold">
+
+              <template v-if="values.retries === 'linear' || values.retries === 'exponential'">
+                <VeeField v-slot="{ field, errors }" name="retries_factor">
                   <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                    <FieldLabel for="failed_threshold">
-                      Failed after
+                    <FieldLabel for="retries_factor">
+                      Factor
                     </FieldLabel>
-                    <NumberField id="failed_threshold" v-bind="field">
+                    <NumberField id="retries_factor" v-bind="field">
                       <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                         <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                         <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1109,147 +1312,77 @@ const onSubmit = handleSubmit(async (data) => {
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
-                <VeeField v-slot="{ field: unitField, errors }" name="failed_threshold_unit">
-                  <Field :data-invalid="!!errors.length">
-                    <FieldLabel class="sr-only" for="failed_threshold_unit">
-                      Unit
-                    </FieldLabel>
-                    <ToggleGroup
-                      id="failed_threshold_unit"
-                      v-bind="unitField"
-                      type="single"
-                      variant="outline"
-                      :aria-invalid="!!errors.length"
+              </template>
+
+              <template v-if="values.retries === 'exponential'">
+                <VeeField v-slot="{ field, errors }" name="retries_jitter">
+                  <FieldSet>
+                    <FieldLegend>Jitter</FieldLegend>
+                    <RadioGroup
+                      class="flex flex-row gap-6"
+                      :model-value="field.value"
+                      @update:model-value="field.onChange"
                     >
-                      <ToggleGroupItem value="ms">
-                        Milliseconds
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="s">
-                        Seconds
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                    <FieldError v-if="errors.length" :errors="errors" />
-                  </Field>
-                </VeeField>
-              </div>
-
-              <p class="text-sm text-muted-foreground">
-                Checks are hard capped at a timeout of 30 seconds, this means the <span class="font-medium">Fail after</span> threshold has a maximum value of 30 seconds.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            Frequency & Retries
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-6">
-              <VeeField v-slot="{ field, errors }" name="interval">
-                <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="interval">
-                    Interval
-                  </FieldLabel>
-                  <Slider
-                    class="w-full"
-                    :max="15"
-                    :step="1"
-                    :ticks="INTERVAL_MAPPING"
-                    v-bind="field"
-                  />
-                  <FieldError v-if="errors.length" :errors="errors" />
-                </Field>
-              </VeeField>
-              <VeeField v-slot="{ field, errors }" name="retries">
-                <FieldSet>
-                  <FieldLegend>Retries</FieldLegend>
-                  <RadioGroup
-                    class="flex flex-row gap-6"
-                    :model-value="field.value"
-                    @update:model-value="field.onChange"
-                  >
-                    <FieldLabel for="retries-none">
-                      <Field orientation="horizontal" :data-invalid="!!errors.length">
-                        <FieldContent>
-                          <FieldTitle>None</FieldTitle>
-                        </FieldContent>
-                        <RadioGroupItem
-                          id="retries-none"
-                          value="none"
-                          :aria-invalid="!!errors.length"
-                        />
-                      </Field>
-                    </FieldLabel>
-                    <FieldLabel for="retries-fixed">
-                      <Field orientation="horizontal" :data-invalid="!!errors.length">
-                        <FieldContent>
-                          <FieldTitle>Fixed</FieldTitle>
-                        </FieldContent>
-                        <RadioGroupItem
-                          id="retries-fixed"
-                          value="fixed"
-                          :aria-invalid="!!errors.length"
-                        />
-                      </Field>
-                    </FieldLabel>
-                    <FieldLabel for="retries-linear">
-                      <Field orientation="horizontal" :data-invalid="!!errors.length">
-                        <FieldContent>
-                          <FieldTitle>Linear</FieldTitle>
-                        </FieldContent>
-                        <RadioGroupItem
-                          id="retries-linear"
-                          value="linear"
-                          :aria-invalid="!!errors.length"
-                        />
-                      </Field>
-                    </FieldLabel>
-                    <FieldLabel for="retries-exponential">
-                      <Field orientation="horizontal" :data-invalid="!!errors.length">
-                        <FieldContent>
-                          <FieldTitle>Exponential</FieldTitle>
-                        </FieldContent>
-                        <RadioGroupItem
-                          id="retries-exponential"
-                          value="exponential"
-                          :aria-invalid="!!errors.length"
-                        />
-                      </Field>
-                    </FieldLabel>
-                  </RadioGroup>
-                  <FieldError v-if="errors.length" :errors="errors" />
-                </FieldSet>
-              </VeeField>
-
-              <template v-if="values.retries !== 'none'">
-                <VeeField v-slot="{ field, errors }" name="retries_count">
-                  <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                    <FieldLabel for="retries_count">
-                      Number of retries
-                    </FieldLabel>
-                    <NumberField id="retries_count" v-bind="field">
-                      <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
-                        <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                        <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                          <ChevronUp class="h-4 w-4" />
-                        </NumberFieldIncrement>
-                        <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                          <ChevronDown class="h-4 w-4" />
-                        </NumberFieldDecrement>
-                      </NumberFieldContent>
-                    </NumberField>
-                    <FieldError v-if="errors.length" :errors="errors" />
-                  </Field>
-                </VeeField>
-
-                <div class="flex flex-row items-end gap-4">
-                  <VeeField v-slot="{ field, errors }" name="retries_delay">
-                    <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                      <FieldLabel for="retries_delay">
-                        Delay between retries
+                      <FieldLabel for="retries_jitter-none">
+                        <Field orientation="horizontal" :data-invalid="!!errors.length">
+                          <FieldContent>
+                            <FieldTitle>None</FieldTitle>
+                          </FieldContent>
+                          <RadioGroupItem
+                            id="retries_jitter-none"
+                            value="none"
+                            :aria-invalid="!!errors.length"
+                          />
+                        </Field>
                       </FieldLabel>
-                      <NumberField id="retries_delay" v-bind="field">
+                      <FieldLabel for="retries_jitter-full">
+                        <Field orientation="horizontal" :data-invalid="!!errors.length">
+                          <FieldContent>
+                            <FieldTitle>Full</FieldTitle>
+                          </FieldContent>
+                          <RadioGroupItem
+                            id="retries_jitter-full"
+                            value="full"
+                            :aria-invalid="!!errors.length"
+                          />
+                        </Field>
+                      </FieldLabel>
+                      <FieldLabel for="retries_jitter-equal">
+                        <Field orientation="horizontal" :data-invalid="!!errors.length">
+                          <FieldContent>
+                            <FieldTitle>Equal</FieldTitle>
+                          </FieldContent>
+                          <RadioGroupItem
+                            id="retries_jitter-equal"
+                            value="equal"
+                            :aria-invalid="!!errors.length"
+                          />
+                        </Field>
+                      </FieldLabel>
+                      <FieldLabel for="retries_jitter-decorrelated">
+                        <Field orientation="horizontal" :data-invalid="!!errors.length">
+                          <FieldContent>
+                            <FieldTitle>Decorrelated</FieldTitle>
+                          </FieldContent>
+                          <RadioGroupItem
+                            id="retries_jitter-decorrelated"
+                            value="decorrelated"
+                            :aria-invalid="!!errors.length"
+                          />
+                        </Field>
+                      </FieldLabel>
+                    </RadioGroup>
+                    <FieldError v-if="errors.length" :errors="errors" />
+                  </FieldSet>
+                </VeeField>
+
+                <template v-if="values.retries_jitter && values.retries_jitter !== 'none'">
+                  <VeeField v-slot="{ field, errors }" name="retries_jitter_factor">
+                    <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                      <FieldLabel for="retries_jitter_factor">
+                        Jitter Factor
+                      </FieldLabel>
+                      <NumberField id="retries_jitter_factor" v-bind="field">
                         <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                           <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1263,13 +1396,35 @@ const onSubmit = handleSubmit(async (data) => {
                       <FieldError v-if="errors.length" :errors="errors" />
                     </Field>
                   </VeeField>
-                  <VeeField v-slot="{ field, errors }" name="retries_delay_unit">
+                </template>
+
+                <div class="flex flex-row items-end gap-4">
+                  <VeeField v-slot="{ field, errors }" name="retries_max_delay">
+                    <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                      <FieldLabel for="retries_max_delay">
+                        Max delay
+                      </FieldLabel>
+                      <NumberField id="retries_max_delay" v-bind="field">
+                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                          <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
+                          <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                            <ChevronUp class="h-4 w-4" />
+                          </NumberFieldIncrement>
+                          <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
+                            <ChevronDown class="h-4 w-4" />
+                          </NumberFieldDecrement>
+                        </NumberFieldContent>
+                      </NumberField>
+                      <FieldError v-if="errors.length" :errors="errors" />
+                    </Field>
+                  </VeeField>
+                  <VeeField v-slot="{ field, errors }" name="retries_max_delay_unit">
                     <Field :data-invalid="!!errors.length">
-                      <FieldLabel class="sr-only" for="retries_delay_unit">
+                      <FieldLabel class="sr-only" for="retries_max_delay_unit">
                         Unit
                       </FieldLabel>
                       <ToggleGroup
-                        id="retries_delay_unit"
+                        id="retries_max_delay_unit"
                         v-bind="field"
                         type="single"
                         variant="outline"
@@ -1288,13 +1443,13 @@ const onSubmit = handleSubmit(async (data) => {
                   </VeeField>
                 </div>
 
-                <template v-if="values.retries === 'linear' || values.retries === 'exponential'">
-                  <VeeField v-slot="{ field, errors }" name="retries_factor">
+                <div class="flex flex-row items-end gap-4">
+                  <VeeField v-slot="{ field, errors }" name="retries_timeout">
                     <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                      <FieldLabel for="retries_factor">
-                        Factor
+                      <FieldLabel for="retries_timeout">
+                        Timeout
                       </FieldLabel>
-                      <NumberField id="retries_factor" v-bind="field">
+                      <NumberField id="retries_timeout" v-bind="field">
                         <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                           <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1308,187 +1463,35 @@ const onSubmit = handleSubmit(async (data) => {
                       <FieldError v-if="errors.length" :errors="errors" />
                     </Field>
                   </VeeField>
-                </template>
-
-                <template v-if="values.retries === 'exponential'">
-                  <VeeField v-slot="{ field, errors }" name="retries_jitter">
-                    <FieldSet>
-                      <FieldLegend>Jitter</FieldLegend>
-                      <RadioGroup
-                        class="flex flex-row gap-6"
-                        :model-value="field.value"
-                        @update:model-value="field.onChange"
+                  <VeeField v-slot="{ field, errors }" name="retries_timeout_unit">
+                    <Field :data-invalid="!!errors.length">
+                      <FieldLabel class="sr-only" for="retries_timeout_unit">
+                        Unit
+                      </FieldLabel>
+                      <ToggleGroup
+                        id="retries_timeout_unit"
+                        v-bind="field"
+                        type="single"
+                        variant="outline"
+                        :aria-invalid="!!errors.length"
+                        :spacing="0"
                       >
-                        <FieldLabel for="retries_jitter-none">
-                          <Field orientation="horizontal" :data-invalid="!!errors.length">
-                            <FieldContent>
-                              <FieldTitle>None</FieldTitle>
-                            </FieldContent>
-                            <RadioGroupItem
-                              id="retries_jitter-none"
-                              value="none"
-                              :aria-invalid="!!errors.length"
-                            />
-                          </Field>
-                        </FieldLabel>
-                        <FieldLabel for="retries_jitter-full">
-                          <Field orientation="horizontal" :data-invalid="!!errors.length">
-                            <FieldContent>
-                              <FieldTitle>Full</FieldTitle>
-                            </FieldContent>
-                            <RadioGroupItem
-                              id="retries_jitter-full"
-                              value="full"
-                              :aria-invalid="!!errors.length"
-                            />
-                          </Field>
-                        </FieldLabel>
-                        <FieldLabel for="retries_jitter-equal">
-                          <Field orientation="horizontal" :data-invalid="!!errors.length">
-                            <FieldContent>
-                              <FieldTitle>Equal</FieldTitle>
-                            </FieldContent>
-                            <RadioGroupItem
-                              id="retries_jitter-equal"
-                              value="equal"
-                              :aria-invalid="!!errors.length"
-                            />
-                          </Field>
-                        </FieldLabel>
-                        <FieldLabel for="retries_jitter-decorrelated">
-                          <Field orientation="horizontal" :data-invalid="!!errors.length">
-                            <FieldContent>
-                              <FieldTitle>Decorrelated</FieldTitle>
-                            </FieldContent>
-                            <RadioGroupItem
-                              id="retries_jitter-decorrelated"
-                              value="decorrelated"
-                              :aria-invalid="!!errors.length"
-                            />
-                          </Field>
-                        </FieldLabel>
-                      </RadioGroup>
+                        <ToggleGroupItem value="ms">
+                          Milliseconds
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="s">
+                          Seconds
+                        </ToggleGroupItem>
+                      </ToggleGroup>
                       <FieldError v-if="errors.length" :errors="errors" />
-                    </FieldSet>
+                    </Field>
                   </VeeField>
-
-                  <template v-if="values.retries_jitter && values.retries_jitter !== 'none'">
-                    <VeeField v-slot="{ field, errors }" name="retries_jitter_factor">
-                      <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                        <FieldLabel for="retries_jitter_factor">
-                          Jitter Factor
-                        </FieldLabel>
-                        <NumberField id="retries_jitter_factor" v-bind="field">
-                          <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
-                            <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                            <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                              <ChevronUp class="h-4 w-4" />
-                            </NumberFieldIncrement>
-                            <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                              <ChevronDown class="h-4 w-4" />
-                            </NumberFieldDecrement>
-                          </NumberFieldContent>
-                        </NumberField>
-                        <FieldError v-if="errors.length" :errors="errors" />
-                      </Field>
-                    </VeeField>
-                  </template>
-
-                  <div class="flex flex-row items-end gap-4">
-                    <VeeField v-slot="{ field, errors }" name="retries_max_delay">
-                      <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                        <FieldLabel for="retries_max_delay">
-                          Max delay
-                        </FieldLabel>
-                        <NumberField id="retries_max_delay" v-bind="field">
-                          <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
-                            <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                            <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                              <ChevronUp class="h-4 w-4" />
-                            </NumberFieldIncrement>
-                            <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                              <ChevronDown class="h-4 w-4" />
-                            </NumberFieldDecrement>
-                          </NumberFieldContent>
-                        </NumberField>
-                        <FieldError v-if="errors.length" :errors="errors" />
-                      </Field>
-                    </VeeField>
-                    <VeeField v-slot="{ field, errors }" name="retries_max_delay_unit">
-                      <Field :data-invalid="!!errors.length">
-                        <FieldLabel class="sr-only" for="retries_max_delay_unit">
-                          Unit
-                        </FieldLabel>
-                        <ToggleGroup
-                          id="retries_max_delay_unit"
-                          v-bind="field"
-                          type="single"
-                          variant="outline"
-                          :aria-invalid="!!errors.length"
-                          :spacing="0"
-                        >
-                          <ToggleGroupItem value="ms">
-                            Milliseconds
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="s">
-                            Seconds
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                        <FieldError v-if="errors.length" :errors="errors" />
-                      </Field>
-                    </VeeField>
-                  </div>
-
-                  <div class="flex flex-row items-end gap-4">
-                    <VeeField v-slot="{ field, errors }" name="retries_timeout">
-                      <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
-                        <FieldLabel for="retries_timeout">
-                          Timeout
-                        </FieldLabel>
-                        <NumberField id="retries_timeout" v-bind="field">
-                          <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
-                            <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                            <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                              <ChevronUp class="h-4 w-4" />
-                            </NumberFieldIncrement>
-                            <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                              <ChevronDown class="h-4 w-4" />
-                            </NumberFieldDecrement>
-                          </NumberFieldContent>
-                        </NumberField>
-                        <FieldError v-if="errors.length" :errors="errors" />
-                      </Field>
-                    </VeeField>
-                    <VeeField v-slot="{ field, errors }" name="retries_timeout_unit">
-                      <Field :data-invalid="!!errors.length">
-                        <FieldLabel class="sr-only" for="retries_timeout_unit">
-                          Unit
-                        </FieldLabel>
-                        <ToggleGroup
-                          id="retries_timeout_unit"
-                          v-bind="field"
-                          type="single"
-                          variant="outline"
-                          :aria-invalid="!!errors.length"
-                          :spacing="0"
-                        >
-                          <ToggleGroupItem value="ms">
-                            Milliseconds
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="s">
-                            Seconds
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                        <FieldError v-if="errors.length" :errors="errors" />
-                      </Field>
-                    </VeeField>
-                  </div>
-                </template>
+                </div>
               </template>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </template>
+          </div>
+        </CardContent>
+      </Card>
     </form>
   </div>
 </template>
