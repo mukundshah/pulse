@@ -151,10 +151,10 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		check.Secure = check.Port == 443
 	}
 
-	if req.SSLVerification != nil {
-		check.SSLVerification = *req.SSLVerification
+	if req.SkipSSLVerification != nil {
+		check.SkipSSLVerification = *req.SkipSSLVerification
 	} else {
-		check.SSLVerification = true // default
+		check.SkipSSLVerification = false // default
 	}
 
 	if req.FollowRedirects != nil {
@@ -349,8 +349,8 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	if req.IPVersion != "" {
 		check.IPVersion = models.IPVersionType(req.IPVersion)
 	}
-	if req.SSLVerification != nil {
-		check.SSLVerification = *req.SSLVerification
+	if req.SkipSSLVerification != nil {
+		check.SkipSSLVerification = *req.SkipSSLVerification
 	}
 	if req.FollowRedirects != nil {
 		check.FollowRedirects = *req.FollowRedirects
