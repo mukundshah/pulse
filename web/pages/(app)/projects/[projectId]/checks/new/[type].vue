@@ -374,7 +374,9 @@ const onSubmit = handleSubmit(async (data) => {
                 <FieldError v-if="errors.length" :errors="errors" />
               </Field>
             </VeeField>
-            <VeeField v-slot="{ field, errors }" name="tag_ids">
+
+            <!-- TODO: Add tags back in -->
+            <!-- <VeeField v-slot="{ field, errors }" name="tag_ids">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="tag_ids">
                   Tags
@@ -382,7 +384,7 @@ const onSubmit = handleSubmit(async (data) => {
                 <Input id="tag_ids" v-bind="field" :aria-invalid="!!errors.length" />
                 <FieldError v-if="errors.length" :errors="errors" />
               </Field>
-            </VeeField>
+            </VeeField> -->
 
             <FieldGroup class="flex flex-row gap-4">
               <VeeField v-slot="{ field, errors }" name="is_enabled">
