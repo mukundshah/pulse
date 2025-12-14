@@ -119,10 +119,15 @@ const checkTypes = [
         <template v-else-if="checks && checks.length === 0">
           <TableRow>
             <TableCell colspan="10">
-              <EmptyState
-                description="Create a check to start monitoring"
-                title="No checks configured"
-              />
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Icon name="lucide:clipboard-list" />
+                  </EmptyMedia>
+                  <EmptyTitle>No checks configured</EmptyTitle>
+                  <EmptyDescription>Create a check to start monitoring</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             </TableCell>
           </TableRow>
         </template>
