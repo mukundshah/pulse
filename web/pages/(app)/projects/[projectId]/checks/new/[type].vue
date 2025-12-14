@@ -437,7 +437,6 @@ const onSubmit = handleSubmit(async (data) => {
                     <FieldLabel class="sr-only" for="ip_version">
                       IP Version
                     </FieldLabel>
-                    <FieldError v-if="errors.length" :errors="errors" />
                     <Select
                       :model-value="field.value"
                       :name="field.name"
@@ -455,9 +454,6 @@ const onSubmit = handleSubmit(async (data) => {
                         </SelectItem>
                         <SelectItem value="ipv6">
                           IPv6
-                        </SelectItem>
-                        <SelectItem value="auto">
-                          Auto
                         </SelectItem>
                       </SelectContent>
                     </Select>
