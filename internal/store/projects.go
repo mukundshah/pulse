@@ -26,6 +26,15 @@ func (s *Store) ListProjects() ([]models.Project, error) {
 	return projects, nil
 }
 
+func (s *Store) ListProjectsByUser(userID uuid.UUID) ([]models.Project, error) {
+	var projects []models.Project
+	err := s.db.Table("projects").
+		Joins("INNER JOIN project_members ON projects.id = project_members.project_id").
+		Where("project_members.user_id = ? AND project_members.deleted_at IS NULL AND projects.deleted_at IS NULL", userID).
+		Find(&projects).Error
+	return projects, err
+}
+
 func (s *Store) UpdateProject(project *models.Project) error {
 	return s.db.Save(project).Error
 }
