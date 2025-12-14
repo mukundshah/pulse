@@ -111,11 +111,39 @@ useHead({
       <TableBody>
         <template v-if="checksLoading">
           <TableRow v-for="i in 5" :key="i">
-            <TableCell colspan="10">
-              <div class="flex items-center gap-2">
-                <Spinner class="h-4 w-4" />
-                <span class="text-sm text-muted-foreground">Loading...</span>
+            <TableCell class="p-0" />
+            <TableCell>
+              <div class="flex items-center gap-4">
+                <Skeleton class="h-2.5 w-2.5 rounded-full" />
+                <div class="space-y-2">
+                  <Skeleton class="h-4 w-32" />
+                  <Skeleton class="h-3 w-24" />
+                </div>
               </div>
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-5 w-12 rounded-full" />
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-16 w-full rounded-md" />
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-4 w-12" />
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-4 w-12" />
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-4 w-12" />
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-4 w-12" />
+            </TableCell>
+            <TableCell>
+              <Skeleton class="h-4 w-12" />
+            </TableCell>
+            <TableCell class="text-right">
+              <Skeleton class="h-8 w-8 rounded-md" />
             </TableCell>
           </TableRow>
         </template>
