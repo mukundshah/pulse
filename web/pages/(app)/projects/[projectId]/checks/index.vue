@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SparklineChart from './@components/SparklineChart.vue'
 import StatusBadge from './@components/StatusBadge.vue'
 
 const route = useRoute()
@@ -163,7 +164,7 @@ useHead({
             </Badge>
           </TableCell>
           <TableCell>
-            sparkline
+            <SparklineChart />
           </TableCell>
           <TableCell>
             <!-- <span class="text-sm">{{ formatUptime(check) }}</span> -->
