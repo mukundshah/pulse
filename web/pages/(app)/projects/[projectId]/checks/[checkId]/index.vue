@@ -5,10 +5,11 @@ import RunResults from './@components/RunResults.vue'
 import UptimeChart from './@components/UptimeChart.vue'
 
 const route = useRoute()
-const { checkId } = route.params as { checkId: string }
+const { projectId, checkId } = route.params as { projectId: string; checkId: string }
 
-const { data: check } = await usePulseAPI('/v1/checks/{checkId}', {
+const { data: check } = await usePulseAPI('/v1/projects/{projectId}/checks/{checkId}', {
   path: {
+    projectId,
     checkId,
   },
 })
@@ -163,7 +164,7 @@ useHead({
             Last 7 days
           </p>
         </div>
-        <RunResults class="flex-1 overflow-y-auto" :check-id="checkId" />
+        <RunResults class="flex-1 overflow-y-auto" :project-id="projectId" :check-id="checkId" />
       </div>
     </aside>
   </div>
