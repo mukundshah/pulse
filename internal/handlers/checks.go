@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 
+	"pulse/internal/middleware"
 	"pulse/internal/models"
 	"pulse/internal/store"
 )
@@ -21,16 +22,21 @@ func NewCheckHandler(s *store.Store) *CheckHandler {
 
 // CreateCheck handles POST /projects/:projectId/checks
 func (h *CheckHandler) CreateCheck(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
 
-	// Verify project exists
-	_, err = h.store.GetProject(projectID)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
@@ -234,15 +240,33 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 	c.JSON(http.StatusCreated, check)
 }
 
-// GetCheck handles GET /checks/:checkId
+// GetCheck handles GET /projects/:projectId/checks/:checkId
 func (h *CheckHandler) GetCheck(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("checkId"))
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	checkID, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
 		return
 	}
 
-	check, err := h.store.GetCheck(id)
+	check, err := h.store.GetCheck(checkID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
 		return
@@ -253,9 +277,21 @@ func (h *CheckHandler) GetCheck(c *gin.Context) {
 
 // ListChecks handles GET /projects/:projectId/checks
 func (h *CheckHandler) ListChecks(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
@@ -268,15 +304,33 @@ func (h *CheckHandler) ListChecks(c *gin.Context) {
 	c.JSON(http.StatusOK, checks)
 }
 
-// UpdateCheck handles PUT /checks/:checkId
+// UpdateCheck handles PUT /projects/:projectId/checks/:checkId
 func (h *CheckHandler) UpdateCheck(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("checkId"))
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	checkID, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
 		return
 	}
 
-	check, err := h.store.GetCheck(id)
+	check, err := h.store.GetCheck(checkID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
 		return
@@ -474,15 +528,33 @@ func (h *CheckHandler) UpdateCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, check)
 }
 
-// DeleteCheck handles DELETE /checks/:checkId
+// DeleteCheck handles DELETE /projects/:projectId/checks/:checkId
 func (h *CheckHandler) DeleteCheck(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("checkId"))
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	checkID, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
 		return
 	}
 
-	if err := h.store.DeleteCheck(id); err != nil {
+	if err := h.store.DeleteCheck(checkID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete check"})
 		return
 	}

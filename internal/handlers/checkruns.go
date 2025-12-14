@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"pulse/internal/middleware"
 	"pulse/internal/store"
 )
 
@@ -18,15 +19,33 @@ func NewCheckRunHandler(s *store.Store) *CheckRunHandler {
 	return &CheckRunHandler{store: s}
 }
 
-// GetCheckRun handles GET /check-runs/:id
+// GetCheckRun handles GET /projects/:projectId/checks/:checkId/runs/:runId
 func (h *CheckRunHandler) GetCheckRun(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	runID, err := uuid.Parse(c.Param("runId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check run ID"})
 		return
 	}
 
-	run, err := h.store.GetCheckRun(id)
+	run, err := h.store.GetCheckRun(runID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Check run not found"})
 		return
@@ -35,18 +54,29 @@ func (h *CheckRunHandler) GetCheckRun(c *gin.Context) {
 	c.JSON(http.StatusOK, run)
 }
 
-// ListCheckRuns handles GET /checks/:checkId/runs
+// ListCheckRuns handles GET /projects/:projectId/checks/:checkId/runs
 func (h *CheckRunHandler) ListCheckRuns(c *gin.Context) {
-	checkID, err := uuid.Parse(c.Param("checkId"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	// Verify check exists
-	_, err = h.store.GetCheck(checkID)
+	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	checkID, err := uuid.Parse(c.Param("checkId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
 		return
 	}
 

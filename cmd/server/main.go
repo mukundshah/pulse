@@ -180,13 +180,11 @@ func main() {
 	protected := api.Group("/").Use(middleware.AuthMiddleware(cfg, s))
 
 	{
-		// Account routes
 		protected.GET("/account/me", accountHandler.GetCurrentUser)
 		protected.PUT("/account/profile", accountHandler.UpdateProfile)
 		protected.PATCH("/account/password", accountHandler.ChangePassword)
 		protected.DELETE("/account", accountHandler.DeleteAccount)
 
-		// Session management routes
 		protected.GET("/auth/session", sessionHandler.ValidateSession)
 		protected.DELETE("/auth/session", sessionHandler.RevokeCurrentSession)
 		protected.GET("/auth/sessions", sessionHandler.ListSessions)
@@ -194,46 +192,36 @@ func main() {
 		protected.DELETE("/auth/sessions/batch", sessionHandler.RevokeSessions)
 		protected.DELETE("/auth/sessions/all", sessionHandler.RevokeAllSessions)
 
-		// Project routes - specific routes first to avoid conflicts
+		protected.GET("/regions", regionHandler.ListRegions)
+
 		protected.POST("/projects", projectHandler.CreateProject)
 		protected.GET("/projects", projectHandler.ListProjects)
-
-		// Project sub-resources (must come before /projects/:projectId)
-		protected.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
-		protected.GET("/projects/:projectId/checks", checkHandler.ListChecks)
-		protected.POST("/projects/:projectId/tags", tagHandler.CreateTag)
-		protected.GET("/projects/:projectId/tags", tagHandler.ListTags)
-		protected.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
-		protected.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
-		protected.POST("/projects/:projectId/invites", invitesHandler.CreateInvite)
-		protected.GET("/projects/:projectId/invites", invitesHandler.ListInvites)
-		protected.GET("/projects/:projectId/members", membersHandler.ListMembers)
-		protected.PUT("/projects/:projectId/members/:userId", membersHandler.UpdateMemberRole)
-		protected.DELETE("/projects/:projectId/members/:userId", membersHandler.RemoveMember)
-
-		// Project CRUD (generic routes come after specific ones)
 		protected.GET("/projects/:projectId", projectHandler.GetProject)
 		protected.PUT("/projects/:projectId", projectHandler.UpdateProject)
 		protected.DELETE("/projects/:projectId", projectHandler.DeleteProject)
 
-		// Check routes - specific routes first
-		protected.GET("/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
-		protected.POST("/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
-		protected.DELETE("/checks/:checkId/tags/:tagId", tagHandler.RemoveTagFromCheck)
+		protected.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
+		protected.GET("/projects/:projectId/checks", checkHandler.ListChecks)
+		protected.GET("/projects/:projectId/checks/:checkId", checkHandler.GetCheck)
+		protected.PUT("/projects/:projectId/checks/:checkId", checkHandler.UpdateCheck)
+		protected.DELETE("/projects/:projectId/checks/:checkId", checkHandler.DeleteCheck)
+		protected.GET("/projects/:projectId/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
+		protected.GET("/projects/:projectId/checks/:checkId/runs/:runId", checkRunHandler.GetCheckRun)
+		protected.POST("/projects/:projectId/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
+		protected.DELETE("/projects/:projectId/checks/:checkId/tags/:tagId", tagHandler.RemoveTagFromCheck)
 
-		// Check CRUD (generic routes come after specific ones)
-		protected.GET("/checks/:checkId", checkHandler.GetCheck)
-		protected.PUT("/checks/:checkId", checkHandler.UpdateCheck)
-		protected.DELETE("/checks/:checkId", checkHandler.DeleteCheck)
+		protected.POST("/projects/:projectId/tags", tagHandler.CreateTag)
+		protected.GET("/projects/:projectId/tags", tagHandler.ListTags)
+		protected.POST("/projects/:projectId/tags/:tagId", tagHandler.AddTagToProject)
+		protected.DELETE("/projects/:projectId/tags/:tagId", tagHandler.RemoveTagFromProject)
 
-		// CheckRun routes
-		protected.GET("/check-runs/:id", checkRunHandler.GetCheckRun)
-
-		// Invite routes
+		protected.POST("/projects/:projectId/invites", invitesHandler.CreateInvite)
+		protected.GET("/projects/:projectId/invites", invitesHandler.ListInvites)
 		protected.POST("/invites/accept", invitesHandler.AcceptInvite)
 
-		// Region routes
-		protected.GET("/regions", regionHandler.ListRegions)
+		protected.GET("/projects/:projectId/members", membersHandler.ListMembers)
+		protected.PUT("/projects/:projectId/members/:userId", membersHandler.UpdateMemberRole)
+		protected.DELETE("/projects/:projectId/members/:userId", membersHandler.RemoveMember)
 	}
 
 	var network, address string

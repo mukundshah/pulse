@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"pulse/internal/middleware"
 	"pulse/internal/models"
 	"pulse/internal/store"
 
@@ -20,16 +21,21 @@ func NewTagHandler(s *store.Store) *TagHandler {
 
 // CreateTag handles POST /projects/:projectId/tags
 func (h *TagHandler) CreateTag(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
 
-	// Verify project exists
-	_, err = h.store.GetProject(projectID)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
@@ -55,28 +61,27 @@ func (h *TagHandler) CreateTag(c *gin.Context) {
 	c.JSON(http.StatusCreated, tag)
 }
 
-// ListTags handles GET /tags or GET /projects/:projectId/tags
+// ListTags handles GET /projects/:projectId/tags
 func (h *TagHandler) ListTags(c *gin.Context) {
-	// Check if projectId is provided in the path
-	if projectIDStr := c.Param("projectId"); projectIDStr != "" {
-		projectID, err := uuid.Parse(projectIDStr)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
-			return
-		}
-
-		tags, err := h.store.GetTagsByProject(projectID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list tags"})
-			return
-		}
-
-		c.JSON(http.StatusOK, tags)
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	// List all tags if no project ID provided
-	tags, err := h.store.ListTags()
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	tags, err := h.store.GetTagsByProject(projectID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list tags"})
 		return
@@ -87,9 +92,21 @@ func (h *TagHandler) ListTags(c *gin.Context) {
 
 // AddTagToProject handles POST /projects/:projectId/tags/:tagId
 func (h *TagHandler) AddTagToProject(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
@@ -116,9 +133,21 @@ func (h *TagHandler) AddTagToProject(c *gin.Context) {
 
 // RemoveTagFromProject handles DELETE /projects/:projectId/tags/:tagId
 func (h *TagHandler) RemoveTagFromProject(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	projectID, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
@@ -136,8 +165,26 @@ func (h *TagHandler) RemoveTagFromProject(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Tag removed from project"})
 }
 
-// AddTagToCheck handles POST /checks/:checkId/tags/:tagId
+// AddTagToCheck handles POST /projects/:projectId/checks/:checkId/tags/:tagId
 func (h *TagHandler) AddTagToCheck(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
 	checkID, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
@@ -164,8 +211,26 @@ func (h *TagHandler) AddTagToCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, check)
 }
 
-// RemoveTagFromCheck handles DELETE /checks/:checkId/tags/:tagId
+// RemoveTagFromCheck handles DELETE /projects/:projectId/checks/:checkId/tags/:tagId
 func (h *TagHandler) RemoveTagFromCheck(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
 	checkID, err := uuid.Parse(c.Param("checkId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
