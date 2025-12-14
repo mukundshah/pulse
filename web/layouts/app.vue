@@ -5,9 +5,16 @@ useHead({ titleTemplate: '%siteName %separator %s' })
 
 const { me, logout } = useAuth()
 
-const { data: user, pending: userPending } = useAsyncData('user', () => me())
+const colorMode = useColorMode()
+const THEME_ICONS = {
+  light: 'lucide:sun',
+  dark: 'lucide:moon',
+  system: 'lucide:monitor',
+} as const
 
 const isMobile = useMediaQuery('(max-width: 768px)')
+
+const { data: user, pending: userPending } = useAsyncData('user', () => me())
 
 const showProjectInput = ref(false)
 
@@ -91,27 +98,6 @@ const handleLogout = async () => {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-          <SidebarGroup class="mt-auto">
-            <!-- <SidebarGroupLabel>Settings</SidebarGroupLabel> -->
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton as-child>
-                  <NuxtLink to="/settings">
-                    <Icon name="lucide:settings" />
-                    <span>Settings</span>
-                  </NuxtLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton as-child>
-                  <NuxtLink to="/integrations">
-                    <Icon name="lucide:plug" />
-                    <span>Integrations</span>
-                  </NuxtLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
@@ -178,15 +164,31 @@ const handleLogout = async () => {
                       <Icon name="lucide:user-circle" />
                       Account
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon name="lucide:credit-card" />
-                      Billing
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon name="lucide:bell" />
-                      Notifications
-                    </DropdownMenuItem>
                   </DropdownMenuGroup>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <div class="flex items-center gap-2">
+                        <Icon class="h-4 w-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
+                        <span>Theme</span>
+                      </div>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem @click="colorMode.preference = 'light'">
+                          <Icon class="h-4 w-4" :name="THEME_ICONS.light" />
+                          Light
+                        </DropdownMenuItem>
+                        <DropdownMenuItem @click="colorMode.preference = 'dark'">
+                          <Icon class="h-4 w-4" :name="THEME_ICONS.dark" />
+                          Dark
+                        </DropdownMenuItem>
+                        <DropdownMenuItem @click="colorMode.preference = 'system'">
+                          <Icon class="h-4 w-4" :name="THEME_ICONS.system" />
+                          System
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem @click="handleLogout">
                     <Icon name="lucide:log-out" />
