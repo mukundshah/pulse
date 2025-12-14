@@ -334,7 +334,7 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 p-4 md:p-6">
     <div class="flex flex-row items-center gap-2 justify-between">
       <h1 class="text-2xl font-bold">
         New {{ TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP] }}

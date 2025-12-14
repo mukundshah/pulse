@@ -204,7 +204,7 @@ const handleLogout = async () => {
             <SidebarTrigger />
           </div>
         </header>
-        <div class="flex flex-1 flex-col gap-4 p-4 md:p-6">
+        <div class="flex flex-1 flex-col gap-4">
           <slot></slot>
         </div>
       </SidebarInset>

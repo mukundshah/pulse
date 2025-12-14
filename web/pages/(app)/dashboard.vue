@@ -16,7 +16,7 @@ const greeting = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-6">
+  <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
