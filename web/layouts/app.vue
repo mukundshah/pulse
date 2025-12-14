@@ -63,7 +63,7 @@ const handleLogout = async () => {
                 @success="async ($event) => {
                   showProjectInput = false
                   await refreshProjects()
-                  await navigateTo({ name: 'projects-id', params: { id: $event.id } })
+                  await navigateTo({ name: 'projects-projectId', params: { projectId: $event.id } })
                 }"
               />
               <SidebarMenu>
