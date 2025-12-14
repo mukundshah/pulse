@@ -1047,7 +1047,14 @@ const onSubmit = handleSubmit(async (data) => {
                   <FieldLabel for="degraded_threshold">
                     Degraded after
                   </FieldLabel>
-                  <NumberField id="degraded_threshold" v-bind="field">
+                  <NumberField
+                    id="degraded_threshold"
+                    :format-options="{ useGrouping: false }"
+                    :min="0"
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  >
                     <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                       <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                       <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1068,11 +1075,13 @@ const onSubmit = handleSubmit(async (data) => {
                   </FieldLabel>
                   <ToggleGroup
                     id="degraded_threshold_unit"
-                    v-bind="field"
                     type="single"
                     variant="outline"
                     :aria-invalid="!!errors.length"
+                    :model-value="field.value"
+                    :name="field.name"
                     :spacing="0"
+                    @update:model-value="field.onChange"
                   >
                     <ToggleGroupItem value="ms">
                       Milliseconds
@@ -1091,7 +1100,14 @@ const onSubmit = handleSubmit(async (data) => {
                   <FieldLabel for="failed_threshold">
                     Failed after
                   </FieldLabel>
-                  <NumberField id="failed_threshold" v-bind="field">
+                  <NumberField
+                    id="failed_threshold"
+                    :format-options="{ useGrouping: false }"
+                    :min="0"
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  >
                     <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                       <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                       <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1112,10 +1128,12 @@ const onSubmit = handleSubmit(async (data) => {
                   </FieldLabel>
                   <ToggleGroup
                     id="failed_threshold_unit"
-                    v-bind="unitField"
                     type="single"
                     variant="outline"
                     :aria-invalid="!!errors.length"
+                    :model-value="unitField.value"
+                    :name="unitField.name"
+                    @update:model-value="unitField.onChange"
                   >
                     <ToggleGroupItem value="ms">
                       Milliseconds
@@ -1150,9 +1168,10 @@ const onSubmit = handleSubmit(async (data) => {
                 <Slider
                   class="w-full"
                   :max="15"
+                  :model-value="[field.value]"
                   :step="1"
                   :ticks="INTERVAL_MAPPING"
-                  v-bind="field"
+                  @update:model-value="(value?: number[]) => field.onChange(value?.[0] ?? 0)"
                 />
                 <FieldError v-if="errors.length" :errors="errors" />
               </Field>
@@ -1224,7 +1243,14 @@ const onSubmit = handleSubmit(async (data) => {
                   <FieldLabel for="retries_count">
                     Number of retries
                   </FieldLabel>
-                  <NumberField id="retries_count" v-bind="field">
+                  <NumberField
+                    id="retries_count"
+                    :format-options="{ useGrouping: false }"
+                    :min="0"
+                    :model-value="field.value"
+                    :name="field.name"
+                    @update:model-value="field.onChange"
+                  >
                     <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                       <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                       <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1245,7 +1271,14 @@ const onSubmit = handleSubmit(async (data) => {
                     <FieldLabel for="retries_delay">
                       Delay between retries
                     </FieldLabel>
-                    <NumberField id="retries_delay" v-bind="field">
+                    <NumberField
+                      id="retries_delay"
+                      :format-options="{ useGrouping: false }"
+                      :min="0"
+                      :model-value="field.value"
+                      :name="field.name"
+                      @update:model-value="field.onChange"
+                    >
                       <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                         <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                         <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1266,11 +1299,13 @@ const onSubmit = handleSubmit(async (data) => {
                     </FieldLabel>
                     <ToggleGroup
                       id="retries_delay_unit"
-                      v-bind="field"
                       type="single"
                       variant="outline"
                       :aria-invalid="!!errors.length"
+                      :model-value="field.value"
+                      :name="field.name"
                       :spacing="0"
+                      @update:model-value="field.onChange"
                     >
                       <ToggleGroupItem value="ms">
                         Milliseconds
@@ -1290,7 +1325,14 @@ const onSubmit = handleSubmit(async (data) => {
                     <FieldLabel for="retries_factor">
                       Factor
                     </FieldLabel>
-                    <NumberField id="retries_factor" v-bind="field">
+                    <NumberField
+                      id="retries_factor"
+                      :format-options="{ useGrouping: false }"
+                      :min="0"
+                      :model-value="field.value"
+                      :name="field.name"
+                      @update:model-value="field.onChange"
+                    >
                       <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                         <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                         <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1374,7 +1416,14 @@ const onSubmit = handleSubmit(async (data) => {
                       <FieldLabel for="retries_jitter_factor">
                         Jitter Factor
                       </FieldLabel>
-                      <NumberField id="retries_jitter_factor" v-bind="field">
+                      <NumberField
+                        id="retries_jitter_factor"
+                        :format-options="{ useGrouping: false }"
+                        :min="0"
+                        :model-value="field.value"
+                        :name="field.name"
+                        @update:model-value="field.onChange"
+                      >
                         <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                           <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1396,7 +1445,14 @@ const onSubmit = handleSubmit(async (data) => {
                       <FieldLabel for="retries_max_delay">
                         Max delay
                       </FieldLabel>
-                      <NumberField id="retries_max_delay" v-bind="field">
+                      <NumberField
+                        id="retries_max_delay"
+                        :format-options="{ useGrouping: false }"
+                        :min="0"
+                        :model-value="field.value"
+                        :name="field.name"
+                        @update:model-value="field.onChange"
+                      >
                         <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                           <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1417,11 +1473,13 @@ const onSubmit = handleSubmit(async (data) => {
                       </FieldLabel>
                       <ToggleGroup
                         id="retries_max_delay_unit"
-                        v-bind="field"
                         type="single"
                         variant="outline"
                         :aria-invalid="!!errors.length"
+                        :model-value="field.value"
+                        :name="field.name"
                         :spacing="0"
+                        @update:model-value="field.onChange"
                       >
                         <ToggleGroupItem value="ms">
                           Milliseconds
@@ -1441,7 +1499,14 @@ const onSubmit = handleSubmit(async (data) => {
                       <FieldLabel for="retries_timeout">
                         Timeout
                       </FieldLabel>
-                      <NumberField id="retries_timeout" v-bind="field">
+                      <NumberField
+                        id="retries_timeout"
+                        :format-options="{ useGrouping: false }"
+                        :min="0"
+                        :model-value="field.value"
+                        :name="field.name"
+                        @update:model-value="field.onChange"
+                      >
                         <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
                           <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
@@ -1462,11 +1527,13 @@ const onSubmit = handleSubmit(async (data) => {
                       </FieldLabel>
                       <ToggleGroup
                         id="retries_timeout_unit"
-                        v-bind="field"
                         type="single"
                         variant="outline"
                         :aria-invalid="!!errors.length"
+                        :model-value="field.value"
+                        :name="field.name"
                         :spacing="0"
+                        @update:model-value="field.onChange"
                       >
                         <ToggleGroupItem value="ms">
                           Milliseconds
