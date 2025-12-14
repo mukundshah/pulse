@@ -47,7 +47,7 @@ const baseSchema = z.object({
   type: z.enum(CHECK_TYPE_VALUES),
   name: z.string().min(1),
   tag_ids: z.uuidv7().array(),
-  region_ids: z.uuidv7().array(),
+  region_ids: z.uuidv7().array().min(1),
   is_enabled: z.boolean(),
   is_muted: z.boolean(),
   should_fail: z.boolean(),
