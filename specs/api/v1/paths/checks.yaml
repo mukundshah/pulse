@@ -1,5 +1,231 @@
 paths:
-  /v1/checks/{checkId}:
+  /v1/projects/{projectId}/checks:
+    get:
+      operationId: listProjectChecks
+      summary: List all checks in a project
+      tags:
+        - Checks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of checks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Check'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    post:
+      operationId: createProjectCheck
+      summary: Create a new check in a project
+      tags:
+        - Checks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - type
+                - host
+                - interval
+              properties:
+                name:
+                  type: string
+                  example: API Health Check
+                type:
+                  type: string
+                  enum: [http, tcp, dns, browser, heartbeat]
+                  example: http
+                host:
+                  type: string
+                  example: api.example.com
+                port:
+                  type: integer
+                  nullable: true
+                secure:
+                  type: boolean
+                  nullable: true
+                method:
+                  type: string
+                  default: GET
+                  example: GET
+                path:
+                  type: string
+                  example: /health
+                query_params:
+                  type: object
+                  additionalProperties: true
+                headers:
+                  type: object
+                  additionalProperties: true
+                body:
+                  type: object
+                  additionalProperties: true
+                ip_version:
+                  type: string
+                skip_ssl_verification:
+                  type: boolean
+                  nullable: true
+                follow_redirects:
+                  type: boolean
+                  nullable: true
+                playwright_script:
+                  type: string
+                  nullable: true
+                assertions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      source:
+                        type: string
+                        enum: [status_code, response_body, response_headers, response_time_ms]
+                      property:
+                        type: string
+                        nullable: true
+                      comparison:
+                        type: string
+                        enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+                      target:
+                        type: string
+                    required:
+                      - source
+                      - comparison
+                      - target
+                  description: Assertions to validate the response
+                pre_script:
+                  type: string
+                  nullable: true
+                post_script:
+                  type: string
+                  nullable: true
+                interval:
+                  type: string
+                  example: 10m
+                degraded_threshold:
+                  type: integer
+                degraded_threshold_unit:
+                  type: string
+                failed_threshold:
+                  type: integer
+                failed_threshold_unit:
+                  type: string
+                retries:
+                  type: string
+                retries_count:
+                  type: integer
+                  nullable: true
+                retries_delay:
+                  type: integer
+                  nullable: true
+                retries_delay_unit:
+                  type: string
+                  nullable: true
+                retries_factor:
+                  type: number
+                  format: float
+                  nullable: true
+                retries_jitter:
+                  type: string
+                  nullable: true
+                retries_jitter_factor:
+                  type: number
+                  format: float
+                  nullable: true
+                retries_max_delay:
+                  type: integer
+                  nullable: true
+                retries_max_delay_unit:
+                  type: string
+                  nullable: true
+                retries_timeout:
+                  type: integer
+                  nullable: true
+                retries_timeout_unit:
+                  type: string
+                  nullable: true
+                is_enabled:
+                  type: boolean
+                  default: true
+                is_muted:
+                  type: boolean
+                  default: false
+                should_fail:
+                  type: boolean
+                  default: false
+                tag_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                region_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                dns_record_type:
+                  type: string
+                  enum: [A, AAAA, CNAME, MX, NS, SOA, SRV, TXT]
+                  nullable: true
+                  description: DNS record type to query
+                dns_resolver:
+                  type: string
+                  nullable: true
+                  description: DNS resolver IP address
+                dns_resolver_port:
+                  type: integer
+                  nullable: true
+                  description: DNS resolver port
+                dns_resolver_protocol:
+                  type: string
+                  enum: [udp, tcp]
+                  nullable: true
+                  description: DNS resolver protocol
+      responses:
+        '201':
+          description: Check created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Check'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /v1/projects/{projectId}/checks/{checkId}:
     get:
       operationId: getCheckById
       summary: Get a check by ID
@@ -8,6 +234,12 @@ paths:
       security:
         - BearerAuth: []
       parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
         - name: checkId
           in: path
           required: true
@@ -21,6 +253,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Check'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
     put:
       operationId: updateCheck
       summary: Update a check
@@ -29,6 +269,12 @@ paths:
       security:
         - BearerAuth: []
       parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
         - name: checkId
           in: path
           required: true
@@ -191,6 +437,10 @@ paths:
                 $ref: '#/components/schemas/Check'
         '400':
           $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
         '404':
           $ref: '#/components/responses/Error'
         '500':
@@ -203,6 +453,12 @@ paths:
       security:
         - BearerAuth: []
       parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
         - name: checkId
           in: path
           required: true
@@ -222,151 +478,9 @@ paths:
                     example: Check deleted successfully
         '400':
           $ref: '#/components/responses/Error'
-        '500':
+        '401':
           $ref: '#/components/responses/Error'
-
-  /v1/checks/{checkId}/runs:
-    get:
-      operationId: listCheckRunsByCheck
-      summary: List check runs for a check
-      description: |
-        Returns a paginated list of check runs for the specified check, sorted from latest to oldest.
-        Use cursor-based pagination with `after` and `before` parameters to navigate through results.
-      tags:
-        - Check Runs
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: checkId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the check
-        - name: limit
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 50
-            minimum: 1
-            maximum: 1000
-          description: Maximum number of runs to return
-        - name: after
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: |
-            Cursor for forward pagination. Returns items older than the specified check run ID.
-            Use the `next_cursor` from the previous response.
-        - name: before
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: |
-            Cursor for backward pagination. Returns items newer than the specified check run ID.
-            Use the `prev_cursor` from the previous response.
-      responses:
-        '200':
-          description: Paginated list of check runs
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/CheckRun'
-                    description: Array of check runs, sorted from latest to oldest
-                  prev_cursor:
-                    type: string
-                    format: uuid
-                    nullable: true
-                    description: |
-                      Cursor to retrieve newer items (previous page).
-                      Use this value with the `before` parameter.
-                      Null if there are no newer items available.
-                  next_cursor:
-                    type: string
-                    format: uuid
-                    nullable: true
-                    description: |
-                      Cursor to retrieve older items (next page).
-                      Use this value with the `after` parameter.
-                      Null if there are no older items available.
-        '400':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-
-  /v1/checks/{checkId}/tags/{tagId}:
-    post:
-      operationId: addTagToCheck
-      summary: Add a tag to a check
-      tags:
-        - Tags
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: checkId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: tagId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Tag added successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
-    delete:
-      operationId: removeTagFromCheck
-      summary: Remove a tag from a check
-      tags:
-        - Tags
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: checkId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: tagId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Tag removed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Check'
-        '400':
+        '403':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
