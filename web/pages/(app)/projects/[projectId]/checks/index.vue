@@ -4,22 +4,6 @@ import StatusBadge from './@components/StatusBadge.vue'
 const route = useRoute()
 const { projectId } = route.params as { projectId: string }
 
-useHead({
-  title: 'Project',
-})
-
-const { data: project } = await usePulseAPI('/v1/projects/{projectId}', {
-  path: {
-    projectId,
-  },
-})
-
-const { data: checks, pending: checksLoading } = useLazyPulseAPI('/v1/projects/{projectId}/checks', {
-  path: {
-    projectId,
-  },
-})
-
 // Check type definitions
 const checkTypes = [
   {
@@ -39,6 +23,22 @@ const checkTypes = [
     ],
   },
 ]
+
+const { data: project } = await usePulseAPI('/v1/projects/{projectId}', {
+  path: {
+    projectId,
+  },
+})
+
+const { data: checks, pending: checksLoading } = useLazyPulseAPI('/v1/projects/{projectId}/checks', {
+  path: {
+    projectId,
+  },
+})
+
+useHead({
+  title: `Checks for ${project.value?.name}`,
+})
 </script>
 
 <template>
