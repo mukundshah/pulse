@@ -229,6 +229,9 @@ paths:
     get:
       operationId: listCheckRunsByCheck
       summary: List check runs for a check
+      description: |
+        Returns a paginated list of check runs for the specified check, sorted from latest to oldest.
+        Use cursor-based pagination with `after` and `before` parameters to navigate through results.
       tags:
         - Check Runs
       security:
@@ -240,6 +243,7 @@ paths:
           schema:
             type: string
             format: uuid
+          description: The ID of the check
         - name: limit
           in: query
           required: false
@@ -249,15 +253,55 @@ paths:
             minimum: 1
             maximum: 1000
           description: Maximum number of runs to return
+        - name: after
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: |
+            Cursor for forward pagination. Returns items older than the specified check run ID.
+            Use the `next_cursor` from the previous response.
+        - name: before
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: |
+            Cursor for backward pagination. Returns items newer than the specified check run ID.
+            Use the `prev_cursor` from the previous response.
       responses:
         '200':
-          description: List of check runs
+          description: Paginated list of check runs
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CheckRun'
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CheckRun'
+                    description: Array of check runs, sorted from latest to oldest
+                  prev_cursor:
+                    type: string
+                    format: uuid
+                    nullable: true
+                    description: |
+                      Cursor to retrieve newer items (previous page).
+                      Use this value with the `before` parameter.
+                      Null if there are no newer items available.
+                  next_cursor:
+                    type: string
+                    format: uuid
+                    nullable: true
+                    description: |
+                      Cursor to retrieve older items (next page).
+                      Use this value with the `after` parameter.
+                      Null if there are no older items available.
         '400':
           $ref: '#/components/responses/Error'
         '404':
