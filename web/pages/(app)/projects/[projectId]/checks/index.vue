@@ -90,21 +90,35 @@ useHead({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead class="p-0">
+          <TableHead class="p-0 w-px">
             <span class="sr-only">Link</span>
           </TableHead>
-          <TableHead class="pl-14">
+          <TableHead class="pl-9 w-[calc(45%-64px)] min-w-[200px] text-left">
             Name
           </TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Last Results</TableHead>
-          <TableHead>24h</TableHead>
-          <TableHead>7d</TableHead>
-          <TableHead>Avg</TableHead>
-          <TableHead>P95</TableHead>
-          <TableHead>ΔT</TableHead>
-          <TableHead class="text-right">
-            Actions
+          <TableHead class="w-[8%] min-w-[80px] text-center">
+            Type
+          </TableHead>
+          <TableHead class="w-[12%] min-w-[240px] text-center">
+            Last Results
+          </TableHead>
+          <TableHead class="w-[7%] min-w-[70px] text-center">
+            24h
+          </TableHead>
+          <TableHead class="w-[7%] min-w-[70px] text-center">
+            7d
+          </TableHead>
+          <TableHead class="w-[7%] min-w-[70px] text-center">
+            Avg
+          </TableHead>
+          <TableHead class="w-[7%] min-w-[70px] text-center">
+            P95
+          </TableHead>
+          <TableHead class="w-[7%] min-w-[70px] text-center">
+            ΔT
+          </TableHead>
+          <TableHead class="w-16">
+            <span class="sr-only">Actions</span>
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -186,7 +200,7 @@ useHead({
               </div>
             </div>
           </TableCell>
-          <TableCell>
+          <TableCell class="text-center">
             <Badge variant="outline">
               {{ check.type.toUpperCase() }}
             </Badge>
@@ -194,19 +208,19 @@ useHead({
           <TableCell>
             <SparklineChart />
           </TableCell>
-          <TableCell>
+          <TableCell class="text-center">
             <!-- <span class="text-sm">{{ formatUptime(check) }}</span> -->
           </TableCell>
-          <TableCell>
+          <TableCell class="text-center">
             <!-- <span class="text-sm">{{ formatUptime(check) }}</span> -->
           </TableCell>
-          <TableCell>
+          <TableCell class="text-center">
             <!-- <span class="text-sm">{{ formatResponseTime(check) }}</span> -->
           </TableCell>
-          <TableCell>
+          <TableCell class="text-center">
             <!-- <span class="text-sm">{{ formatResponseTime(check) }}</span> -->
           </TableCell>
-          <TableCell>
+          <TableCell class="text-center">
             <span class="text-sm">{{ check.interval }}</span>
           </TableCell>
           <TableCell class="text-right">
