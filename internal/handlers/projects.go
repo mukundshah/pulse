@@ -108,9 +108,21 @@ func (h *ProjectHandler) ListProjects(c *gin.Context) {
 
 // UpdateProject handles PUT /projects/:projectId
 func (h *ProjectHandler) UpdateProject(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	id, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(id, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
@@ -140,9 +152,21 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 
 // DeleteProject handles DELETE /projects/:projectId
 func (h *ProjectHandler) DeleteProject(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
 	id, err := uuid.Parse(c.Param("projectId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(id, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
 
