@@ -27,10 +27,9 @@ properties:
     type: object
     additionalProperties: true
     description: Network timing metrics
-  metrics:
-    type: object
-    additionalProperties: true
-    description: Performance metrics
+  total_time_ms:
+    type: integer
+    description: Total time taken for the check run in milliseconds
   region_id:
     type: string
     format: uuid
