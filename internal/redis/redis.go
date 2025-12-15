@@ -42,6 +42,15 @@ func Connect(cfg *config.Config) (*Client, error) {
 	}, nil
 }
 
+func (c *Client) Close() error {
+	return c.client.Close()
+}
+
+// HealthCheck pings Redis to verify connectivity
+func (c *Client) HealthCheck() error {
+	return c.client.Ping(c.ctx).Err()
+}
+
 func (c *Client) EnqueueJob(checkID uuid.UUID) error {
 	jobData, err := json.Marshal(checkID.String())
 	if err != nil {
@@ -79,6 +88,11 @@ func (c *Client) DequeueJob(timeout time.Duration) (uuid.UUID, error) {
 	}
 
 	return checkID, nil
+}
+
+// GetQueueDepth returns the number of jobs in the queue
+func (c *Client) GetQueueDepth() (int64, error) {
+	return c.client.LLen(c.ctx, "pulse:jobs").Result()
 }
 
 func (c *Client) GetCheck(checkID uuid.UUID) (*models.Check, error) {
@@ -121,34 +135,20 @@ func (c *Client) DeleteCheck(checkID uuid.UUID) error {
 	return nil
 }
 
-func (c *Client) Close() error {
-	return c.client.Close()
-}
-
-// HealthCheck pings Redis to verify connectivity
-func (c *Client) HealthCheck() error {
-	return c.client.Ping(c.ctx).Err()
-}
-
-// GetQueueDepth returns the number of jobs in the queue
-func (c *Client) GetQueueDepth() (int64, error) {
-	return c.client.LLen(c.ctx, "pulse:jobs").Result()
-}
-
 // SetSession stores a session indicator in Redis cache
 func (c *Client) SetSession(jti string, ttl time.Duration) error {
-	key := fmt.Sprintf("session:%s", jti)
+	key := fmt.Sprintf("pulse:session:%s", jti)
 	return c.client.Set(c.ctx, key, "active", ttl).Err()
 }
 
 // GetSession retrieves a session indicator from Redis cache
 func (c *Client) GetSession(jti string) (string, error) {
-	key := fmt.Sprintf("session:%s", jti)
+	key := fmt.Sprintf("pulse:session:%s", jti)
 	return c.client.Get(c.ctx, key).Result()
 }
 
 // DeleteSession removes a session indicator from Redis cache
 func (c *Client) DeleteSession(jti string) error {
-	key := fmt.Sprintf("session:%s", jti)
+	key := fmt.Sprintf("pulse:session:%s", jti)
 	return c.client.Del(c.ctx, key).Err()
 }
