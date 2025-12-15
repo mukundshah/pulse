@@ -7,7 +7,7 @@ import (
 
 func init() {
 	RegisterMigration(&gormigrate.Migration{
-		ID: "202512151520_add_total_time_ms_to_check_runs",
+		ID: "202512151455_add_total_time_ms_to_check_runs",
 		Migrate: func(tx *gorm.DB) error {
 			if err := tx.Exec("ALTER TABLE check_runs ADD COLUMN total_time_ms INTEGER").Error; err != nil {
 				return err
