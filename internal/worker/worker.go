@@ -102,7 +102,7 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 	metrics.IncrementChecksExecuted()
 
 	// Track failures
-	if result.Status != models.CheckRunStatusSuccess {
+	if result.Status != models.CheckRunStatusPassing {
 		metrics.IncrementChecksFailed()
 	}
 
@@ -111,7 +111,7 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 		Status:           result.Status,
 		ResponseStatus:   result.ResponseStatus,
 		AssertionResults: result.AssertionResults,
-		PlaywrightReport: *result.PlaywrightReport,
+		PlaywrightReport: result.PlaywrightReport,
 		NetworkTimings:   result.NetworkTimings,
 		Metrics:          result.Metrics,
 		RegionID:         w.regionID,

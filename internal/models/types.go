@@ -13,11 +13,10 @@ const (
 type CheckRunStatus string
 
 const (
-	CheckRunStatusSuccess CheckRunStatus = "success"
-	CheckRunStatusFail    CheckRunStatus = "fail"
-	CheckRunStatusTimeout CheckRunStatus = "timeout"
-	CheckRunStatusError   CheckRunStatus = "error"
-	CheckRunStatusUnknown CheckRunStatus = "unknown"
+	CheckRunStatusPassing  CheckRunStatus = "passing"
+	CheckRunStatusDegraded CheckRunStatus = "degraded"
+	CheckRunStatusFailing  CheckRunStatus = "failing"
+	CheckRunStatusUnknown  CheckRunStatus = "unknown"
 )
 
 type IPVersionType string
