@@ -2,7 +2,7 @@ import type { RouterContext } from 'rou3'
 import type { RouteLocationRaw } from 'vue-router'
 
 import { defu } from 'defu'
-import { addImports, addPlugin, addTemplate, createResolver, defineNuxtModule, addRouteMiddleware } from 'nuxt/kit'
+import { addImports, addPlugin, addRouteMiddleware, addTemplate, createResolver, defineNuxtModule } from 'nuxt/kit'
 import { createRouter as _createRouter, addRoute, findAllRoutes } from 'rou3'
 
 interface ModuleOptions {
@@ -84,7 +84,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.hook('modules:done', () => {
       addPlugin({ src: resolve('./runtime/plugin/session') }, { append: true })
       addPlugin({ src: resolve('./runtime/plugin/openfetch') }, { append: true })
-      addRouteMiddleware({name: 'authz', path: resolve('./runtime/middleware/authz'), global: true})
+      addRouteMiddleware({ name: 'authz', path: resolve('./runtime/middleware/authz'), global: true })
     })
 
     nuxt.hook('prepare:types', ({ references, nodeReferences }) => {
