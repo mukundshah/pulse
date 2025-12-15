@@ -31,7 +31,7 @@ useHead({
             <StatusBadge status="passing" />
           </div>
 
-          <p class="text-sm text-muted-foreground font-mono">
+          <div class="text-sm text-muted-foreground font-mono flex items-center gap-2">
             <Badge class="text-xs" variant="secondary">
               {{ check?.method }}
             </Badge>
@@ -39,7 +39,7 @@ useHead({
             <span>
               {{ constructURL({ host: check?.host, port: check?.port, path: check?.path, queryParams: check?.query_params, secure: check?.secure }) }}
             </span>
-          </p>
+          </div>
 
           <div>
             <Badge class="text-xs" variant="outline">
