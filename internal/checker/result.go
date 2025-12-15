@@ -10,12 +10,17 @@ import (
 type Result struct {
 	Status           models.CheckRunStatus
 	ResponseStatus   int32
+	TotalTimeMs      int
 	AssertionResults datatypes.JSON
 	PlaywrightReport datatypes.JSON
 	NetworkTimings   datatypes.JSON
-	Metrics          datatypes.JSON
+	Error            error
 }
 
-func emptyJSON() datatypes.JSON {
+func emptyJSONArray() datatypes.JSON {
+	return mustMarshalJSON([]interface{}{})
+}
+
+func emptyJSONObject() datatypes.JSON {
 	return mustMarshalJSON(map[string]interface{}{})
 }
