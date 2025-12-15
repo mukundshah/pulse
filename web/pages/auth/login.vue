@@ -5,6 +5,8 @@ import { useForm, Field as VeeField } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
+const route = useRoute()
+
 const { login } = useAuth()
 const { requestEmailVerification } = useEmailManagement()
 
@@ -27,7 +29,7 @@ const onSubmit = handleSubmit(async (data) => {
     toast('Welcome back!', {
       description: 'You are now logged in',
     })
-    await navigateTo('/dashboard')
+    await navigateTo(route.query.next as string || '/dashboard')
   } catch (error: unknown) {
     // Handle 403 - email not verified
     if ((error as FetchError)?.status === 403) {
