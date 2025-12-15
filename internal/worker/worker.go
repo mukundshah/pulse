@@ -109,16 +109,16 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 	// Convert checker.Result to models.CheckRun
 	checkRun := &models.CheckRun{
 		Status:           result.Status,
+		TotalTimeMs:      result.TotalTimeMs,
 		ResponseStatus:   result.ResponseStatus,
 		AssertionResults: result.AssertionResults,
 		PlaywrightReport: result.PlaywrightReport,
 		NetworkTimings:   result.NetworkTimings,
-		Metrics:          result.Metrics,
+		Remarks:          result.Error.Error(),
 		RegionID:         w.regionID,
 		CheckID:          check.ID,
 	}
 
-	// Save result to PostgreSQL
 	if err := w.store.CreateCheckRun(checkRun); err != nil {
 		log.Printf("Worker %d: Error saving check run for %s: %v", workerID, checkID, err)
 	}
@@ -126,15 +126,14 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 	// Process alerts
 	w.alerter.ProcessCheckResult(check, result)
 
-	// Parse interval to seconds and update check status
-	intervalSeconds, err := models.ParseIntervalToSeconds(check.Interval)
+	// Parse interval and update check status
+	interval, err := time.ParseDuration(check.Interval)
 	if err != nil {
 		log.Printf("Worker %d: Error parsing interval for check %s: %v", workerID, checkID, err)
-		intervalSeconds = 600 // Default to 10 minutes if parsing fails
+		interval = 10 * time.Minute // Default to 10 minutes if parsing fails
 	}
-	nextRun := time.Now().Add(time.Duration(intervalSeconds) * time.Second)
-	lastStatus := string(result.Status)
-	if err := w.store.UpdateCheckStatus(checkID, nextRun, lastStatus); err != nil {
+	nextRun := time.Now().Add(interval)
+	if err := w.store.UpdateCheckStatus(checkID, nextRun, result.Status); err != nil {
 		log.Printf("Worker %d: Error updating check status for %s: %v", workerID, checkID, err)
 	}
 
