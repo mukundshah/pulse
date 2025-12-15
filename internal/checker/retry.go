@@ -50,21 +50,21 @@ func computeRetryDelay(check *models.Check, attempt int, previousDelay time.Dura
 		return 0
 	}
 
-	baseDelay := durationFrom(check.RetriesDelay, check.RetriesDelayUnit)
-	maxDelay := durationFrom(check.RetriesMaxDelay, check.RetriesMaxDelayUnit)
+	baseDelay := check.RetriesDelayDuration()
+	maxDelay := check.RetriesMaxDelayDuration()
 	delay := baseDelay
 
 	switch check.Retries {
 	case models.RetryTypeFixed:
 		delay = baseDelay
 	case models.RetryTypeLinear:
-		delay = time.Duration(int64(baseDelay) * int64(attempt+1))
+		delay = baseDelay * time.Duration(attempt+1)
 	case models.RetryTypeExponential:
 		factor := 2.0
 		if check.RetriesFactor != nil && *check.RetriesFactor > 0 {
 			factor = *check.RetriesFactor
 		}
-		delay = time.Duration(float64(baseDelay) * math.Pow(factor, float64(attempt)))
+		delay = baseDelay * time.Duration(math.Pow(factor, float64(attempt)))
 	}
 
 	delay = applyJitter(delay, previousDelay, check)
@@ -114,17 +114,4 @@ func applyJitter(delay time.Duration, previousDelay time.Duration, check *models
 	default:
 		return delay
 	}
-}
-
-func durationFrom(value *int, unit *models.UnitType) time.Duration {
-	if value == nil {
-		return 0
-	}
-
-	multiplier := time.Millisecond
-	if unit != nil && *unit == models.UnitTypeS {
-		multiplier = time.Second
-	}
-
-	return time.Duration(*value) * multiplier
 }
