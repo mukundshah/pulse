@@ -25,6 +25,8 @@ type CheckRun struct {
 	CheckID uuid.UUID `gorm:"type:uuid;index;not null" json:"check_id"`
 	Check   Check     `gorm:"foreignKey:CheckID" json:"check,omitempty"`
 
+	Remarks string `gorm:"type:text" json:"remarks"`
+
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`

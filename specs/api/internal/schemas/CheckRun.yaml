@@ -44,6 +44,11 @@ properties:
   check:
     $ref: '#/components/schemas/Check'
     nullable: true
+  remarks:
+    type: string
+    nullable: true
+    description: Additional remarks or notes about the check run
+    example: Connection timeout after 30 seconds
   created_at:
     type: string
     format: date-time
