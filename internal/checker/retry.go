@@ -1,6 +1,7 @@
 package checker
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"math/rand"
@@ -10,11 +11,9 @@ import (
 )
 
 func executeOnce(check *models.Check) Result {
-	startTime := time.Now()
-
 	switch check.Type {
 	case models.CheckTypeHTTP:
-		return executeHTTPCheck(check, startTime)
+		return ExecuteHTTPCheck(context.Background(), check)
 	// case models.CheckTypeTCP:
 	// 	return executeTCPCheck(check)
 	// case models.CheckTypeDNS:
