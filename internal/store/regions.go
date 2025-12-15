@@ -2,6 +2,8 @@ package store
 
 import (
 	"pulse/internal/models"
+
+	"github.com/google/uuid"
 )
 
 // ListRegions returns all system regions (read-only)
@@ -19,4 +21,28 @@ func (s *Store) GetRegionByCode(code string) (*models.Region, error) {
 		return nil, err
 	}
 	return &region, nil
+}
+
+func (s *Store) AddRegionToCheck(checkID uuid.UUID, regionID uuid.UUID) error {
+	var check models.Check
+	if err := s.db.First(&check, "id = ?", checkID).Error; err != nil {
+		return err
+	}
+	var region models.Region
+	if err := s.db.First(&region, "id = ?", regionID).Error; err != nil {
+		return err
+	}
+	return s.db.Model(&check).Association("Regions").Append(&region)
+}
+
+func (s *Store) RemoveRegionFromCheck(checkID uuid.UUID, regionID uuid.UUID) error {
+	var check models.Check
+	if err := s.db.First(&check, "id = ?", checkID).Error; err != nil {
+		return err
+	}
+	var region models.Region
+	if err := s.db.First(&region, "id = ?", regionID).Error; err != nil {
+		return err
+	}
+	return s.db.Model(&check).Association("Regions").Delete(&region)
 }

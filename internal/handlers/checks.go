@@ -90,6 +90,12 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		return
 	}
 
+	// Validate that at least one region is required
+	if len(req.RegionIDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "At least one region is required"})
+		return
+	}
+
 	checkType := models.CheckType(req.Type)
 	if checkType != models.CheckTypeHTTP && checkType != models.CheckTypeTCP &&
 		checkType != models.CheckTypeDNS && checkType != models.CheckTypeBrowser &&
@@ -224,10 +230,12 @@ func (h *CheckHandler) CreateCheck(c *gin.Context) {
 		}
 	}
 
-	// Add regions if provided
-	if len(req.RegionIDs) > 0 {
-		// Note: Region association would need to be implemented in store
-		// For now, we'll just create the check
+	// Add regions
+	for _, regionID := range req.RegionIDs {
+		if err := h.store.AddRegionToCheck(check.ID, regionID); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to associate region with check"})
+			return
+		}
 	}
 
 	// Reload check with associations
