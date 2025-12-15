@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"pulse/internal/config"
 
@@ -12,7 +13,11 @@ import (
 
 func Connect(cfg *config.Config) (*gorm.DB, error) {
 	dsn := cfg.DatabaseURL
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		NowFunc: func() time.Time {
+			return time.Now().UTC()
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
