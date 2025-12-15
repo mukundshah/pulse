@@ -2,8 +2,6 @@ package models
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -79,33 +77,59 @@ type Check struct {
 	Regions []Region `gorm:"many2many:check_regions;" json:"regions,omitempty"`
 }
 
-// ParseIntervalToSeconds converts an interval string (e.g., "10m", "5s", "1h") to seconds
-func ParseIntervalToSeconds(interval string) (int, error) {
-	if interval == "" {
-		return 0, fmt.Errorf("interval cannot be empty")
-	}
-
-	// Get the last character (unit) and the number part
-	if len(interval) < 2 {
-		return 0, fmt.Errorf("invalid interval format: %s", interval)
-	}
-
-	unit := strings.ToLower(interval[len(interval)-1:])
-	numberStr := interval[:len(interval)-1]
-
-	number, err := strconv.Atoi(numberStr)
+func (c *Check) FailedThresholdDuration() time.Duration {
+	duration, err := time.ParseDuration(fmt.Sprintf("%d%s", c.FailedThreshold, c.FailedThresholdUnit))
 	if err != nil {
-		return 0, fmt.Errorf("invalid interval format: %s", interval)
+		return 0
 	}
+	return duration
+}
 
-	switch unit {
-	case "s":
-		return number, nil
-	case "m":
-		return number * 60, nil
-	case "h":
-		return number * 3600, nil
-	default:
-		return 0, fmt.Errorf("unknown interval unit: %s (supported: s, m, h)", unit)
+func (c *Check) DegradedThresholdDuration() time.Duration {
+	duration, err := time.ParseDuration(fmt.Sprintf("%d%s", c.DegradedThreshold, c.DegradedThresholdUnit))
+	if err != nil {
+		return 0
 	}
+	return duration
+}
+
+func (c *Check) RetriesDelayDuration() time.Duration {
+	if c.RetriesDelay == nil || c.RetriesDelayUnit == nil {
+		return 0
+	}
+	duration, err := time.ParseDuration(fmt.Sprintf("%d%s", *c.RetriesDelay, *c.RetriesDelayUnit))
+	if err != nil {
+		return 0
+	}
+	return duration
+}
+
+func (c *Check) RetriesMaxDelayDuration() time.Duration {
+	if c.RetriesMaxDelay == nil || c.RetriesMaxDelayUnit == nil {
+		return 0
+	}
+	duration, err := time.ParseDuration(fmt.Sprintf("%d%s", *c.RetriesMaxDelay, *c.RetriesMaxDelayUnit))
+	if err != nil {
+		return 0
+	}
+	return duration
+}
+
+func (c *Check) RetriesTimeoutDuration() time.Duration {
+	if c.RetriesTimeout == nil || c.RetriesTimeoutUnit == nil {
+		return 0
+	}
+	duration, err := time.ParseDuration(fmt.Sprintf("%d%s", *c.RetriesTimeout, *c.RetriesTimeoutUnit))
+	if err != nil {
+		return 0
+	}
+	return duration
+}
+
+func (c *Check) IntervalDuration() time.Duration {
+	duration, err := time.ParseDuration(c.Interval)
+	if err != nil {
+		return 0
+	}
+	return duration
 }
