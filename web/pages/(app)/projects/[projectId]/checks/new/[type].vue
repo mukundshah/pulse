@@ -283,15 +283,14 @@ const onSubmit = handleSubmit(async (data) => {
   }
 
   if (data.type === 'http') {
-    const url = new URL(data.url)
-    const https = url.protocol === 'https:'
+    const { host, port, path, queryParams, secure } = decomposeURL(data.url)
 
     payload.method = data.method
-    payload.host = url.hostname
-    payload.port = url.port ? Number.parseInt(url.port) : (https ? 443 : 80)
-    payload.path = url.pathname
-    payload.query_params = Object.fromEntries(url.searchParams.entries())
-    payload.secure = https
+    payload.host = host
+    payload.port = port
+    payload.path = path
+    payload.query_params = queryParams
+    payload.secure = secure
 
     payload.ip_version = data.ip_version
     payload.skip_ssl_verification = data.skip_ssl_verification
@@ -310,13 +309,12 @@ const onSubmit = handleSubmit(async (data) => {
     payload.dns_resolver_port = data.dns_resolver_port
     payload.dns_resolver_protocol = data.dns_resolver_protocol
   } else if (data.type === 'browser') {
-    const url = new URL(data.url)
-    const https = url.protocol === 'https:'
-    payload.host = url.hostname
-    payload.port = url.port ? Number.parseInt(url.port) : (https ? 443 : 80)
-    payload.path = url.pathname
-    payload.query_params = Object.fromEntries(url.searchParams.entries())
-    payload.secure = https
+    const { host, port, path, queryParams, secure } = decomposeURL(data.url)
+    payload.host = host
+    payload.port = port
+    payload.path = path
+    payload.query_params = queryParams
+    payload.secure = secure
 
     payload.pre_script = data.pre_script
     payload.post_script = data.post_script

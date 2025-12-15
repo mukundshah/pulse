@@ -32,7 +32,13 @@ useHead({
           </div>
 
           <p class="text-sm text-muted-foreground font-mono">
-            {{ check?.method }} {{ check?.host }} {{ check?.path }}
+            <Badge class="text-xs" variant="secondary">
+              {{ check?.method }}
+            </Badge>
+
+            <span>
+              {{ constructURL({ host: check?.host, port: check?.port, path: check?.path, queryParams: check?.query_params, secure: check?.secure }) }}
+            </span>
           </p>
 
           <div>
