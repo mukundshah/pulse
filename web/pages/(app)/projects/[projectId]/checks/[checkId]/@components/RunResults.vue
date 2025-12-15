@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useInfiniteScroll } from '@vueuse/core'
-import { Activity, CheckCircle2 } from 'lucide-vue-next'
+import { Activity } from 'lucide-vue-next'
 
 const props = withDefaults(defineProps<{
   projectId: string
@@ -9,6 +9,25 @@ const props = withDefaults(defineProps<{
 }>(), {
   filters: () => ({}),
 })
+
+const STATUS_ICON_COLOR_MAP = {
+  passing: {
+    icon: 'lucide:circle-check',
+    color: 'text-success',
+  },
+  degraded: {
+    icon: 'lucide:circle-alert',
+    color: 'text-warning',
+  },
+  failing: {
+    icon: 'lucide:circle-x',
+    color: 'text-destructive',
+  },
+  unknown: {
+    icon: 'lucide:circle-minus',
+    color: 'text-muted-foreground',
+  },
+} as const
 
 const { $pulseAPI } = useNuxtApp()
 
@@ -51,7 +70,7 @@ const { isLoading } = useInfiniteScroll(
 </script>
 
 <template>
-  <div ref="containerRef">
+  <div ref="containerRef" class="divide-y divide-border">
     <Empty v-if="response && response.data.length === 0" class="h-full">
       <EmptyHeader>
         <EmptyMedia class="text-muted-foreground rounded-full bg-muted" variant="icon">
@@ -64,24 +83,25 @@ const { isLoading } = useInfiniteScroll(
     <div
       v-for="run in response?.data"
       :key="run.id"
-      class="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors group"
+      class="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors group"
     >
-      <CheckCircle2 class="w-4 h-4 text-success shrink-0" />
+      <Icon
+        class="text-lg"
+        :class="STATUS_ICON_COLOR_MAP[run.status as keyof typeof STATUS_ICON_COLOR_MAP].color"
+        :name="STATUS_ICON_COLOR_MAP[run.status as keyof typeof STATUS_ICON_COLOR_MAP].icon"
+      />
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
           <span class="text-sm font-medium text-foreground">
             {{ run.region?.name || 'Unknown' }}
           </span>
-          <Badge v-if="run.region?.code" class="text-xs px-1.5 py-0 h-5" variant="outline">
-            {{ run.region.code }}
-          </Badge>
         </div>
         <p class="text-xs text-muted-foreground">
-          <NuxtTime :datetime="run.created_at" />
+          <NuxtTime relative title :datetime="run.created_at" />
         </p>
       </div>
       <span class="text-xs font-mono text-muted-foreground">
-        {{ run.metrics?.duration }}
+        {{ run.total_time_ms }}ms
       </span>
     </div>
 
@@ -95,7 +115,6 @@ const { isLoading } = useInfiniteScroll(
         <div class="flex-1 min-w-0 space-y-2">
           <div class="flex items-center gap-2">
             <Skeleton class="h-4 w-24" />
-            <Skeleton class="h-5 w-12 rounded-full" />
           </div>
           <Skeleton class="h-3 w-16" />
         </div>
