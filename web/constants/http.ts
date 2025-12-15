@@ -95,7 +95,8 @@ export const DNS_RESOLVER_PROTOCOLS = [
 
 export const ASSERTION_SOURCES = [
   'status_code',
-  'response_body',
+  'response_body_json',
+  'response_body_text',
   'response_headers',
   'response_time_ms',
 ] as const
@@ -126,8 +127,20 @@ export const ASSERTION_PROPERTIES = {
       'is_greater_than_or_equal_to',
     ],
   },
-  response_body: {
-    label: 'Response Body',
+  response_body_json: {
+    label: 'JSON Response',
+    type: 'string',
+    operators: [
+      'equals',
+      'not_equals',
+      'contains',
+      'not_contains',
+      'is_empty',
+      'is_not_empty',
+    ],
+  },
+  response_body_text: {
+    label: 'Text Response',
     type: 'string',
     operators: [
       'equals',
@@ -151,7 +164,7 @@ export const ASSERTION_PROPERTIES = {
     ],
   },
   response_time_ms: {
-    label: 'Response Time',
+    label: 'Response Time (ms)',
     type: 'number',
     operators: [
       'equals',
