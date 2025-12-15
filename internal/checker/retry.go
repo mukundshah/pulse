@@ -1,6 +1,7 @@
 package checker
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -14,21 +15,21 @@ func executeOnce(check *models.Check) Result {
 	switch check.Type {
 	case models.CheckTypeHTTP:
 		return executeHTTPCheck(check, startTime)
-	case models.CheckTypeTCP:
-		return executeTCPCheck(check, startTime)
-	case models.CheckTypeDNS:
-		return executeDNSCheck(check, startTime)
-	case models.CheckTypeBrowser:
-		return executeBrowserCheck(check, startTime)
-	case models.CheckTypeHeartbeat:
-		return executeHeartbeatCheck(check, startTime)
+	// case models.CheckTypeTCP:
+	// 	return executeTCPCheck(check)
+	// case models.CheckTypeDNS:
+	// 	return executeDNSCheck(check)
+	// case models.CheckTypeBrowser:
+	// 	return executeBrowserCheck(check)
+	// case models.CheckTypeHeartbeat:
+	// 	return executeHeartbeatCheck(check)
 	default:
 		return Result{
-			Status:           models.CheckRunStatusUnknown,
-			AssertionResults: emptyJSON(),
-			PlaywrightReport: emptyJSON(),
-			NetworkTimings:   emptyJSON(),
-			Metrics:          mustMarshalJSON(map[string]interface{}{"error": "unknown check type"}),
+			Status:           models.CheckRunStatusFailing,
+			Error:            fmt.Errorf("unsupported check type: %s", check.Type),
+			AssertionResults: emptyJSONArray(),
+			PlaywrightReport: emptyJSONObject(),
+			NetworkTimings:   emptyJSONObject(),
 		}
 	}
 }
