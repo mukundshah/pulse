@@ -20,7 +20,7 @@ func (s *Store) GetCheckRun(id uuid.UUID) (*models.CheckRun, error) {
 
 func (s *Store) GetCheckRunsByCheck(checkID uuid.UUID, limit int, after, before *uuid.UUID) ([]models.CheckRun, error) {
 	var runs []models.CheckRun
-	query := s.db.Preload("Region").Where("check_id = ?", checkID)
+	query := s.db.Preload("Region").Omit("Check").Where("check_id = ?", checkID)
 
 	// Handle cursor-based pagination
 	// We sort by created_at DESC, id DESC (latest to oldest)

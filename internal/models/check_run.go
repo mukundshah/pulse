@@ -23,7 +23,7 @@ type CheckRun struct {
 	Region   Region    `gorm:"foreignKey:RegionID" json:"region,omitempty"`
 
 	CheckID uuid.UUID `gorm:"type:uuid;index;not null" json:"check_id"`
-	Check   Check     `gorm:"foreignKey:CheckID" json:"check,omitempty"`
+	Check   Check     `gorm:"foreignKey:CheckID" json:"-"`
 
 	Remarks string `gorm:"type:text" json:"remarks"`
 
