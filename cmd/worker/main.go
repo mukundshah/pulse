@@ -71,7 +71,7 @@ func main() {
 	a := alerter.New(s)
 
 	// Create scheduler with region code
-	sched := scheduler.New(s, redisClient, cfg.RegionCode)
+	sched := scheduler.New(s, redisClient, cfg.RegionCode, scheduler.DefaultConfig())
 	sched.Start()
 	defer sched.Stop()
 
