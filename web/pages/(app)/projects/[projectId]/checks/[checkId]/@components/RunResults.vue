@@ -13,19 +13,19 @@ const props = withDefaults(defineProps<{
 const STATUS_ICON_COLOR_MAP = {
   passing: {
     icon: 'lucide:circle-check',
-    color: 'text-success',
+    color: 'text-green-500',
   },
   degraded: {
     icon: 'lucide:circle-alert',
-    color: 'text-warning',
+    color: 'text-amber-500',
   },
   failing: {
     icon: 'lucide:circle-x',
-    color: 'text-destructive',
+    color: 'text-red-500',
   },
   unknown: {
     icon: 'lucide:circle-minus',
-    color: 'text-muted-foreground',
+    color: 'text-gray-500',
   },
 } as const
 
