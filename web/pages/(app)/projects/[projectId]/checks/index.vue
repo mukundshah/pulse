@@ -187,14 +187,19 @@ useHead({
           </TableCell>
           <TableCell>
             <div class="flex items-center justify-start gap-4">
-              <StatusBadge :status="check.status" />
+              <StatusBadge :status="check.last_status" />
               <div>
                 <div class="font-medium">
                   {{ check.name }}
                 </div>
                 <div class="text-xs text-muted-foreground">
                   <span class="sr-only">Last run at:</span>
-                  <NuxtTime v-if="check.last_run_at" :datetime="check.last_run_at" />
+                  <NuxtTime
+                    v-if="check.last_run_at"
+                    relative
+                    title
+                    :datetime="check.last_run_at"
+                  />
                   <span v-else>Never ran</span>
                 </div>
               </div>
