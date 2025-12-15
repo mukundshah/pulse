@@ -295,9 +295,14 @@ const onSubmit = handleSubmit(async (data) => {
     payload.ip_version = data.ip_version
     payload.skip_ssl_verification = data.skip_ssl_verification
     payload.follow_redirects = data.follow_redirects
-    payload.headers = Object.fromEntries(data.headers?.map(header => [header.key, header.value]) ?? [])
+    payload.headers = Object.fromEntries(data.headers?.filter(header => header.key && header.value).map(header => [header.key, header.value]) ?? [])
     payload.body = data.body
-    payload.assertions = data.assertions as PulseAPIRequestBody<'createProjectCheck'>['assertions']
+    payload.assertions = data.assertions?.filter(assertion => assertion.source && assertion.comparison && assertion.target).map(assertion => ({
+      source: assertion.source,
+      property: assertion.property,
+      comparison: assertion.comparison,
+      target: assertion.target,
+    })) as PulseAPIRequestBody<'createProjectCheck'>['assertions']
   } else if (data.type === 'tcp') {
     payload.host = data.host
     payload.port = data.port
