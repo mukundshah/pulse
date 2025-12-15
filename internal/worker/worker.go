@@ -114,9 +114,12 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 		AssertionResults: result.AssertionResults,
 		PlaywrightReport: result.PlaywrightReport,
 		NetworkTimings:   result.NetworkTimings,
-		Remarks:          result.Error.Error(),
 		RegionID:         w.regionID,
 		CheckID:          check.ID,
+	}
+
+	if result.Error != nil {
+		checkRun.Remarks = result.Error.Error()
 	}
 
 	if err := w.store.CreateCheckRun(checkRun); err != nil {
