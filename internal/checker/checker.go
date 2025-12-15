@@ -8,26 +8,26 @@ import (
 
 // Execute runs a check and returns the result
 func Execute(check *models.Check) Result {
-	startTime := time.Now()
+	attempts := computeAttempts(check)
+	var result Result
+	var previousDelay time.Duration
 
-	switch check.Type {
-	case models.CheckTypeHTTP:
-		return executeHTTPCheck(check, startTime)
-	case models.CheckTypeTCP:
-		return executeTCPCheck(check, startTime)
-	case models.CheckTypeDNS:
-		return executeDNSCheck(check, startTime)
-	case models.CheckTypeBrowser:
-		return executeBrowserCheck(check, startTime)
-	case models.CheckTypeHeartbeat:
-		return executeHeartbeatCheck(check, startTime)
-	default:
-		return Result{
-			Status:           models.CheckRunStatusUnknown,
-			AssertionResults: emptyJSON(),
-			PlaywrightReport: emptyJSON(),
-			NetworkTimings:   emptyJSON(),
-			Metrics:          mustMarshalJSON(map[string]interface{}{"error": "unknown check type"}),
+	for attempt := 0; attempt < attempts; attempt++ {
+		result = executeOnce(check)
+		if result.Status == models.CheckRunStatusPassing {
+			return result
+		}
+
+		if attempt == attempts-1 {
+			break
+		}
+
+		delay := computeRetryDelay(check, attempt, previousDelay)
+		previousDelay = delay
+		if delay > 0 {
+			time.Sleep(delay)
 		}
 	}
+
+	return result
 }
