@@ -28,7 +28,7 @@ useHead({
             <h1 class="text-2xl font-semibold text-balance text-foreground">
               {{ check?.name }}
             </h1>
-            <StatusBadge status="passing" />
+            <StatusBadge :status="check?.last_status" />
           </div>
 
           <div class="text-sm text-muted-foreground font-mono flex items-center gap-2">
