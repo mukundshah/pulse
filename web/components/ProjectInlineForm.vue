@@ -23,7 +23,7 @@ const { handleSubmit, isSubmitting, resetForm } = useForm({
 
 const onSubmit = handleSubmit(async (data) => {
   try {
-    const res = await $pulseAPI('/v1/projects', {
+    const res = await $pulseAPI('/internal/projects', {
       method: 'POST',
       body: data,
     })

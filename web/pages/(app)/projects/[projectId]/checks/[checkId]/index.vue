@@ -7,7 +7,7 @@ import UptimeChart from './@components/UptimeChart.vue'
 const route = useRoute()
 const { projectId, checkId } = route.params as { projectId: string, checkId: string }
 
-const { data: check } = await usePulseAPI('/v1/projects/{projectId}/checks/{checkId}', {
+const { data: check } = await usePulseAPI('/internal/projects/{projectId}/checks/{checkId}', {
   path: {
     projectId,
     checkId,

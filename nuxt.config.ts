@@ -73,7 +73,7 @@ export default defineNuxtConfig({
     clients: {
       pulseAPI: {
         baseURL: 'http://localhost:8080/api',
-        schema: joinURL(env.NUXT_PUBLIC_OPEN_FETCH_PULSE_API_BASE_URL ?? 'http://localhost:8080', '/docs/v1/openapi.json'),
+        schema: joinURL(env.NUXT_PUBLIC_OPEN_FETCH_PULSE_API_BASE_URL ?? 'http://localhost:8080', '/docs/internal/openapi.json'),
       },
     },
   },

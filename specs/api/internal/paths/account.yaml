@@ -1,5 +1,5 @@
 paths:
-  /v1/account/me:
+  /internal/account/me:
     get:
       operationId: getCurrentUser
       summary: Get current user information
@@ -9,20 +9,20 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: User information retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrentUser'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/CurrentUser"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/account/profile:
+  /internal/account/profile:
     put:
       operationId: updateProfile
       summary: Update user profile
@@ -51,28 +51,28 @@ paths:
                   description: Email address (if changed, will require verification)
                   example: john.doe@example.com
       responses:
-        '200':
+        "200":
           description: Profile updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '409':
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
           description: Email already in use
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/account/password:
+  /internal/account/password:
     patch:
       operationId: changePassword
       summary: Change password
@@ -103,7 +103,7 @@ paths:
                   description: New password (minimum 8 characters)
                   example: newpassword123
       responses:
-        '200':
+        "200":
           description: Password changed successfully
           content:
             application/json:
@@ -113,20 +113,20 @@ paths:
                   message:
                     type: string
                     example: password changed successfully
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
           description: Invalid current password
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/account:
+  /internal/account:
     delete:
       operationId: deleteAccount
       summary: Delete (deactivate) account
@@ -150,7 +150,7 @@ paths:
                   description: User's password for confirmation
                   example: securepassword123
       responses:
-        '200':
+        "200":
           description: Account deactivated successfully
           content:
             application/json:
@@ -160,15 +160,15 @@ paths:
                   message:
                     type: string
                     example: account deactivated successfully
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
           description: Invalid password
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"

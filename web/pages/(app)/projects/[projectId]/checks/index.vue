@@ -25,13 +25,13 @@ const checkTypes = [
   },
 ]
 
-const { data: project } = await usePulseAPI('/v1/projects/{projectId}', {
+const { data: project } = await usePulseAPI('/internal/projects/{projectId}', {
   path: {
     projectId,
   },
 })
 
-const { data: checks, pending: checksLoading } = useLazyPulseAPI('/v1/projects/{projectId}/checks', {
+const { data: checks, pending: checksLoading } = useLazyPulseAPI('/internal/projects/{projectId}/checks', {
   path: {
     projectId,
   },

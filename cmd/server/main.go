@@ -94,7 +94,7 @@ func main() {
 	r.GET("/docs/:version", (func(c *gin.Context) {
 		version := c.Param("version")
 
-		if version != "v1" {
+		if version != "internal" {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Unsupported version",
 			})
@@ -129,7 +129,7 @@ func main() {
 		version := c.Param("version")
 		format := c.Param("format")
 
-		if version != "v1" {
+		if version != "internal" {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Unsupported version",
 			})
@@ -165,7 +165,7 @@ func main() {
 	}))
 
 	// API routes
-	api := r.Group("/api/v1")
+	api := r.Group("/api/internal")
 
 	{
 		// Auth routes

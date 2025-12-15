@@ -23,7 +23,7 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
   const storage = getStorage({ namespace })
 
   const login = async (data: PulseAPIRequestBody<'loginUser'>) => {
-    const response = await $pulseAPI('/v1/auth/login', {
+    const response = await $pulseAPI('/internal/auth/login', {
       method: 'POST',
       body: data,
     })
@@ -43,7 +43,7 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
   }
 
   const logout = async () => {
-    const response = await $pulseAPI('/v1/auth/session', {
+    const response = await $pulseAPI('/internal/auth/session', {
       method: 'DELETE',
     })
 
@@ -55,7 +55,7 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
   }
 
   const signup = async (data: PulseAPIRequestBody<'registerUser'>) => {
-    const response = await $pulseAPI('/v1/auth/register', {
+    const response = await $pulseAPI('/internal/auth/register', {
       method: 'POST',
       body: data,
     })
@@ -69,7 +69,7 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
 
   const syncAuthenticationStatus = async () => {
     try {
-      const response = await $pulseAPI('/v1/auth/session', { method: 'GET' })
+      const response = await $pulseAPI('/internal/auth/session', { method: 'GET' })
       return response
     } catch (error: any) {
       // If unauthorized, clear auth state
@@ -83,7 +83,7 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
   }
 
   const me = async () => {
-    const response = await $pulseAPI('/v1/account/me', { method: 'GET' })
+    const response = await $pulseAPI('/internal/account/me', { method: 'GET' })
     return response
   }
 
@@ -163,7 +163,7 @@ export const useEmailManagement = ({ namespace }: { namespace?: string } = {}) =
   }
 
   const requestEmailVerification = async (data: PulseAPIRequestBody<'resendVerificationEmail'>) => {
-    const response = await $pulseAPI('/v1/auth/resend-verification', {
+    const response = await $pulseAPI('/internal/auth/resend-verification', {
       method: 'POST',
       body: data,
     })
@@ -171,7 +171,7 @@ export const useEmailManagement = ({ namespace }: { namespace?: string } = {}) =
   }
 
   const verifyEmail = async (data: PulseAPIRequestBody<'verifyEmail'>) => {
-    const response = await $pulseAPI('/v1/auth/verify-email', {
+    const response = await $pulseAPI('/internal/auth/verify-email', {
       method: 'POST',
       body: data,
     })
@@ -203,7 +203,7 @@ export const usePasswordManagement = ({ namespace }: { namespace?: string } = {}
   const { $pulseAPI } = useNuxtApp()
 
   const requestPasswordReset = async (data: PulseAPIRequestBody<'requestPasswordReset'>) => {
-    const response = await $pulseAPI('/v1/auth/password/reset', {
+    const response = await $pulseAPI('/internal/auth/password/reset', {
       method: 'POST',
       body: data,
     })
@@ -215,7 +215,7 @@ export const usePasswordManagement = ({ namespace }: { namespace?: string } = {}
   }
 
   const resetPassword = async (data: PulseAPIRequestBody<'resetPassword'>) => {
-    const response = await $pulseAPI('/v1/auth/password/reset/confirm', {
+    const response = await $pulseAPI('/internal/auth/password/reset/confirm', {
       method: 'POST',
       body: data,
     })
@@ -223,7 +223,7 @@ export const usePasswordManagement = ({ namespace }: { namespace?: string } = {}
   }
 
   const changePassword = async (data: PulseAPIRequestBody<'changePassword'>) => {
-    const response = await $pulseAPI('/v1/account/password', {
+    const response = await $pulseAPI('/internal/account/password', {
       method: 'PATCH',
       body: data,
     })

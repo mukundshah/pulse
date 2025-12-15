@@ -18,7 +18,7 @@ const { data: user, pending: userPending } = useAsyncData('user', () => me())
 
 const showProjectInput = ref(false)
 
-const { data: projects, pending: projectsLoading, refresh: refreshProjects } = useLazyPulseAPI('/v1/projects')
+const { data: projects, pending: projectsLoading, refresh: refreshProjects } = useLazyPulseAPI('/internal/projects')
 
 const handleLogout = async () => {
   await logout()

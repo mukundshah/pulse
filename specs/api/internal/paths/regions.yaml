@@ -1,5 +1,5 @@
 paths:
-  /v1/regions:
+  /internal/regions:
     get:
       operationId: listRegions
       summary: List all regions
@@ -8,13 +8,13 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of regions
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Region'
-        '500':
-          $ref: '#/components/responses/Error'
+                  $ref: "#/components/schemas/Region"
+        "500":
+          $ref: "#/components/responses/Error"

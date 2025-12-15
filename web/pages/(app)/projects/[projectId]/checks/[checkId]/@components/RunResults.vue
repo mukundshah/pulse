@@ -15,7 +15,7 @@ const { $pulseAPI } = useNuxtApp()
 const container = useTemplateRef<HTMLElement>('containerRef')
 
 const fetcher = (after?: string, limit: number = 50) => {
-  return $pulseAPI('/v1/projects/{projectId}/checks/{checkId}/runs', {
+  return $pulseAPI('/internal/projects/{projectId}/checks/{checkId}/runs', {
     path: {
       projectId: props.projectId,
       checkId: props.checkId,

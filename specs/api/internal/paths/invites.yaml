@@ -1,5 +1,5 @@
 paths:
-  /v1/projects/{projectId}/invites:
+  /internal/projects/{projectId}/invites:
     get:
       operationId: listProjectInvites
       summary: List all invitations for a project
@@ -15,22 +15,22 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: List of project invitations
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProjectInvitation'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                  $ref: "#/components/schemas/ProjectInvitation"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
     post:
       operationId: createProjectInvite
       summary: Create a new project invitation
@@ -59,24 +59,24 @@ paths:
                   format: email
                   example: john.doe@example.com
       responses:
-        '201':
+        "201":
           description: Invitation created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectInvitation'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '409':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/ProjectInvitation"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/invites/accept:
+  /internal/invites/accept:
     post:
       operationId: acceptInvite
       summary: Accept a project invitation
@@ -97,7 +97,7 @@ paths:
                   type: string
                   example: invitation-token-here
       responses:
-        '200':
+        "200":
           description: Invitation accepted successfully
           content:
             application/json:
@@ -111,15 +111,15 @@ paths:
                     type: string
                     format: uuid
                     example: 550e8400-e29b-41d4-a716-446655440000
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '409':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"

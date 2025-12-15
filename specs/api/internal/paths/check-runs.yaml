@@ -1,5 +1,5 @@
 paths:
-  /v1/projects/{projectId}/checks/{checkId}/runs:
+  /internal/projects/{projectId}/checks/{checkId}/runs:
     get:
       operationId: listCheckRunsByCheck
       summary: List check runs for a check
@@ -53,7 +53,7 @@ paths:
             Cursor for backward pagination. Returns items newer than the specified check run ID.
             Use the `prev_cursor` from the previous response.
       responses:
-        '200':
+        "200":
           description: Paginated list of check runs
           content:
             application/json:
@@ -65,7 +65,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CheckRun'
+                      $ref: "#/components/schemas/CheckRun"
                     description: Array of check runs, sorted from latest to oldest
                   prev_cursor:
                     type: string
@@ -83,16 +83,16 @@ paths:
                       Cursor to retrieve older items (next page).
                       Use this value with the `after` parameter.
                       Null if there are no older items available.
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
 
-  /v1/projects/{projectId}/checks/{checkId}/runs/{runId}:
+  /internal/projects/{projectId}/checks/{checkId}/runs/{runId}:
     get:
       operationId: getCheckRunById
       summary: Get a check run by ID
@@ -123,17 +123,17 @@ paths:
             format: uuid
           description: The ID of the check run
       responses:
-        '200':
+        "200":
           description: Check run details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CheckRun'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/CheckRun"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"

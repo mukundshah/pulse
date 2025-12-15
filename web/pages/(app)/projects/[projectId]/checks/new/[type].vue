@@ -258,7 +258,7 @@ useHead({
   title: `New ${TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP]}`,
 })
 
-const { data: regions, pending: isLoadingRegions, error: regionsFetchError } = await useLazyPulseAPI('/v1/regions')
+const { data: regions, pending: isLoadingRegions, error: regionsFetchError } = await useLazyPulseAPI('/internal/regions')
 
 const { handleSubmit, isSubmitting, values } = useForm({
   validationSchema: toTypedSchema(schema),
@@ -321,7 +321,7 @@ const onSubmit = handleSubmit(async (data) => {
     payload.playwright_script = data.playwright_script
   }
 
-  const res = await $pulseAPI('/v1/projects/{projectId}/checks', {
+  const res = await $pulseAPI('/internal/projects/{projectId}/checks', {
     method: 'POST',
     path: { projectId },
     body: payload,

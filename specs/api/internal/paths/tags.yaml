@@ -1,5 +1,5 @@
 paths:
-  /v1/projects/{projectId}/tags:
+  /internal/projects/{projectId}/tags:
     get:
       operationId: listProjectTags
       summary: List all tags for a project
@@ -15,22 +15,22 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: List of tags for the project
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                  $ref: "#/components/schemas/Tag"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
     post:
       operationId: createProjectTag
       summary: Create a new tag in a project
@@ -58,22 +58,22 @@ paths:
                   type: string
                   example: production
       responses:
-        '201':
+        "201":
           description: Tag created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Tag"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/projects/{projectId}/tags/{tagId}:
+  /internal/projects/{projectId}/tags/{tagId}:
     post:
       operationId: addTagToProject
       summary: Add a tag to a project
@@ -95,20 +95,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Tag added to project successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Tag"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
     delete:
       operationId: removeTagFromProject
       summary: Remove a tag from a project
@@ -130,7 +130,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Tag removed from project successfully
           content:
             application/json:
@@ -140,16 +140,16 @@ paths:
                   message:
                     type: string
                     example: Tag removed from project
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/projects/{projectId}/checks/{checkId}/tags/{tagId}:
+  /internal/projects/{projectId}/checks/{checkId}/tags/{tagId}:
     post:
       operationId: addTagToCheck
       summary: Add a tag to a check
@@ -177,20 +177,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Tag added to check successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Check"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
     delete:
       operationId: removeTagFromCheck
       summary: Remove a tag from a check
@@ -218,17 +218,17 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Tag removed from check successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Check"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"

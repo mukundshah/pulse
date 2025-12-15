@@ -1,5 +1,5 @@
 paths:
-  /v1/projects/{projectId}/checks:
+  /internal/projects/{projectId}/checks:
     get:
       operationId: listProjectChecks
       summary: List all checks in a project
@@ -15,22 +15,22 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: List of checks
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                  $ref: "#/components/schemas/Check"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
     post:
       operationId: createProjectCheck
       summary: Create a new check in a project
@@ -107,13 +107,31 @@ paths:
                     properties:
                       source:
                         type: string
-                        enum: [status_code, response_body, response_headers, response_time_ms]
+                        enum:
+                          [
+                            status_code,
+                            response_body,
+                            response_headers,
+                            response_time_ms,
+                          ]
                       property:
                         type: string
                         nullable: true
                       comparison:
                         type: string
-                        enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+                        enum:
+                          [
+                            equals,
+                            not_equals,
+                            contains,
+                            not_contains,
+                            is_empty,
+                            is_not_empty,
+                            is_less_than,
+                            is_less_than_or_equal_to,
+                            is_greater_than,
+                            is_greater_than_or_equal_to,
+                          ]
                       target:
                         type: string
                     required:
@@ -210,22 +228,22 @@ paths:
                   nullable: true
                   description: DNS resolver protocol
       responses:
-        '201':
+        "201":
           description: Check created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Check"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
 
-  /v1/projects/{projectId}/checks/{checkId}:
+  /internal/projects/{projectId}/checks/{checkId}:
     get:
       operationId: getCheckById
       summary: Get a check by ID
@@ -247,20 +265,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Check details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Check"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
     put:
       operationId: updateCheck
       summary: Update a check
@@ -332,13 +350,31 @@ paths:
                     properties:
                       source:
                         type: string
-                        enum: [status_code, response_body, response_headers, response_time_ms]
+                        enum:
+                          [
+                            status_code,
+                            response_body,
+                            response_headers,
+                            response_time_ms,
+                          ]
                       property:
                         type: string
                         nullable: true
                       comparison:
                         type: string
-                        enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+                        enum:
+                          [
+                            equals,
+                            not_equals,
+                            contains,
+                            not_contains,
+                            is_empty,
+                            is_not_empty,
+                            is_less_than,
+                            is_less_than_or_equal_to,
+                            is_greater_than,
+                            is_greater_than_or_equal_to,
+                          ]
                       target:
                         type: string
                     required:
@@ -429,22 +465,22 @@ paths:
                   nullable: true
                   description: DNS resolver protocol
       responses:
-        '200':
+        "200":
           description: Check updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Check'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Check"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
     delete:
       operationId: deleteCheck
       summary: Delete a check
@@ -466,7 +502,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Check deleted successfully
           content:
             application/json:
@@ -476,11 +512,11 @@ paths:
                   message:
                     type: string
                     example: Check deleted successfully
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
