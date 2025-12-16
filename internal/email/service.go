@@ -55,7 +55,7 @@ func loadTemplates() (*template.Template, error) {
 			return template.HTML(s)
 		},
 		"now": func() time.Time {
-			return time.Now()
+			return time.Now().UTC()
 		},
 	})
 

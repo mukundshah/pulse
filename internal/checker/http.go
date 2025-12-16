@@ -101,9 +101,9 @@ func (e *httpCheckExecutor) execute(ctx context.Context) Result {
 	req = e.addTracing(req)
 
 	// Execute request
-	e.startTime = time.Now()
+	e.startTime = time.Now().UTC()
 	resp, httpErr := e.client.Do(req)
-	e.endTime = time.Now()
+	e.endTime = time.Now().UTC()
 
 	// Handle response error
 	if httpErr != nil {
@@ -225,28 +225,28 @@ func (e *httpCheckExecutor) setHeaders(req *http.Request) error {
 func (e *httpCheckExecutor) addTracing(req *http.Request) *http.Request {
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(httptrace.DNSStartInfo) {
-			e.timings.dnsStart = time.Now()
+			e.timings.dnsStart = time.Now().UTC()
 		},
 		DNSDone: func(httptrace.DNSDoneInfo) {
-			e.timings.dnsDone = time.Now()
+			e.timings.dnsDone = time.Now().UTC()
 		},
 		ConnectStart: func(_, _ string) {
-			e.timings.connectStart = time.Now()
+			e.timings.connectStart = time.Now().UTC()
 		},
 		ConnectDone: func(_, _ string, _ error) {
-			e.timings.connectDone = time.Now()
+			e.timings.connectDone = time.Now().UTC()
 		},
 		TLSHandshakeStart: func() {
-			e.timings.tlsStart = time.Now()
+			e.timings.tlsStart = time.Now().UTC()
 		},
 		TLSHandshakeDone: func(tls.ConnectionState, error) {
-			e.timings.tlsDone = time.Now()
+			e.timings.tlsDone = time.Now().UTC()
 		},
 		GotConn: func(httptrace.GotConnInfo) {
-			e.timings.gotConn = time.Now()
+			e.timings.gotConn = time.Now().UTC()
 		},
 		GotFirstResponseByte: func() {
-			e.timings.firstByte = time.Now()
+			e.timings.firstByte = time.Now().UTC()
 		},
 	}
 

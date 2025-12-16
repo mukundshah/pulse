@@ -184,7 +184,7 @@ func NewFileBackend(backendURL string) (*FileBackend, error) {
 
 // SendEmail writes the email to a file
 func (b *FileBackend) SendEmail(ctx context.Context, email *Email) error {
-	timestamp := time.Now().Format("20060102-150405")
+	timestamp := time.Now().UTC().Format("20060102-150405")
 	safeEmail := strings.NewReplacer(
 		"@", "_at_",
 		":", "_",
@@ -196,7 +196,7 @@ func (b *FileBackend) SendEmail(ctx context.Context, email *Email) error {
 
 	content := fmt.Sprintf("To: %s\n", email.To) +
 		fmt.Sprintf("Subject: %s\n", email.Subject) +
-		fmt.Sprintf("Time: %s\n", time.Now().Format(time.RFC3339)) +
+		fmt.Sprintf("Time: %s\n", time.Now().UTC().Format(time.RFC3339)) +
 		strings.Repeat("=", 80) + "\n" +
 		"TEXT VERSION:\n" +
 		strings.Repeat("-", 80) + "\n" +
@@ -247,7 +247,7 @@ func (b *LocMemBackend) SendEmail(ctx context.Context, email *Email) error {
 		Subject:  email.Subject,
 		HTMLBody: email.HTMLBody,
 		TextBody: email.TextBody,
-		SentAt:   time.Now(),
+		SentAt:   time.Now().UTC(),
 	})
 
 	log.Printf("Email stored in memory (total: %d)", len(b.emails))

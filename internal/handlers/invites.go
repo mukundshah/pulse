@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -84,8 +83,6 @@ func (h *InvitesHandler) CreateInvite(c *gin.Context) {
 		ProjectID: projectID,
 		Email:     req.Email,
 		Token:     token,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	if err := h.store.CreateProjectInvitation(invite); err != nil {
@@ -174,8 +171,6 @@ func (h *InvitesHandler) AcceptInvite(c *gin.Context) {
 		ProjectID: invite.ProjectID,
 		UserID:    userID,
 		Role:      "member", // Default role for invited members
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	if err := h.store.CreateProjectMember(member); err != nil {

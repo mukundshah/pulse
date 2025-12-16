@@ -74,7 +74,7 @@ func (h *SessionHandler) ValidateSession(c *gin.Context) {
 	}
 
 	// Check if session has expired
-	if time.Now().After(session.ExpiresAt) {
+	if time.Now().UTC().After(session.ExpiresAt) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "session has expired"})
 		return
 	}

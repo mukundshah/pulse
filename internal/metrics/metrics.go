@@ -15,7 +15,7 @@ type Metrics struct {
 }
 
 var globalMetrics = &Metrics{
-	StartTime: time.Now(),
+	StartTime: time.Now().UTC(),
 }
 
 // GetMetrics returns the current metrics snapshot

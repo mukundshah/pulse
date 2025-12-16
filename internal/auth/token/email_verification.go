@@ -42,7 +42,7 @@ func NewEmailVerificationTokenGenerator(cfg EmailVerificationConfig) *EmailVerif
 // Returns a token in the format: {emailb64}-{timestamp}-{hmac_signature}
 // The email is included in the token so it can be extracted during verification.
 func (g *EmailVerificationTokenGenerator) Generate(email string) string {
-	ts := secondsSinceEpoch(time.Now())
+	ts := secondsSinceEpoch(time.Now().UTC())
 	token := g.generateWithTimestamp(email, ts)
 	emailb64 := base64.RawURLEncoding.EncodeToString([]byte(email))
 	return fmt.Sprintf("%s-%s", emailb64, token)
@@ -72,7 +72,7 @@ func (g *EmailVerificationTokenGenerator) Validate(email, token string) bool {
 		return false
 	}
 
-	now := secondsSinceEpoch(time.Now())
+	now := secondsSinceEpoch(time.Now().UTC())
 	elapsed := time.Duration(now-ts) * time.Second
 
 	return elapsed <= g.timeout
@@ -98,7 +98,7 @@ func (g *EmailVerificationTokenGenerator) ValidateWithEmail(token string) bool {
 		return false
 	}
 
-	now := secondsSinceEpoch(time.Now())
+	now := secondsSinceEpoch(time.Now().UTC())
 	elapsed := time.Duration(now-ts) * time.Second
 
 	return elapsed <= g.timeout

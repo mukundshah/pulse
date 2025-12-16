@@ -105,8 +105,6 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		PasswordHash:  passwordHash,
 		EmailVerified: false,
 		IsActive:      true,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
 	}
 
 	if err := h.store.CreateUser(user); err != nil {
@@ -164,7 +162,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	// Update last login
-	now := time.Now()
+	now := time.Now().UTC()
 	user.LastLogin = &now
 	if err := h.store.UpdateUser(user); err != nil {
 		// Log error but don't fail the login
@@ -186,8 +184,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		UserAgent:    c.GetHeader("User-Agent"),
 		IPAddress:    c.ClientIP(),
 		IsActive:     true,
-		ExpiresAt:    time.Now().Add(24 * time.Hour), // Match JWT validity
-		LastActivity: time.Now(),
+		ExpiresAt:    time.Now().UTC().Add(24 * time.Hour), // Match JWT validity
+		LastActivity: time.Now().UTC(),
 	}
 
 	if err := h.store.CreateSession(session); err != nil {
@@ -298,7 +296,6 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 
 	// Update password (this will invalidate the token since password hash changes)
 	user.PasswordHash = newPasswordHash
-	user.UpdatedAt = time.Now()
 	if err := h.store.UpdateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update password"})
 		return

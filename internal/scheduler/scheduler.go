@@ -148,7 +148,7 @@ func (s *Scheduler) poller() {
 
 // pollOnce performs a single poll cycle.
 func (s *Scheduler) pollOnce() {
-	start := time.Now()
+	start := time.Now().UTC()
 	s.logger.Debug("starting poll cycle")
 
 	checks, err := s.getDueChecks()
@@ -285,7 +285,7 @@ func (s *Scheduler) enqueueCheck(check *models.Check) error {
 func (s *Scheduler) updateNextRun(check *models.Check) error {
 	interval := check.IntervalDuration()
 
-	nextRun := time.Now().Add(interval)
+	nextRun := time.Now().UTC().Add(interval)
 
 	if err := s.store.UpdateCheckStatus(check.ID, nextRun, check.LastStatus); err != nil {
 		return fmt.Errorf("failed to update check status: %w", err)

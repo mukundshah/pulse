@@ -44,7 +44,7 @@ type Claims struct {
 // Generate creates a new JWT token for a user.
 // Returns the token string and the JTI (JWT ID) for session tracking.
 func (g *JWTTokenGenerator) Generate(userID uuid.UUID, email string) (string, string, error) {
-	now := time.Now()
+	now := time.Now().UTC()
 	jti := uuid.New().String() // Generate unique JWT ID
 
 	claims := Claims{
@@ -69,7 +69,7 @@ func (g *JWTTokenGenerator) Generate(userID uuid.UUID, email string) (string, st
 
 // GenerateWithJTI creates a new JWT token with a specific JTI (for token refresh scenarios).
 func (g *JWTTokenGenerator) GenerateWithJTI(userID uuid.UUID, email string, jti string) (string, error) {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	claims := Claims{
 		UserID: userID,

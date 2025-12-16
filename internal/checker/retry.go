@@ -91,7 +91,7 @@ func applyJitter(delay time.Duration, previousDelay time.Duration, check *models
 		jitterFactor = *check.RetriesJitterFactor
 	}
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
 	switch jitterType {
 	case models.RetryJitterTypeFull:

@@ -44,7 +44,7 @@ type User struct {
 
 // Generate creates a password reset token for the given user.
 func (g *PasswordResetTokenGenerator) Generate(u User) string {
-	ts := secondsSinceEpoch(time.Now())
+	ts := secondsSinceEpoch(time.Now().UTC())
 	return g.generateWithTimestamp(u, ts)
 }
 
@@ -62,7 +62,7 @@ func (g *PasswordResetTokenGenerator) GetUID(token string) string {
 }
 
 func (g *PasswordResetTokenGenerator) GenerateWithUID(u User) string {
-	ts := secondsSinceEpoch(time.Now())
+	ts := secondsSinceEpoch(time.Now().UTC())
 	token := g.generateWithTimestamp(u, ts)
 	uidb64 := base64.RawURLEncoding.EncodeToString([]byte(u.ID))
 	return fmt.Sprintf("%s-%s", uidb64, token)
@@ -123,7 +123,7 @@ func (g *PasswordResetTokenGenerator) ValidateWithFallbacks(u User, token string
 	}
 
 	// Check if token has expired
-	now := secondsSinceEpoch(time.Now())
+	now := secondsSinceEpoch(time.Now().UTC())
 	elapsed := time.Duration(now-ts) * time.Second
 
 	return elapsed <= g.timeout
@@ -220,5 +220,5 @@ func takeEveryOther(s string) string {
 
 // secondsSinceEpoch returns seconds since the epoch (2001-01-01).
 func secondsSinceEpoch(t time.Time) int64 {
-	return int64(t.Sub(epoch).Seconds())
+	return int64(t.UTC().Sub(epoch).Seconds())
 }

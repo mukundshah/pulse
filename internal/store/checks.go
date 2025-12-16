@@ -38,7 +38,7 @@ func (s *Store) DeleteCheck(id uuid.UUID) error {
 
 func (s *Store) GetDueChecks(regionCode string) ([]models.Check, error) {
 	var checks []models.Check
-	now := time.Now()
+	now := time.Now().UTC()
 
 	// Get region ID by code
 	var region models.Region
@@ -60,7 +60,7 @@ func (s *Store) GetDueChecks(regionCode string) ([]models.Check, error) {
 }
 
 func (s *Store) UpdateCheckStatus(checkID uuid.UUID, nextRun time.Time, lastStatus models.CheckRunStatus) error {
-	now := time.Now()
+	now := time.Now().UTC()
 	return s.db.Model(&models.Check{}).Where("id = ?", checkID).Updates(map[string]interface{}{
 		"last_run_at": now,
 		"next_run_at": nextRun,

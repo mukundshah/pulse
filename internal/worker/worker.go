@@ -135,7 +135,7 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 		log.Printf("Worker %d: Error parsing interval for check %s: %v", workerID, checkID, err)
 		interval = 10 * time.Minute // Default to 10 minutes if parsing fails
 	}
-	nextRun := time.Now().Add(interval)
+	nextRun := time.Now().UTC().Add(interval)
 	if err := w.store.UpdateCheckStatus(checkID, nextRun, result.Status); err != nil {
 		log.Printf("Worker %d: Error updating check status for %s: %v", workerID, checkID, err)
 	}

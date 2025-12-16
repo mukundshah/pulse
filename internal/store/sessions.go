@@ -14,13 +14,13 @@ func (s *Store) CreateSession(session *models.Session) error {
 		session.ID = uuid.New()
 	}
 	if session.CreatedAt.IsZero() {
-		session.CreatedAt = time.Now()
+		session.CreatedAt = time.Now().UTC()
 	}
 	if session.UpdatedAt.IsZero() {
-		session.UpdatedAt = time.Now()
+		session.UpdatedAt = time.Now().UTC()
 	}
 	if session.LastActivity.IsZero() {
-		session.LastActivity = time.Now()
+		session.LastActivity = time.Now().UTC()
 	}
 
 	err := s.db.Create(session).Error
@@ -57,7 +57,7 @@ func (s *Store) GetSessionByJTI(jti string) (*models.Session, error) {
 	}
 
 	var session models.Session
-	err := s.db.Where("jti = ? AND is_active = ? AND expires_at > ?", jti, true, time.Now()).First(&session).Error
+	err := s.db.Where("jti = ? AND is_active = ? AND expires_at > ?", jti, true, time.Now().UTC()).First(&session).Error
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (s *Store) GetSessionByID(sessionID uuid.UUID) (*models.Session, error) {
 // GetSessionsByUserID retrieves all active sessions for a user
 func (s *Store) GetSessionsByUserID(userID uuid.UUID) ([]*models.Session, error) {
 	var sessions []*models.Session
-	err := s.db.Where("user_id = ? AND is_active = ? AND expires_at > ?", userID, true, time.Now()).
+	err := s.db.Where("user_id = ? AND is_active = ? AND expires_at > ?", userID, true, time.Now().UTC()).
 		Order("last_activity DESC").
 		Find(&sessions).Error
 	if err != nil {
@@ -94,7 +94,7 @@ func (s *Store) InvalidateSession(jti string) error {
 		Where("jti = ?", jti).
 		Updates(map[string]interface{}{
 			"is_active":  false,
-			"updated_at": time.Now(),
+			"updated_at": time.Now().UTC(),
 		}).Error
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func (s *Store) InvalidateAllUserSessions(userID uuid.UUID) error {
 		Where("user_id = ? AND is_active = ?", userID, true).
 		Updates(map[string]interface{}{
 			"is_active":  false,
-			"updated_at": time.Now(),
+			"updated_at": time.Now().UTC(),
 		}).Error
 
 	return err
@@ -135,14 +135,14 @@ func (s *Store) InvalidateAllUserSessions(userID uuid.UUID) error {
 func (s *Store) UpdateSessionActivity(jti string) error {
 	return s.db.Model(&models.Session{}).
 		Where("jti = ?", jti).
-		Update("last_activity", time.Now()).Error
+		Update("last_activity", time.Now().UTC()).Error
 }
 
 // CleanupExpiredSessions removes expired sessions from the database
 // This should be run periodically (e.g., via a cron job)
 func (s *Store) CleanupExpiredSessions() error {
 	// Delete expired sessions
-	result := s.db.Where("expires_at < ?", time.Now()).Delete(&models.Session{})
+	result := s.db.Where("expires_at < ?", time.Now().UTC()).Delete(&models.Session{})
 	return result.Error
 }
 

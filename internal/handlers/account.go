@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/gin-gonic/gin"
@@ -96,10 +95,10 @@ func (h *AccountHandler) GetCurrentUser(c *gin.Context) {
 	avatarURL := getGravatarURL(user.Email)
 
 	c.JSON(http.StatusOK, gin.H{
-		"name":          user.Name,
-		"email":         user.Email,
-		"initials":      initials,
-		"avatar_url":    avatarURL,
+		"name":       user.Name,
+		"email":      user.Email,
+		"initials":   initials,
+		"avatar_url": avatarURL,
 	})
 }
 
@@ -149,7 +148,6 @@ func (h *AccountHandler) ChangePassword(c *gin.Context) {
 
 	// Update password
 	user.PasswordHash = newPasswordHash
-	user.UpdatedAt = time.Now()
 	if err := h.store.UpdateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update password"})
 		return
@@ -198,7 +196,6 @@ func (h *AccountHandler) UpdateProfile(c *gin.Context) {
 	// Update user profile
 	user.Name = req.Name
 	user.Email = req.Email
-	user.UpdatedAt = time.Now()
 
 	if err := h.store.UpdateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update profile"})
@@ -249,7 +246,6 @@ func (h *AccountHandler) DeleteAccount(c *gin.Context) {
 
 	// Deactivate account
 	user.IsActive = false
-	user.UpdatedAt = time.Now()
 
 	if err := h.store.UpdateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete account"})
