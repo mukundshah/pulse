@@ -97,9 +97,15 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 		return
 	}
 
+	// Track run start time
+	runStartedAt := time.Now().UTC()
+
 	// Execute check
 	result := checker.Execute(check)
 	metrics.IncrementChecksExecuted()
+
+	// Track run end time
+	runEndedAt := time.Now().UTC()
 
 	// Track failures
 	if result.Status != models.CheckRunStatusPassing {
@@ -108,18 +114,32 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 
 	// Convert checker.Result to models.CheckRun
 	checkRun := &models.CheckRun{
-		Status:           result.Status,
-		TotalTimeMs:      result.TotalTimeMs,
-		ResponseStatus:   result.ResponseStatus,
+		Status:             result.Status,
+		FailureReason:      result.FailureReason,
+		ResponseStatusCode: result.ResponseStatus,
+
+		// Run timeline
+		RunStartedAt: runStartedAt,
+		RunEndedAt:   runEndedAt,
+
+		// Request timeline (from result)
+		RequestStartedAt: result.RequestStartedAt,
+		FirstByteAt:      result.FirstByteAt,
+		ResponseEndedAt:  result.ResponseEndedAt,
+
+		// Metadata
+		ConnectionReused:  result.ConnectionReused,
+		IPVersion:         result.IPVersion,
+		IPAddress:         result.IPAddress,
+		ResponseSizeBytes: result.ResponseSizeBytes,
+
+		// JSON fields
 		AssertionResults: result.AssertionResults,
 		PlaywrightReport: result.PlaywrightReport,
 		NetworkTimings:   result.NetworkTimings,
-		RegionID:         w.regionID,
-		CheckID:          check.ID,
-	}
 
-	if result.Error != nil {
-		checkRun.Remarks = result.Error.Error()
+		RegionID: w.regionID,
+		CheckID:  check.ID,
 	}
 
 	if err := w.store.CreateCheckRun(checkRun); err != nil {

@@ -23,12 +23,23 @@ func executeOnce(check *models.Check) Result {
 	// case models.CheckTypeHeartbeat:
 	// 	return executeHeartbeatCheck(check)
 	default:
+		now := time.Now().UTC()
+		err := fmt.Errorf("unsupported check type: %s", check.Type)
 		return Result{
-			Status:           models.CheckRunStatusFailing,
-			Error:            fmt.Errorf("unsupported check type: %s", check.Type),
-			AssertionResults: emptyJSONArray(),
-			PlaywrightReport: emptyJSONObject(),
-			NetworkTimings:   emptyJSONObject(),
+			Status:            models.CheckRunStatusFailing,
+			FailureReason:     failureReasonPtr(models.FailureUnknown),
+			ResponseStatus:    nil,
+			RequestStartedAt:  now,
+			FirstByteAt:       time.Time{},
+			ResponseEndedAt:   time.Time{},
+			ConnectionReused:  false,
+			IPVersion:         "",
+			IPAddress:         "",
+			ResponseSizeBytes: 0,
+			AssertionResults:  emptyJSONArray(),
+			PlaywrightReport:  emptyJSONObject(),
+			NetworkTimings:    emptyJSONObject(),
+			Error:             err,
 		}
 	}
 }

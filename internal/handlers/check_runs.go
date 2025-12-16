@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"pulse/internal/middleware"
+	"pulse/internal/models"
 	"pulse/internal/store"
 )
 
@@ -72,7 +73,9 @@ func (h *CheckRunHandler) GetCheckRun(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, run)
+	// Convert to response with computed total_time_ms
+	response := toCheckRunResponse(run)
+	c.JSON(http.StatusOK, response)
 }
 
 // ListCheckRuns handles GET /projects/:projectId/checks/:checkId/runs
@@ -166,13 +169,45 @@ func (h *CheckRunHandler) ListCheckRuns(c *gin.Context) {
 		prevCursor = &prevCursorStr
 	}
 
+	// Convert runs to responses with computed total_time_ms
+	runResponses := make([]CheckRunResponse, len(runs))
+	for i := range runs {
+		runResponses[i] = toCheckRunResponse(&runs[i])
+	}
+
 	response := gin.H{
-		"data":        runs,
+		"data":        runResponses,
 		"prev_cursor": prevCursor,
 		"next_cursor": nextCursor,
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+// CheckRunResponse represents a check run with computed fields for JSON serialization.
+// It embeds the CheckRun model and adds computed fields.
+type CheckRunResponse struct {
+	models.CheckRun
+	TotalTimeMs *int `json:"total_time_ms,omitempty"` // Computed from RequestStartedAt and ResponseEndedAt
+}
+
+// toCheckRunResponse converts a CheckRun model to a CheckRunResponse with computed fields.
+func toCheckRunResponse(run *models.CheckRun) CheckRunResponse {
+	var totalTimeMs *int
+
+	// Compute total response time from timestamps
+	if !run.RequestStartedAt.IsZero() && !run.ResponseEndedAt.IsZero() {
+		duration := run.ResponseEndedAt.Sub(run.RequestStartedAt)
+		if duration > 0 {
+			ms := int(duration.Milliseconds())
+			totalTimeMs = &ms
+		}
+	}
+
+	return CheckRunResponse{
+		CheckRun:    *run,
+		TotalTimeMs: totalTimeMs,
+	}
 }
 
 // GetCheckUptime handles GET /projects/:projectId/checks/:checkId/uptime

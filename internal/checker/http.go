@@ -7,9 +7,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptrace"
 	"net/url"
+	"strings"
 	"time"
 
 	"pulse/internal/models"
@@ -29,6 +31,7 @@ var (
 
 // timingTracker tracks HTTP request timing events.
 type timingTracker struct {
+	requestStart time.Time
 	dnsStart     time.Time
 	dnsDone      time.Time
 	connectStart time.Time
@@ -36,16 +39,20 @@ type timingTracker struct {
 	tlsStart     time.Time
 	tlsDone      time.Time
 	gotConn      time.Time
+	requestSent  time.Time
 	firstByte    time.Time
+	responseEnd  time.Time
 }
 
 // httpCheckExecutor executes HTTP checks with all necessary configuration.
 type httpCheckExecutor struct {
-	check     *models.Check
-	client    *http.Client
-	timings   *timingTracker
-	startTime time.Time
-	endTime   time.Time
+	check            *models.Check
+	client           *http.Client
+	timings          *timingTracker
+	responseSize     int64
+	connectionReused bool
+	ipVersion        string
+	ipAddress        string
 }
 
 // ExecuteHTTPCheck performs an HTTP check and returns the result.
@@ -83,9 +90,11 @@ func newHTTPCheckExecutor(check *models.Check) *httpCheckExecutor {
 	}
 
 	return &httpCheckExecutor{
-		check:   check,
-		client:  client,
-		timings: &timingTracker{},
+		check:            check,
+		client:           client,
+		timings:          &timingTracker{},
+		responseSize:     0,
+		connectionReused: false,
 	}
 }
 
@@ -100,28 +109,41 @@ func (e *httpCheckExecutor) execute(ctx context.Context) Result {
 	// Add tracing
 	req = e.addTracing(req)
 
-	// Execute request
-	e.startTime = time.Now().UTC()
-	resp, httpErr := e.client.Do(req)
-	e.endTime = time.Now().UTC()
+	// CRITICAL: Start timer before request
+	e.timings.requestStart = time.Now().UTC()
 
-	// Handle response error
+	// Execute request (this returns at TTFB, not after body download)
+	resp, httpErr := e.client.Do(req)
+
+	// Handle response error BEFORE reading body
 	if httpErr != nil {
 		return e.createErrorResult(httpErr)
 	}
 	defer resp.Body.Close()
 
-	// Calculate response time
-	responseTime := e.responseTime()
+	// CRITICAL: Read body fully to measure download time
+	// Read body into memory so we can use it for assertions too
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return e.createErrorResult(fmt.Errorf("failed to read response body: %w", err))
+	}
+
+	// NOW stop the timer (after body is fully read)
+	e.timings.responseEnd = time.Now().UTC()
+	e.responseSize = int64(len(bodyBytes))
+
+	// Create new reader for assertions (they may need the body)
+	resp.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 
 	// Process assertions
+	responseTime := e.responseTime()
 	assertionResults, err := e.processAssertions(resp, responseTime)
 	if err != nil {
 		return e.createErrorResult(fmt.Errorf("%w: %v", ErrAssertionProcessing, err))
 	}
 
-	// Build result
-	return e.buildResult(resp, responseTime, assertionResults)
+	// Build result with timestamps
+	return e.buildResult(resp, assertionResults)
 }
 
 // buildRequest creates an HTTP request from the check configuration.
@@ -160,7 +182,7 @@ func (e *httpCheckExecutor) buildURL() (string, error) {
 		u.Scheme = "https"
 	}
 
-	if len(e.check.QueryParams) > 0 {
+	if e.check.QueryParams != nil && len(e.check.QueryParams) > 0 {
 		if err := e.setQueryParams(&u); err != nil {
 			return "", err
 		}
@@ -242,8 +264,28 @@ func (e *httpCheckExecutor) addTracing(req *http.Request) *http.Request {
 		TLSHandshakeDone: func(tls.ConnectionState, error) {
 			e.timings.tlsDone = time.Now().UTC()
 		},
-		GotConn: func(httptrace.GotConnInfo) {
+		GotConn: func(info httptrace.GotConnInfo) {
 			e.timings.gotConn = time.Now().UTC()
+			e.connectionReused = info.Reused
+
+			// Extract IP address and version from connection
+			if info.Conn != nil {
+				host, _, err := net.SplitHostPort(info.Conn.RemoteAddr().String())
+				if err == nil {
+					e.ipAddress = host
+					ip := net.ParseIP(host)
+					if ip != nil {
+						if ip.To4() != nil {
+							e.ipVersion = "IPv4"
+						} else {
+							e.ipVersion = "IPv6"
+						}
+					}
+				}
+			}
+		},
+		WroteRequest: func(httptrace.WroteRequestInfo) {
+			e.timings.requestSent = time.Now().UTC()
 		},
 		GotFirstResponseByte: func() {
 			e.timings.firstByte = time.Now().UTC()
@@ -255,42 +297,109 @@ func (e *httpCheckExecutor) addTracing(req *http.Request) *http.Request {
 
 // processAssertions evaluates all assertions against the response.
 func (e *httpCheckExecutor) processAssertions(resp *http.Response, responseTime time.Duration) ([]AssertionResult, error) {
-	if e.check.Assertions == nil || len(e.check.Assertions) == 0 {
+	if len(e.check.Assertions) == 0 {
 		return []AssertionResult{}, nil
 	}
 
 	return ProcessAssertions(e.check.Assertions, resp, responseTime)
 }
 
-// responseTime calculates the total response time.
+// responseTime calculates the total response time from timestamps.
 func (e *httpCheckExecutor) responseTime() time.Duration {
-	return e.endTime.Sub(e.startTime)
+	if e.timings.requestStart.IsZero() || e.timings.responseEnd.IsZero() {
+		return 0
+	}
+	return e.timings.responseEnd.Sub(e.timings.requestStart)
 }
 
 // buildNetworkTimings creates a map of detailed network timing information.
-func (e *httpCheckExecutor) buildNetworkTimings(responseTime time.Duration) map[string]int {
-	timings := make(map[string]int)
+// Stores both raw timestamps (for timeline reconstruction) and durations (for convenience).
+func (e *httpCheckExecutor) buildNetworkTimings() map[string]interface{} {
+	timings := make(map[string]interface{})
 
-	if ms := durationMs(e.timings.dnsStart, e.timings.dnsDone); ms > 0 {
-		timings["dns_lookup_ms"] = ms
+	// Store raw timestamps (for timeline reconstruction and debugging)
+	if !e.timings.requestStart.IsZero() {
+		timings["request_start"] = e.timings.requestStart.Format(time.RFC3339Nano)
 	}
-	if ms := durationMs(e.timings.connectStart, e.timings.connectDone); ms > 0 {
-		timings["tcp_connection_ms"] = ms
+	if !e.timings.dnsStart.IsZero() {
+		timings["dns_start"] = e.timings.dnsStart.Format(time.RFC3339Nano)
 	}
-	if ms := durationMs(e.timings.tlsStart, e.timings.tlsDone); ms > 0 {
-		timings["tls_handshake_ms"] = ms
+	if !e.timings.dnsDone.IsZero() {
+		timings["dns_done"] = e.timings.dnsDone.Format(time.RFC3339Nano)
 	}
-	if ms := durationMs(e.startTime, e.timings.firstByte); ms > 0 {
-		timings["time_to_first_byte_ms"] = ms
+	if !e.timings.connectStart.IsZero() {
+		timings["tcp_start"] = e.timings.connectStart.Format(time.RFC3339Nano)
 	}
-	if ms := durationMs(e.timings.gotConn, e.timings.firstByte); ms > 0 {
-		timings["server_processing_ms"] = ms
+	if !e.timings.connectDone.IsZero() {
+		timings["tcp_done"] = e.timings.connectDone.Format(time.RFC3339Nano)
 	}
-	if ms := durationMs(e.timings.firstByte, e.endTime); ms > 0 {
-		timings["content_transfer_ms"] = ms
+	if !e.timings.tlsStart.IsZero() {
+		timings["tls_start"] = e.timings.tlsStart.Format(time.RFC3339Nano)
 	}
-	if responseTime > 0 {
-		timings["response_time_ms"] = int(responseTime / time.Millisecond)
+	if !e.timings.tlsDone.IsZero() {
+		timings["tls_done"] = e.timings.tlsDone.Format(time.RFC3339Nano)
+	}
+	if !e.timings.requestSent.IsZero() {
+		timings["request_sent"] = e.timings.requestSent.Format(time.RFC3339Nano)
+	}
+	if !e.timings.firstByte.IsZero() {
+		timings["first_byte"] = e.timings.firstByte.Format(time.RFC3339Nano)
+	}
+	if !e.timings.responseEnd.IsZero() {
+		timings["response_end"] = e.timings.responseEnd.Format(time.RFC3339Nano)
+	}
+
+	// Compute durations from timestamps (in microseconds)
+	// Only compute if both timestamps are valid and end is after start
+	// DNS duration: dns_done - dns_start
+	if !e.timings.dnsStart.IsZero() && !e.timings.dnsDone.IsZero() && e.timings.dnsDone.After(e.timings.dnsStart) {
+		if us := durationUs(e.timings.dnsStart, e.timings.dnsDone); us > 0 {
+			timings["dns_duration_us"] = us
+		}
+	}
+	// TCP duration: tcp_done - tcp_start
+	if !e.timings.connectStart.IsZero() && !e.timings.connectDone.IsZero() && e.timings.connectDone.After(e.timings.connectStart) {
+		if us := durationUs(e.timings.connectStart, e.timings.connectDone); us > 0 {
+			timings["tcp_duration_us"] = us
+		}
+	}
+	// TLS duration: tls_done - tls_start
+	if !e.timings.tlsStart.IsZero() && !e.timings.tlsDone.IsZero() && e.timings.tlsDone.After(e.timings.tlsStart) {
+		if us := durationUs(e.timings.tlsStart, e.timings.tlsDone); us > 0 {
+			timings["tls_duration_us"] = us
+		}
+	}
+	// Request send duration: request_sent - tls_done (or request_sent - request_start if no TLS)
+	// Only compute if request_sent is after tls_done (or request_start if no TLS)
+	if !e.timings.requestSent.IsZero() {
+		var requestDurationUs int
+		if !e.timings.tlsDone.IsZero() && e.timings.requestSent.After(e.timings.tlsDone) {
+			requestDurationUs = durationUs(e.timings.tlsDone, e.timings.requestSent)
+		} else if !e.timings.requestStart.IsZero() && e.timings.requestSent.After(e.timings.requestStart) {
+			requestDurationUs = durationUs(e.timings.requestStart, e.timings.requestSent)
+		}
+		if requestDurationUs > 0 {
+			timings["request_duration_us"] = requestDurationUs
+		}
+	}
+	// TTFB: first_byte - request_sent (only if both are available and first_byte is after request_sent)
+	if !e.timings.requestSent.IsZero() && !e.timings.firstByte.IsZero() && e.timings.firstByte.After(e.timings.requestSent) {
+		if us := durationUs(e.timings.requestSent, e.timings.firstByte); us > 0 {
+			timings["ttfb_us"] = us
+		}
+	}
+	// Download duration: response_end - first_byte
+	if !e.timings.firstByte.IsZero() && !e.timings.responseEnd.IsZero() && e.timings.responseEnd.After(e.timings.firstByte) {
+		if us := durationUs(e.timings.firstByte, e.timings.responseEnd); us > 0 {
+			timings["download_us"] = us
+		}
+	}
+	// Total response time: response_end - request_start
+	if !e.timings.requestStart.IsZero() && !e.timings.responseEnd.IsZero() && e.timings.responseEnd.After(e.timings.requestStart) {
+		responseTime := e.responseTime()
+		if responseTime > 0 {
+			timings["response_time_us"] = int(responseTime / time.Microsecond)
+		}
 	}
 
 	return timings
@@ -317,39 +426,196 @@ func (e *httpCheckExecutor) determineStatus(responseTime time.Duration, assertio
 }
 
 // buildResult creates the final result object.
-func (e *httpCheckExecutor) buildResult(resp *http.Response, responseTime time.Duration, assertionResults []AssertionResult) Result {
-	networkTimings := e.buildNetworkTimings(responseTime)
+func (e *httpCheckExecutor) buildResult(resp *http.Response, assertionResults []AssertionResult) Result {
+	// Compute response time from timestamps
+	responseTime := e.responseTime()
+
+	// Build network timings (raw timestamps for JSON)
+	networkTimings := e.buildNetworkTimings()
+
+	// Determine status
 	status := e.determineStatus(responseTime, assertionResults)
 
+	// Determine failure reason if failed
+	var failureReason *models.FailureReason
+	if status == models.CheckRunStatusFailing {
+		failureReason = e.determineFailureReason(resp, responseTime, assertionResults)
+	}
+
+	// Validate timeline invariants
+	if !e.timings.requestStart.IsZero() && !e.timings.responseEnd.IsZero() {
+		if e.timings.responseEnd.Before(e.timings.requestStart) {
+			// Invalid timeline - mark as agent error
+			status = models.CheckRunStatusFailing
+			failureReason = failureReasonPtr(models.FailureAgent)
+		}
+	}
+	if !e.timings.firstByte.IsZero() {
+		if e.timings.firstByte.Before(e.timings.requestStart) {
+			status = models.CheckRunStatusFailing
+			failureReason = failureReasonPtr(models.FailureAgent)
+		}
+		if !e.timings.responseEnd.IsZero() && e.timings.responseEnd.Before(e.timings.firstByte) {
+			status = models.CheckRunStatusFailing
+			failureReason = failureReasonPtr(models.FailureAgent)
+		}
+	}
+
+	// Response status (nullable)
+	var responseStatus *int32
+	if resp != nil {
+		code := int32(resp.StatusCode)
+		responseStatus = &code
+	}
+
 	return Result{
-		Status:           status,
-		ResponseStatus:   int32(resp.StatusCode),
-		TotalTimeMs:      int(responseTime / time.Millisecond),
-		AssertionResults: mustMarshalJSON(assertionResults),
-		PlaywrightReport: emptyJSONObject(),
-		NetworkTimings:   mustMarshalJSON(networkTimings),
-		Error:            nil,
+		Status:            status,
+		FailureReason:     failureReason,
+		ResponseStatus:    responseStatus,
+		RequestStartedAt:  e.timings.requestStart,
+		FirstByteAt:       e.timings.firstByte,
+		ResponseEndedAt:   e.timings.responseEnd,
+		ConnectionReused:  e.connectionReused,
+		IPVersion:         e.ipVersion,
+		IPAddress:         e.ipAddress,
+		ResponseSizeBytes: e.responseSize,
+		AssertionResults:  mustMarshalJSON(assertionResults),
+		PlaywrightReport:  emptyJSONObject(),
+		NetworkTimings:    mustMarshalJSON(networkTimings),
+		Error:             nil,
 	}
 }
 
 // createErrorResult creates a result for a failed check.
 func (e *httpCheckExecutor) createErrorResult(err error) Result {
+	// Determine failure reason from error type
+	failureReason := e.classifyError(err)
+
+	// Response status is nil on error
+	var responseStatus *int32
+
+	// Timestamps may be partial
+	requestStart := e.timings.requestStart
+	if requestStart.IsZero() {
+		requestStart = time.Now().UTC()
+	}
+
 	return Result{
-		Status:           models.CheckRunStatusFailing,
-		ResponseStatus:   0,
-		TotalTimeMs:      0,
-		AssertionResults: emptyJSONObject(),
-		PlaywrightReport: emptyJSONObject(),
-		NetworkTimings:   emptyJSONObject(),
-		Error:            err,
+		Status:            models.CheckRunStatusFailing,
+		FailureReason:     failureReason,
+		ResponseStatus:    responseStatus,
+		RequestStartedAt:  requestStart,
+		FirstByteAt:       e.timings.firstByte,   // May be zero
+		ResponseEndedAt:   e.timings.responseEnd, // May be zero
+		ConnectionReused:  e.connectionReused,
+		IPVersion:         e.ipVersion,
+		IPAddress:         e.ipAddress,
+		ResponseSizeBytes: 0,
+		AssertionResults:  emptyJSONObject(),
+		PlaywrightReport:  emptyJSONObject(),
+		NetworkTimings:    emptyJSONObject(),
+		Error:             err,
 	}
 }
 
-// durationMs calculates duration in milliseconds between two times.
+// failureReasonPtr returns a pointer to a FailureReason constant.
+func failureReasonPtr(r models.FailureReason) *models.FailureReason {
+	return &r
+}
+
+// classifyError determines the failure reason from an error.
+func (e *httpCheckExecutor) classifyError(err error) *models.FailureReason {
+	if err == nil {
+		return nil
+	}
+
+	errStr := err.Error()
+
+	// Network errors
+	if contains(errStr, "no such host") || contains(errStr, "dns") {
+		return failureReasonPtr(models.FailureDNS)
+	}
+	if contains(errStr, "connection refused") {
+		return failureReasonPtr(models.FailureConnectionRefused)
+	}
+	if contains(errStr, "timeout") || contains(errStr, "deadline exceeded") {
+		return failureReasonPtr(models.FailureRequestTimeout)
+	}
+	if contains(errStr, "tls") || contains(errStr, "certificate") || contains(errStr, "handshake") {
+		return failureReasonPtr(models.FailureTLS)
+	}
+	if contains(errStr, "connection") && contains(errStr, "reset") {
+		return failureReasonPtr(models.FailureTCP)
+	}
+	if contains(errStr, "network is unreachable") {
+		return failureReasonPtr(models.FailureNetworkUnreachable)
+	}
+
+	return failureReasonPtr(models.FailureUnknown)
+}
+
+// contains checks if a string contains a substring (case-insensitive).
+func contains(s, substr string) bool {
+	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
+}
+
+// determineFailureReason determines the failure reason based on response and assertions.
+func (e *httpCheckExecutor) determineFailureReason(resp *http.Response, responseTime time.Duration, assertionResults []AssertionResult) *models.FailureReason {
+	// Check assertions first
+	for _, result := range assertionResults {
+		if !result.Passed {
+			return failureReasonPtr(models.FailureAssertionFailed)
+		}
+	}
+
+	// Check HTTP status
+	if resp != nil {
+		if resp.StatusCode >= 500 {
+			return failureReasonPtr(models.FailureHTTP5xx)
+		}
+		if resp.StatusCode >= 400 {
+			return failureReasonPtr(models.FailureHTTP4xx)
+		}
+	}
+
+	// Check timeouts (if applicable)
+	// Determine specific timeout type based on responseTime and thresholds
+	failedThreshold := e.check.FailedThresholdDuration()
+	if failedThreshold > 0 && responseTime > failedThreshold {
+		// Total request exceeded threshold - determine if it's TTFB or download timeout
+		if !e.timings.firstByte.IsZero() && !e.timings.requestStart.IsZero() {
+			ttfb := e.timings.firstByte.Sub(e.timings.requestStart)
+			downloadTime := responseTime - ttfb
+
+			// TTFB timeout: TTFB exceeds the failed threshold OR TTFB is >80% of total time
+			// This indicates the server took too long to start responding
+			if ttfb > 0 && (ttfb > failedThreshold || ttfb > responseTime*4/5) {
+				return failureReasonPtr(models.FailureTTFBTimeout)
+			}
+
+			// Download timeout: download time is significant (>80% of total)
+			// AND exceeds a reasonable threshold (50% of failed threshold)
+			// This indicates the response body download was too slow
+			downloadThreshold := failedThreshold / 2
+			if downloadTime > 0 && downloadTime > downloadThreshold && downloadTime > responseTime*4/5 {
+				return failureReasonPtr(models.FailureDownloadTimeout)
+			}
+		}
+
+		// Default to general request timeout when we can't determine specific timeout type
+		// or when total time exceeded threshold but timestamps aren't available
+		return failureReasonPtr(models.FailureRequestTimeout)
+	}
+
+	// Default to unknown
+	return failureReasonPtr(models.FailureUnknown)
+}
+
+// durationUs calculates duration in microseconds between two times.
 // Returns 0 if either time is zero or end is before start.
-func durationMs(start, end time.Time) int {
+func durationUs(start, end time.Time) int {
 	if start.IsZero() || end.IsZero() || end.Before(start) {
 		return 0
 	}
-	return int(end.Sub(start) / time.Millisecond)
+	return int(end.Sub(start) / time.Microsecond)
 }
