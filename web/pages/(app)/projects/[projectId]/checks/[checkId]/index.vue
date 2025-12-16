@@ -40,12 +40,6 @@ useHead({
               {{ constructURL({ host: check?.host, port: check?.port, path: check?.path, queryParams: check?.query_params, secure: check?.secure }) }}
             </span>
           </div>
-
-          <div>
-            <Badge class="text-xs" variant="outline">
-              Last updated <NuxtTime :datetime="check?.updated_at ?? new Date()" />
-            </Badge>
-          </div>
         </div>
 
         <div class="flex items-center gap-2.5">
