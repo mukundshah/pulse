@@ -260,19 +260,25 @@ const timelineData = computed(() => {
                   <td class="py-2 px-3">
                     {{ ASSERTION_PROPERTIES[assertion.source as keyof typeof ASSERTION_PROPERTIES].label }}
                   </td>
-                  <td class="py-2 px-3">
-                    {{ assertion.property || '—' }}
+                  <td class="py-2 px-3 font-mono">
+                    <Badge v-if="assertion.property" variant="secondary">
+                      {{ assertion.property }}
+                    </Badge>
+                    <span v-else>n/a</span>
                   </td>
                   <td class="py-2 px-3">
-                    {{ assertion.comparison || '—' }}
+                    {{ assertion.comparison }}
                   </td>
-                  <td class="py-2 px-3">
-                    <span v-if="assertion.target !== undefined" class="font-mono">{{ assertion.target }}</span>
-                    <span v-else>—</span>
+                  <td class="py-2 px-3 font-mono">
+                    <Badge variant="secondary">
+                      {{ assertion.target }}
+                    </Badge>
                   </td>
-                  <td class="py-2 px-3">
-                    <span v-if="assertion.received !== undefined" class="font-mono">{{ assertion.received }}</span>
-                    <span v-else>—</span>
+                  <td class="py-2 px-3 font-mono">
+                    <Badge v-if="assertion.received" variant="secondary" :class="assertion.passed ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'">
+                      {{ assertion.received }}
+                    </Badge>
+                    <span v-else>n/a</span>
                   </td>
                   <td class="py-2 px-3">
                     <Icon
