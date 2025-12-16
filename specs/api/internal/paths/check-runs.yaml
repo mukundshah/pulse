@@ -92,6 +92,132 @@ paths:
         "404":
           $ref: "#/components/responses/Error"
 
+  /internal/projects/{projectId}/checks/{checkId}/uptime:
+    get:
+      operationId: getCheckUptime
+      summary: Get uptime data for a check
+      description: |
+        Returns aggregated uptime data for a check over a specified time period.
+        Data is aggregated into time buckets (minute, hour, or day) based on the time range.
+        Supports both period presets and custom datetime ranges.
+      tags:
+        - Check Runs
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the project
+        - name: checkId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the check
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [today, 1hr, 3hr, 24hr, 7d, 30d]
+            default: 24hr
+          description: |
+            Time period preset. Options:
+            - `today`: From start of today to now (hourly buckets)
+            - `1hr`: Last 1 hour (minute buckets)
+            - `3hr`: Last 3 hours (minute buckets)
+            - `24hr`: Last 24 hours (hourly buckets)
+            - `7d`: Last 7 days (hourly buckets)
+            - `30d`: Last 30 days (daily buckets)
+
+            If both `period` and `start`/`end` are provided, `start`/`end` takes precedence.
+        - name: start
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: |
+            Start time for custom datetime range (RFC3339 format).
+            Must be provided together with `end`.
+            Example: `2024-01-01T00:00:00Z`
+        - name: end
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: |
+            End time for custom datetime range (RFC3339 format).
+            Must be provided together with `start`.
+            Must be after `start`.
+            Example: `2024-01-01T23:59:59Z`
+      responses:
+        "200":
+          description: Uptime data aggregated by time buckets
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - period
+                  - start_time
+                  - end_time
+                  - time_bucket
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UptimeDataPoint"
+                    description: Array of uptime data points, sorted chronologically
+                  period:
+                    type: string
+                    description: |
+                      Period identifier. Either one of the preset values (today, 1hr, 3hr, 24hr, 7d, 30d)
+                      or "custom" if using start/end datetime range.
+                    example: "24hr"
+                  start_time:
+                    type: string
+                    format: date-time
+                    description: Start time of the data range (RFC3339 format)
+                    example: "2024-01-01T00:00:00Z"
+                  end_time:
+                    type: string
+                    format: date-time
+                    description: End time of the data range (RFC3339 format)
+                    example: "2024-01-01T23:59:59Z"
+                  time_bucket:
+                    type: string
+                    enum: [minute, hour, day]
+                    description: |
+                      Time bucket used for aggregation:
+                      - `minute`: For ranges less than 3 hours
+                      - `hour`: For ranges less than 7 days
+                      - `day`: For ranges 7 days or more
+                    example: "hour"
+        "400":
+          $ref: "#/components/responses/Error"
+          description: |
+            Bad request. Possible reasons:
+            - Invalid period value
+            - Invalid datetime format for start/end
+            - Start time is after end time
+            - Only one of start/end provided (both required)
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
+
   /internal/projects/{projectId}/checks/{checkId}/runs/{runId}:
     get:
       operationId: getCheckRunById

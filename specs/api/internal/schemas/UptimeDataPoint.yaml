@@ -1,0 +1,41 @@
+type: object
+properties:
+  timestamp:
+    type: string
+    format: date-time
+    description: Timestamp for this data point (time bucket start)
+    example: "2024-01-01T00:00:00Z"
+  uptime_percentage:
+    type: number
+    format: float
+    minimum: 0
+    maximum: 100
+    description: Uptime percentage for this time bucket
+    example: 100.0
+  total_runs:
+    type: integer
+    minimum: 0
+    description: Total number of check runs in this time bucket
+    example: 10
+  passing:
+    type: integer
+    minimum: 0
+    description: Number of passing check runs in this time bucket
+    example: 10
+  degraded:
+    type: integer
+    minimum: 0
+    description: Number of degraded check runs in this time bucket
+    example: 0
+  failing:
+    type: integer
+    minimum: 0
+    description: Number of failing check runs in this time bucket
+    example: 0
+required:
+  - timestamp
+  - uptime_percentage
+  - total_runs
+  - passing
+  - degraded
+  - failing
