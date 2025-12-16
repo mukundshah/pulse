@@ -7,9 +7,9 @@ properties:
     example: 550e8400-e29b-41d4-a716-446655440000
   status:
     type: string
-    enum: [success, fail, timeout, error, unknown]
+    enum: [passing, degraded, failing, unknown]
     description: Status of the check run
-    example: success
+    example: passing
   response_status:
     type: integer
     description: HTTP response status code

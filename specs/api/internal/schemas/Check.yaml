@@ -220,7 +220,7 @@ properties:
     example: udp
   last_status:
     type: string
-    enum: [success, fail, timeout, error, unknown]
+    enum: [passing, degraded, failing, unknown]
     description: Status of the last check run
     default: unknown
   last_run_at:
