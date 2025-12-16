@@ -124,7 +124,7 @@ useHead({
         </CardHeader>
         <CardContent>
           <div>
-            <UptimeChart />
+            <UptimeChart :check-id="checkId" :project-id="projectId" />
           </div>
         </CardContent>
       </Card>
