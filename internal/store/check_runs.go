@@ -21,9 +21,17 @@ func (s *Store) GetCheckRun(id uuid.UUID) (*models.CheckRun, error) {
 	return &run, nil
 }
 
-func (s *Store) GetCheckRunsByCheck(checkID uuid.UUID, limit int, after, before *uuid.UUID) ([]models.CheckRun, error) {
+func (s *Store) GetCheckRunsByCheck(checkID uuid.UUID, limit int, after, before *uuid.UUID, startTime, endTime *time.Time) ([]models.CheckRun, error) {
 	var runs []models.CheckRun
 	query := s.db.Preload("Region").Omit("Check").Where("check_id = ?", checkID)
+
+	// Apply date range filter if provided
+	if startTime != nil {
+		query = query.Where("created_at >= ?", *startTime)
+	}
+	if endTime != nil {
+		query = query.Where("created_at <= ?", *endTime)
+	}
 
 	// Handle cursor-based pagination
 	// We sort by created_at DESC, id DESC (latest to oldest)

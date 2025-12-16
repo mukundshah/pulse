@@ -6,6 +6,7 @@ paths:
       description: |
         Returns a paginated list of check runs for the specified check, sorted from latest to oldest.
         Use cursor-based pagination with `after` and `before` parameters to navigate through results.
+        Optionally filter by date range using `start` and `end` parameters.
       tags:
         - Check Runs
       security:
@@ -52,6 +53,26 @@ paths:
           description: |
             Cursor for backward pagination. Returns items newer than the specified check run ID.
             Use the `prev_cursor` from the previous response.
+        - name: start
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: |
+            Start time for date range filter (RFC3339 format).
+            Only returns check runs created at or after this time.
+            Example: `2024-01-01T00:00:00Z`
+        - name: end
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: |
+            End time for date range filter (RFC3339 format).
+            Only returns check runs created at or before this time.
+            Example: `2024-01-01T23:59:59Z`
       responses:
         "200":
           description: Paginated list of check runs
@@ -85,12 +106,22 @@ paths:
                       Null if there are no older items available.
         "400":
           $ref: "#/components/responses/Error"
+          description: |
+            Bad request. Possible reasons:
+            - Invalid project ID format
+            - Invalid check ID format
+            - Invalid limit value
+            - Invalid cursor format (after/before)
+            - Invalid date format for start/end (must be RFC3339)
         "401":
           $ref: "#/components/responses/Error"
+          description: Unauthorized. Authentication token is missing or invalid.
         "403":
           $ref: "#/components/responses/Error"
+          description: Forbidden. User does not have access to the project.
         "404":
           $ref: "#/components/responses/Error"
+          description: Check not found or user does not have access.
 
   /internal/projects/{projectId}/checks/{checkId}/uptime:
     get:

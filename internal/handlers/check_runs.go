@@ -122,8 +122,21 @@ func (h *CheckRunHandler) ListCheckRuns(c *gin.Context) {
 		}
 	}
 
+	// Parse date range parameters
+	var startTime, endTime *time.Time
+	if startStr := c.Query("start"); startStr != "" {
+		if parsedStart, err := time.Parse(time.RFC3339, startStr); err == nil {
+			startTime = &parsedStart
+		}
+	}
+	if endStr := c.Query("end"); endStr != "" {
+		if parsedEnd, err := time.Parse(time.RFC3339, endStr); err == nil {
+			endTime = &parsedEnd
+		}
+	}
+
 	// Fetch runs (limit+1 to check if there's a next page)
-	runs, err := h.store.GetCheckRunsByCheck(checkID, limit, after, before)
+	runs, err := h.store.GetCheckRunsByCheck(checkID, limit, after, before, startTime, endTime)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list check runs"})
 		return
