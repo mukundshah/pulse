@@ -15,7 +15,7 @@ func (s *Store) CreateCheckRun(run *models.CheckRun) error {
 
 func (s *Store) GetCheckRun(id uuid.UUID) (*models.CheckRun, error) {
 	var run models.CheckRun
-	if err := s.db.Preload("Check").Preload("Region").First(&run, "id = ?", id).Error; err != nil {
+	if err := s.db.Preload("Check.Project").Preload("Region").First(&run, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &run, nil

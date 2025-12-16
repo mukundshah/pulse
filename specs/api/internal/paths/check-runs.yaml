@@ -222,6 +222,10 @@ paths:
     get:
       operationId: getCheckRunById
       summary: Get a check run by ID
+      description: |
+        Returns detailed information about a specific check run, including status, response details,
+        assertion results, network timings, and other execution metadata.
+        The check run must belong to the specified check, and the check must belong to the specified project.
       tags:
         - Check Runs
       security:
@@ -257,9 +261,21 @@ paths:
                 $ref: "#/components/schemas/CheckRun"
         "400":
           $ref: "#/components/responses/Error"
+          description: |
+            Bad request. Possible reasons:
+            - Invalid project ID format
+            - Invalid check ID format
+            - Invalid check run ID format
         "401":
           $ref: "#/components/responses/Error"
+          description: Unauthorized. Authentication token is missing or invalid.
         "403":
           $ref: "#/components/responses/Error"
+          description: Forbidden. User does not have access to the project.
         "404":
           $ref: "#/components/responses/Error"
+          description: |
+            Not found. Possible reasons:
+            - Check run does not exist
+            - Check run does not belong to the specified check
+            - Check does not belong to the specified project

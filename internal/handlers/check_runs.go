@@ -40,14 +40,34 @@ func (h *CheckRunHandler) GetCheckRun(c *gin.Context) {
 		return
 	}
 
+	checkID, err := uuid.Parse(c.Param("checkId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
+		return
+	}
+
 	runID, err := uuid.Parse(c.Param("runId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check run ID"})
 		return
 	}
 
+	// Get the check run with its associated check
 	run, err := h.store.GetCheckRun(runID)
 	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Check run not found"})
+		return
+	}
+
+	// Verify the check run belongs to the specified check
+	if run.CheckID != checkID {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Check run not found"})
+		return
+	}
+
+	// Verify the check belongs to the specified project
+	// The Check is preloaded in GetCheckRun with its Project
+	if run.Check.ProjectID != projectID {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Check run not found"})
 		return
 	}
