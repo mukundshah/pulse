@@ -49,7 +49,7 @@ const fetcher = (after?: string, limit: number = 50) => {
 
 const { data: response, pending, error } = useLazyAsyncData(`check:${props.checkId}:runs`, () => fetcher())
 
-const { isLoading } = useInfiniteScroll(
+const { isLoading: isFetchingMore } = useInfiniteScroll(
   container,
   async () => {
     if (!response.value || response.value.next_cursor === null) {
@@ -110,13 +110,13 @@ const { isLoading } = useInfiniteScroll(
       </span>
     </div>
 
-    <div v-if="pending || isLoading" class="p-3 space-y-2">
+    <template v-if="pending || isFetchingMore">
       <div
         v-for="i in 5"
         :key="i"
-        class="flex items-center gap-3 p-3 rounded-lg"
+        class="flex items-center gap-3 p-3"
       >
-        <Skeleton class="w-4 h-4 rounded-full shrink-0" />
+        <Skeleton class="size-4.5 rounded-full shrink-0" />
         <div class="flex-1 min-w-0 space-y-2">
           <div class="flex items-center gap-2">
             <Skeleton class="h-4 w-24" />
@@ -125,7 +125,7 @@ const { isLoading } = useInfiniteScroll(
         </div>
         <Skeleton class="h-3 w-12" />
       </div>
-    </div>
+    </template>
 
     <div v-if="error" class="p-6 text-center">
       <p class="text-sm text-destructive">
