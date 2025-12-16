@@ -70,6 +70,7 @@ func (s *Store) GetCheckRunsByCheck(checkID uuid.UUID, limit int, after, before 
 	if err := query.Find(&runs).Error; err != nil {
 		return nil, err
 	}
+
 	return runs, nil
 }
 

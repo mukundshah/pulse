@@ -67,7 +67,7 @@ func (h *CheckRunHandler) GetCheckRun(c *gin.Context) {
 
 	// Verify the check belongs to the specified project
 	// The Check is preloaded in GetCheckRun with its Project
-	if run.Check.ProjectID != projectID {
+	if run.Check == nil || run.Check.ProjectID != projectID {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Check run not found"})
 		return
 	}
