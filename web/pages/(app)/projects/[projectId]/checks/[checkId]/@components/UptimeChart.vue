@@ -72,8 +72,10 @@ const { data: response, pending, error, refresh } = useLazyPulseAPI('/internal/p
       <ChartContainer class="h-48 w-full" :config="chartConfig" :cursor="true">
         <VisXYContainer :data="response?.data">
           <VisStackedBar
+            :bar-max-width="8"
             :bar-padding="0.5"
             :color="[chartConfig.passing.color, chartConfig.degraded.color, chartConfig.failing.color]"
+            :rounded-corners="true"
             :x="(d: Data) => new Date(d.timestamp)"
             :y="[(d: Data) => d.passing, (d: Data) => d.degraded, (d: Data) => d.failing]"
           />
@@ -86,7 +88,7 @@ const { data: response, pending, error, refresh } = useLazyPulseAPI('/internal/p
               const date = new Date(d)
               return date.toLocaleString('en-US', TIME_FORMAT[response?.time_bucket as keyof typeof TIME_FORMAT])
             }"
-            :tick-line="false"
+            :tick-line="true"
             :x="(d: Data) => new Date(d.timestamp)"
           />
           <VisAxis
@@ -101,12 +103,11 @@ const { data: response, pending, error, refresh } = useLazyPulseAPI('/internal/p
           <ChartTooltip />
           <ChartCrosshair
             :color="[chartConfig.passing.color, chartConfig.degraded.color, chartConfig.failing.color]"
-            :template=" componentToString(chartConfig, ChartTooltipContent, {
-              labelFormatter(d) {
+            :template="componentToString(chartConfig, ChartTooltipContent, {
+              labelFormatter: (d) => {
                 return new Date(d).toLocaleString('en-US', TIME_FORMAT[response?.time_bucket as keyof typeof TIME_FORMAT])
               },
-            })
-            "
+            })"
           />
         </VisXYContainer>
       </ChartContainer>

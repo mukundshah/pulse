@@ -7,7 +7,7 @@ interface AssertionResult {
   property?: string
   comparison?: string
   target?: string | number
-  actual?: string | number
+  received?: string | number
   passed?: boolean
   name?: string
 }
@@ -229,7 +229,7 @@ const statusText = computed(() => {
                     <span v-else>—</span>
                   </td>
                   <td class="py-2 px-3">
-                    <span v-if="assertion.actual !== undefined" class="font-mono">{{ assertion.actual }}</span>
+                    <span v-if="assertion.received !== undefined" class="font-mono">{{ assertion.received }}</span>
                     <span v-else>—</span>
                   </td>
                 </tr>
