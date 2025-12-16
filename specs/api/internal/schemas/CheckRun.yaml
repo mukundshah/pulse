@@ -10,12 +10,114 @@ properties:
     enum: [passing, degraded, failing, unknown]
     description: Status of the check run
     example: passing
-  response_status:
+  failure_reason:
+    type: string
+    nullable: true
+    description: Reason for failure if status is failing
+    enum:
+      - dns_error
+      - tcp_error
+      - tls_error
+      - connection_timeout
+      - connection_refused
+      - network_unreachable
+      - request_timeout
+      - ttfb_timeout
+      - download_timeout
+      - run_timeout
+      - http_4xx
+      - http_5xx
+      - invalid_http_response
+      - unexpected_status_code
+      - assertion_failed
+      - content_mismatch
+      - header_mismatch
+      - schema_validation_failed
+      - browser_launch_failed
+      - navigation_failed
+      - script_error
+      - element_not_found
+      - page_crash
+      - max_retries_exceeded
+      - dependency_failed
+      - agent_error
+      - serialization_error
+      - unknown_error
+    example: request_timeout
+  response_status_code:
     type: integer
-    description: HTTP response status code
+    nullable: true
+    description: HTTP response status code (null if no HTTP response was received)
     example: 200
+  run_started_at:
+    type: string
+    format: date-time
+    description: Timestamp when the check run started
+    example: '2025-12-16T10:00:00Z'
+  run_ended_at:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp when the check run ended
+    example: '2025-12-16T10:00:05Z'
+  request_started_at:
+    type: string
+    format: date-time
+    description: Timestamp when the HTTP request started
+    example: '2025-12-16T10:00:01Z'
+  first_byte_at:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp when the first byte of response was received (TTFB)
+    example: '2025-12-16T10:00:01.152Z'
+  response_ended_at:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp when the response body was fully read
+    example: '2025-12-16T10:00:01.193Z'
+  connection_reused:
+    type: boolean
+    description: Whether the HTTP connection was reused from a previous request
+    example: false
+  ip_version:
+    type: string
+    nullable: true
+    description: IP version used for the connection (IPv4 or IPv6)
+    example: IPv4
+  ip_address:
+    type: string
+    nullable: true
+    description: IP address of the server that responded to the request
+    example: 192.168.1.1
+  response_size_bytes:
+    type: integer
+    format: int64
+    description: Size of the response body in bytes
+    example: 1024
   assertion_results:
-    type: object
+    type: array
+    items:
+      type: object
+      properties:
+        source:
+          type: string
+          enum: [status_code, response_body, response_headers, response_time_ms]
+        property:
+          type: string
+          nullable: true
+        comparison:
+          type: string
+          enum: [equals, not_equals, contains, not_contains, is_empty, is_not_empty, is_less_than, is_less_than_or_equal_to, is_greater_than, is_greater_than_or_equal_to]
+        target:
+          type: string
+        received:
+          type: string
+          nullable: true
+        passed:
+          type: boolean
+          nullable: true
     additionalProperties: true
     description: Results of assertion validations
   playwright_report:
@@ -26,10 +128,12 @@ properties:
   network_timings:
     type: object
     additionalProperties: true
-    description: Network timing metrics
+    description: Network timing metrics with raw timestamps and durations in microseconds
   total_time_ms:
     type: integer
-    description: Total time taken for the check run in milliseconds
+    nullable: true
+    description: Total response time in milliseconds (computed from request_started_at and response_ended_at)
+    example: 193
   region_id:
     type: string
     format: uuid
@@ -44,11 +148,6 @@ properties:
   check:
     $ref: '#/components/schemas/Check'
     nullable: true
-  remarks:
-    type: string
-    nullable: true
-    description: Additional remarks or notes about the check run
-    example: Connection timeout after 30 seconds
   created_at:
     type: string
     format: date-time
@@ -60,6 +159,8 @@ properties:
 required:
   - id
   - status
+  - run_started_at
+  - request_started_at
   - region_id
   - check_id
   - created_at
