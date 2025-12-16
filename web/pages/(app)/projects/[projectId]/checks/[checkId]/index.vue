@@ -28,7 +28,7 @@ useHead({
             <h1 class="text-2xl font-semibold text-balance text-foreground">
               {{ check?.name }}
             </h1>
-            <StatusBadge :status="check?.last_status" />
+            <StatusBadge :status="check?.last_status ?? 'unknown'" />
           </div>
 
           <div class="text-sm text-muted-foreground font-mono flex items-center gap-2">
@@ -37,7 +37,7 @@ useHead({
             </Badge>
 
             <span>
-              {{ constructURL({ host: check?.host, port: check?.port, path: check?.path, queryParams: check?.query_params, secure: check?.secure }) }}
+              {{ constructURL({ host: check?.host!, port: check?.port!, path: check?.path!, queryParams: check?.query_params as Record<string, string> | undefined, secure: check?.secure }) }}
             </span>
           </div>
         </div>
