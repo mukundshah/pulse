@@ -68,8 +68,10 @@ type CheckRun struct {
 	FirstByteAt      time.Time `gorm:"type:timestamptz" json:"first_byte_at"`
 	ResponseEndedAt  time.Time `gorm:"type:timestamptz" json:"response_ended_at"`
 
-	ConnectionReused  bool  `gorm:"type:boolean;default:false" json:"connection_reused"`
-	ResponseSizeBytes int64 `gorm:"type:bigint" json:"response_size_bytes"`
+	ConnectionReused  bool   `gorm:"type:boolean;default:false" json:"connection_reused"`
+	IPVersion         string `gorm:"type:varchar(10)" json:"ip_version,omitempty"` // "IPv4" or "IPv6"
+	IPAddress         string `gorm:"type:varchar(45)" json:"ip_address,omitempty"` // IPv4 or IPv6 address
+	ResponseSizeBytes int64  `gorm:"type:bigint" json:"response_size_bytes"`
 
 	AssertionResults datatypes.JSON `gorm:"type:jsonb" json:"assertion_results"`
 	PlaywrightReport datatypes.JSON `gorm:"type:jsonb" json:"playwright_report,omitempty"`
