@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ASSERTION_PROPERTIES, IP_VERSION_LABELS } from '@/constants/http'
+import { ASSERTION_PROPERTIES } from '@/constants/http'
 import { constructURL } from '@/utils/url'
 
 const STATUS_ICON_COLOR_MAP = {
@@ -190,7 +190,7 @@ const timelineData = computed(() => {
 
           <div v-if="run?.ip_version && run?.ip_address">
             <span class="mr-2">•</span>
-            <span>{{ IP_VERSION_LABELS[run?.ip_version as keyof typeof IP_VERSION_LABELS] }}{{ ':' }} {{ run?.ip_address }}</span>
+            <span>{{ run?.ip_version }}{{ ':' }} {{ run?.ip_address }}</span>
           </div>
         </div>
         <div class="flex items-center justify-between">
