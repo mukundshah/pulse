@@ -34,7 +34,7 @@ const handleLogout = async () => {
         '--header-height': 'calc(var(--spacing) * 15 + 1px)',
       }"
     >
-      <Sidebar class="h-auto border-r" collapsible="none">
+      <Sidebar class="h-auto border-r" collapsible="offcanvas">
         <SidebarHeader class="border-b">
           <NuxtLink class="flex items-center gap-2.5 px-2 py-1.5" to="/dashboard">
             <div class="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background font-semibold">
