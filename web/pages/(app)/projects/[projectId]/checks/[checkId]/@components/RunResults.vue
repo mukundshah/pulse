@@ -80,10 +80,11 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
       </EmptyHeader>
     </Empty>
 
-    <div
+    <NuxtLink
       v-for="run in response?.data"
       :key="run.id"
       class="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors group"
+      :to="`/projects/${projectId}/checks/${checkId}/runs/${run.id}`"
     >
       <Icon
         class="text-lg"
@@ -108,7 +109,7 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
       <span class="text-xs font-mono text-muted-foreground">
         {{ run.total_time_ms }}ms
       </span>
-    </div>
+    </NuxtLink>
 
     <template v-if="pending || isFetchingMore">
       <div
