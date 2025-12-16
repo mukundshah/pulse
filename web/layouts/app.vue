@@ -81,7 +81,7 @@ const handleLogout = async () => {
                 </template>
                 <template v-else-if="projects && projects.length > 0">
                   <SidebarMenuItem v-for="project in projects" :key="project.id">
-                    <SidebarMenuButton as-child :is-active="$route.path === `/projects/${project.id}`">
+                    <SidebarMenuButton as-child :is-active="$route.fullPath.startsWith(`/projects/${project.id}`)">
                       <NuxtLink :to="`/projects/${project.id}`">
                         {{ project.name }}
                       </NuxtLink>
