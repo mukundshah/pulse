@@ -77,6 +77,11 @@ export const IP_VERSIONS = [
   'ipv6',
 ] as const
 
+export const IP_VERSION_LABELS = {
+  ipv4: 'IPv4',
+  ipv6: 'IPv6',
+} as const
+
 export const DNS_RECORD_TYPES = [
   'A',
   'AAAA',
