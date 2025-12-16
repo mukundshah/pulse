@@ -97,7 +97,12 @@ const { isLoading } = useInfiniteScroll(
           </span>
         </div>
         <p class="text-xs text-muted-foreground">
-          <NuxtTime relative title :datetime="run.created_at" />
+          <NuxtTime
+            relative
+            title
+            numeric="auto"
+            :datetime="run.created_at"
+          />
         </p>
       </div>
       <span class="text-xs font-mono text-muted-foreground">
