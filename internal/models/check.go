@@ -63,12 +63,12 @@ type Check struct {
 	DNSResolverProtocol *DNSResolverProtocolType `json:"dns_resolver_protocol,omitempty"`
 
 	LastStatus CheckRunStatus `gorm:"type:varchar(20);default:'unknown'" json:"last_status"`
-	LastRunAt  *time.Time     `json:"last_run_at,omitempty"`
-	NextRunAt  *time.Time     `json:"next_run_at,omitempty"`
+	LastRunAt  *time.Time     `gorm:"type:timestamptz" json:"last_run_at,omitempty"`
+	NextRunAt  *time.Time     `gorm:"type:timestamptz" json:"next_run_at,omitempty"`
 
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	CreatedAt time.Time      `gorm:"type:timestamptz" json:"created_at"`
+	UpdatedAt time.Time      `gorm:"type:timestamptz" json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"type:timestamptz;index" json:"-"`
 
 	ProjectID uuid.UUID `gorm:"type:uuid;index;not null" json:"project_id"`
 	Project   Project   `gorm:"foreignKey:ProjectID" json:"project,omitempty"`

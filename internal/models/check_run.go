@@ -27,7 +27,7 @@ type CheckRun struct {
 
 	Remarks string `gorm:"type:text" json:"remarks"`
 
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	CreatedAt time.Time      `gorm:"type:timestamptz" json:"created_at"`
+	UpdatedAt time.Time      `gorm:"type:timestamptz" json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"type:timestamptz;index" json:"-"`
 }
