@@ -356,6 +356,7 @@ func (h *CheckHandler) ListChecks(c *gin.Context) {
 				id,
 				type,
 				name,
+				interval,
 				last_run_at,
 				last_status
 			FROM checks
@@ -444,9 +445,9 @@ func (h *CheckHandler) ListChecks(c *gin.Context) {
 			cb.id AS id,
 			cb.type AS type,
 			cb.name AS name,
+			cb.interval AS interval,
 			cb.last_run_at AS last_run_at,
 			cb.last_status AS last_status,
-			cb.interval AS interval,
 			COALESCE(l24r.runs::text, '[]') AS last_24_runs,
 			us.uptime_24h AS uptime_24h,
 			us.uptime_7d AS uptime_7d,
