@@ -195,10 +195,10 @@ useHead({
                 <div class="text-xs text-muted-foreground">
                   <span class="sr-only">Last run at:</span>
                   <NuxtTime
-                    v-if="check.last_run_at"
+                    v-if="check.last_run"
                     relative
                     title
-                    :datetime="check.last_run_at"
+                    :datetime="check.last_run"
                   />
                   <span v-else>Never ran</span>
                 </div>
