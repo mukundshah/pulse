@@ -1,55 +1,39 @@
-# Pulse
+<div align="center">
+  <img width="140" src="./public/logo.svg"  alt="Pulse"/>
+  <h2 align="center">Pulse</h2>
+  <p align="center">🔥 Self-hosted synthetic monitoring made simple.</p>
+</div>
 
-> **Note:** This is an experimental learning project. Inspired by [Checkly](https://www.checklyhq.com/), it was built to understand how synthetic monitoring systems work. Active maintenance isn't guaranteed, though I may continue development if there's interest.
+<div align="center">
 
-**Self-hosted synthetic monitoring that actually makes sense.**
+[![stargazers](https://img.shields.io/github/stars/mukundshah/pulse)](https://github.com/mukundshah/pulse/stargazers)
+[![forks](https://img.shields.io/github/forks/mukundshah/pulse)](https://github.com/mukundshah/pulse/network/members)
+[![issues](https://img.shields.io/github/issues/mukundshah/pulse)](https://github.com/mukundshah/pulse/issues)
+[![license](https://img.shields.io/github/license/mukundshah/pulse)](https://github.com/mukundshah/pulse/blob/master/LICENSE)
+[![share](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fmukundshah%2Fpulse)](https://twitter.com/intent/tweet?text=Self-hosted%20synthetic%20monitoring%20made%20simple.%0D%0A&url=https%3A%2F%2Fgithub.com%2Fmukundshah%2Fpulse)
 
-Pulse is a self-hosted monitoring solution that gives you full control over your monitoring infrastructure. Monitor your APIs and services with complete data ownership, flexible deployment options, and no external dependencies.
+</div>
 
-Built with Go for developers who care about performance, simplicity, and control.
+> [!NOTE]
+> This is an experimental learning project. Inspired by [Checkly](https://www.checklyhq.com/), it was built to understand how synthetic monitoring systems work. Active maintenance isn't guaranteed, though I may continue development if there's interest.
 
-## Why Pulse?
-
-**You own your data.** Complete control over where your data lives and how it's stored.
-
-**It's fast.** Built in Go, runs on minimal resources, scales horizontally without breaking a sweat.
-
-**It's simple.** One Docker command to deploy. Clean API. Intuitive interface. Straightforward setup.
-
-**It's complete.** HTTP checks, performance tracking, time-series analytics, flexible alerting—everything you need, nothing you don't.
-
-## ✨ What You Get
-
-- **Lightning Fast** — Go-powered engine that uses minimal resources while handling thousands of checks
-- **Time-Series Analytics** — ClickHouse integration for blazing-fast metrics queries and insights
-- **Horizontal Scaling** — Worker-based architecture that grows with your infrastructure
-- **Flexible Alerting** — Webhook integrations that fit into your existing notification stack
-- **Docker-Ready** — Deploy in minutes with a single command, no configuration hell
-
-## 🚀 Get Started in 60 Seconds
+## 🚀 Installation
 
 ### Prerequisites
 
-- **Docker & Docker Compose** (for production deployment)
-- **Taskfile** (for running development tasks)
-- **Go 1.25+** (only needed for local development)
-- **PostgreSQL 18+**, **Redis 8+** (or Valkey), **ClickHouse** (optional, for advanced analytics)
+- **Taskfile**
+- **Go 1.25+**
+- **PostgreSQL 18+**
+- **Redis 8+**
+- **ClickHouse**
 
-### Production Deployment
-
-```bash
-git clone https://github.com/mukundshah/pulse.git
-cd pulse
-task docker:up
-```
-
-### Local Development
+_Alternatively, you can spin up the infrastructure services using Docker Compose._
 
 ```bash
-# Start infrastructure services (PostgreSQL, Valkey, ClickHouse)
+# Start infrastructure services, if not already running
 task docker:infra:up
 
-# Copy environment template
+# Copy environment template and edit it to your needs
 cp .env.example .env
 
 # Run database migrations
@@ -67,10 +51,10 @@ This is primarily a learning project, and active maintenance isn't guaranteed. T
 
 **Contributions, feedback, and discussions are still welcome!**
 
+## Screenshots
+
+![Screenshot 1](./public/screenshots/screenshot-1.jpeg)
+
 ## 📄 License
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. See the [LICENSE](LICENSE) file for details.
-
----
-
-**Built for developers who want control over their monitoring infrastructure.**
