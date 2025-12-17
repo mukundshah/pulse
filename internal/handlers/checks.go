@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
+	"math"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -18,6 +22,29 @@ type CheckHandler struct {
 
 func NewCheckHandler(s *store.Store) *CheckHandler {
 	return &CheckHandler{store: s}
+}
+
+// CheckListResponse represents a check in the list with metrics
+type CheckListResponse struct {
+	ID                   uuid.UUID    `json:"id"`
+	Type                 string       `json:"type"`
+	Name                 string       `json:"name"`
+	Interval             string       `json:"interval"`
+	LastRun              *time.Time   `json:"last_run,omitempty"`
+	LastStatus           string       `json:"last_status"`
+	Last24Runs           []RunSummary `json:"last_24_runs"`
+	Uptime24h            *string      `json:"uptime_24h,omitempty"`
+	Uptime7d             *string      `json:"uptime_7d,omitempty"`
+	AvgResponseTime24hMs *string      `json:"avg_response_time_24h_ms,omitempty"`
+	P95ResponseTime24hMs *string      `json:"p95_response_time_24h_ms,omitempty"`
+}
+
+// RunSummary represents a summary of a check run
+type RunSummary struct {
+	ID          *uuid.UUID `json:"id,omitempty"`
+	Timestamp   *time.Time `json:"timestamp,omitempty"`
+	TotalTimeMs *int       `json:"total_time_ms,omitempty"`
+	Status      *string    `json:"status,omitempty"`
 }
 
 // CreateCheck handles POST /projects/:projectId/checks
@@ -303,13 +330,244 @@ func (h *CheckHandler) ListChecks(c *gin.Context) {
 		return
 	}
 
-	checks, err := h.store.GetChecksByProject(projectID)
+	now := time.Now().UTC()
+	twentyFourHoursAgo := now.Add(-24 * time.Hour)
+	sevenDaysAgo := now.Add(-7 * 24 * time.Hour)
+
+	// Single optimized query using CTEs to get all data
+	type CheckListRow struct {
+		ID                 uuid.UUID  `gorm:"column:id"`
+		Type               string     `gorm:"column:type"`
+		Name               string     `gorm:"column:name"`
+		Interval           string     `gorm:"column:interval"`
+		LastRun            *time.Time `gorm:"column:last_run_at"`
+		LastStatus         string     `gorm:"column:last_status"`
+		Last24Runs         string     `gorm:"column:last_24_runs"` // JSON array
+		Uptime24h          *float64   `gorm:"column:uptime_24h"`
+		Uptime7d           *float64   `gorm:"column:uptime_7d"`
+		AvgResponseTime24h *float64   `gorm:"column:avg_response_time_24h"`
+		P95ResponseTime24h *float64   `gorm:"column:p95_response_time_24h"`
+	}
+
+	var rows []CheckListRow
+	err = h.store.DB().Raw(`
+		WITH checks_base AS (
+			SELECT
+				id,
+				type,
+				name,
+				last_run_at,
+				last_status
+			FROM checks
+			WHERE project_id = ? AND deleted_at IS NULL
+		),
+		ranked_runs AS (
+			SELECT
+				check_id,
+				status,
+				request_started_at,
+				response_ended_at,
+				created_at,
+				id,
+				ROW_NUMBER() OVER (PARTITION BY check_id ORDER BY created_at DESC, id DESC) as row_num
+			FROM check_runs
+			WHERE deleted_at IS NULL
+		),
+		last_24_runs AS (
+			SELECT
+				check_id,
+				json_agg(
+					json_build_object(
+						'id', id::text,
+						'timestamp', created_at,
+						'total_time_ms',
+						CASE
+							WHEN request_started_at IS NOT NULL AND response_ended_at IS NOT NULL
+								AND response_ended_at > request_started_at
+							THEN EXTRACT(EPOCH FROM (response_ended_at - request_started_at)) * 1000
+							ELSE NULL
+						END,
+						'status', status
+					) ORDER BY created_at ASC, id ASC
+				) as runs
+			FROM ranked_runs
+			WHERE row_num <= 24
+			GROUP BY check_id
+		),
+		uptime_stats AS (
+			SELECT
+				check_id,
+				-- 24h uptime
+				CASE
+					WHEN COUNT(*) FILTER (WHERE created_at >= ? AND created_at <= ?) > 0
+					THEN (
+						COUNT(*) FILTER (
+							WHERE created_at >= ? AND created_at <= ?
+							AND status IN ('passing', 'degraded')
+						)::float /
+						NULLIF(COUNT(*) FILTER (WHERE created_at >= ? AND created_at <= ?), 0) * 100.0
+					)
+					ELSE NULL
+				END as uptime_24h,
+				-- 7d uptime
+				CASE
+					WHEN COUNT(*) FILTER (WHERE created_at >= ? AND created_at <= ?) > 0
+					THEN (
+						COUNT(*) FILTER (
+							WHERE created_at >= ? AND created_at <= ?
+							AND status IN ('passing', 'degraded')
+						)::float /
+						NULLIF(COUNT(*) FILTER (WHERE created_at >= ? AND created_at <= ?), 0) * 100.0
+					)
+					ELSE NULL
+				END as uptime_7d
+			FROM check_runs
+			WHERE deleted_at IS NULL
+			GROUP BY check_id
+		),
+		response_time_stats AS (
+			SELECT
+				check_id,
+				AVG(EXTRACT(EPOCH FROM (response_ended_at - request_started_at)) * 1000) as avg_response_time_24h,
+				PERCENTILE_CONT(0.95) WITHIN GROUP (
+					ORDER BY EXTRACT(EPOCH FROM (response_ended_at - request_started_at)) * 1000
+				) as p95_response_time_24h
+			FROM check_runs
+			WHERE deleted_at IS NULL
+				AND created_at >= ? AND created_at <= ?
+				AND request_started_at IS NOT NULL
+				AND response_ended_at IS NOT NULL
+				AND response_ended_at > request_started_at
+			GROUP BY check_id
+		)
+		SELECT
+			cb.id AS id,
+			cb.type AS type,
+			cb.name AS name,
+			cb.last_run_at AS last_run_at,
+			cb.last_status AS last_status,
+			cb.interval AS interval,
+			COALESCE(l24r.runs::text, '[]') AS last_24_runs,
+			us.uptime_24h AS uptime_24h,
+			us.uptime_7d AS uptime_7d,
+			rts.avg_response_time_24h AS avg_response_time_24h,
+			rts.p95_response_time_24h AS p95_response_time_24h
+		FROM checks_base cb
+		LEFT JOIN last_24_runs l24r ON cb.id = l24r.check_id
+		LEFT JOIN uptime_stats us ON cb.id = us.check_id
+		LEFT JOIN response_time_stats rts ON cb.id = rts.check_id
+		ORDER BY cb.name
+	`, projectID,
+		twentyFourHoursAgo, now, // 24h uptime filters (4 times)
+		twentyFourHoursAgo, now,
+		twentyFourHoursAgo, now,
+		sevenDaysAgo, now, // 7d uptime filters (4 times)
+		sevenDaysAgo, now,
+		sevenDaysAgo, now,
+		twentyFourHoursAgo, now, // response time stats filter
+	).Scan(&rows).Error
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list checks"})
 		return
 	}
 
-	c.JSON(http.StatusOK, checks)
+	// Parse JSON array for last_24_runs and left-pad to 24 items
+	responses := make([]CheckListResponse, len(rows))
+	for i, row := range rows {
+		// Temporary struct for parsing JSON from SQL
+		type RunSummaryRaw struct {
+			ID          *string    `json:"id"`
+			Timestamp   *time.Time `json:"timestamp"`
+			TotalTimeMs *float64   `json:"total_time_ms"` // SQL returns float, convert to int
+			Status      *string    `json:"status"`
+		}
+
+		var last24RunsRaw []RunSummaryRaw
+		if row.Last24Runs != "" && row.Last24Runs != "[]" {
+			// Parse JSON array
+			if err := json.Unmarshal([]byte(row.Last24Runs), &last24RunsRaw); err != nil {
+				last24RunsRaw = []RunSummaryRaw{}
+			}
+		}
+
+		// Convert to RunSummary with proper UUID parsing and float to int conversion
+		last24Runs := make([]RunSummary, len(last24RunsRaw))
+		for j, raw := range last24RunsRaw {
+			var id *uuid.UUID
+			if raw.ID != nil {
+				if parsedID, err := uuid.Parse(*raw.ID); err == nil {
+					id = &parsedID
+				}
+			}
+
+			// Convert float to int (round down)
+			var totalTimeMs *int
+			if raw.TotalTimeMs != nil {
+				ms := int(math.Floor(*raw.TotalTimeMs))
+				totalTimeMs = &ms
+			}
+
+			last24Runs[j] = RunSummary{
+				ID:          id,
+				Timestamp:   raw.Timestamp,
+				TotalTimeMs: totalTimeMs,
+				Status:      raw.Status,
+			}
+		}
+
+		// Left-pad with empty datapoints to ensure we always have 24 items
+		// Empty datapoints go on the left, actual runs on the right (sorted ascending)
+		paddedRuns := make([]RunSummary, 24)
+		numRuns := len(last24Runs)
+		emptyCount := 24 - numRuns
+
+		// Fill left side with empty datapoints
+		for j := 0; j < emptyCount; j++ {
+			paddedRuns[j] = RunSummary{}
+		}
+
+		// Fill right side with actual runs (already sorted ascending)
+		for j := 0; j < numRuns; j++ {
+			paddedRuns[emptyCount+j] = last24Runs[j]
+		}
+
+		// Format percentages and response times as strings with 0 decimal places (rounded down)
+		var uptime24hStr, uptime7dStr, avgMsStr, p95MsStr *string
+
+		if row.Uptime24h != nil {
+			val := fmt.Sprintf("%.0f", math.Floor(*row.Uptime24h))
+			uptime24hStr = &val
+		}
+		if row.Uptime7d != nil {
+			val := fmt.Sprintf("%.0f", math.Floor(*row.Uptime7d))
+			uptime7dStr = &val
+		}
+		if row.AvgResponseTime24h != nil {
+			val := fmt.Sprintf("%.0f", math.Floor(*row.AvgResponseTime24h))
+			avgMsStr = &val
+		}
+		if row.P95ResponseTime24h != nil {
+			val := fmt.Sprintf("%.0f", math.Floor(*row.P95ResponseTime24h))
+			p95MsStr = &val
+		}
+
+		responses[i] = CheckListResponse{
+			ID:                   row.ID,
+			Type:                 row.Type,
+			Name:                 row.Name,
+			LastRun:              row.LastRun,
+			LastStatus:           row.LastStatus,
+			Interval:             row.Interval,
+			Last24Runs:           paddedRuns,
+			Uptime24h:            uptime24hStr,
+			Uptime7d:             uptime7dStr,
+			AvgResponseTime24hMs: avgMsStr,
+			P95ResponseTime24hMs: p95MsStr,
+		}
+	}
+
+	c.JSON(http.StatusOK, responses)
 }
 
 // UpdateCheck handles PUT /projects/:projectId/checks/:checkId

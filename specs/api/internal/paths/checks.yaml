@@ -16,13 +16,100 @@ paths:
             format: uuid
       responses:
         "200":
-          description: List of checks
+          description: List of checks with metrics
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Check"
+                  type: object
+                  required:
+                    - id
+                    - type
+                    - name
+                    - last_status
+                    - last_24_runs
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: Unique identifier for the check
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                    type:
+                      type: string
+                      enum: [http, tcp, dns, browser, heartbeat]
+                      description: Type of check
+                      example: http
+                    name:
+                      type: string
+                      description: Name of the check
+                      example: API Health Check
+                    interval:
+                      type: string
+                      description: Interval of the check
+                      example: 10m
+                    last_run:
+                      type: string
+                      format: date-time
+                      nullable: true
+                      description: Timestamp of the last check run
+                      example: "2024-01-15T10:30:00Z"
+                    last_status:
+                      type: string
+                      enum: [passing, degraded, failing, unknown]
+                      description: Status of the last check run
+                      example: passing
+                    last_24_runs:
+                      type: array
+                      description: Last 24 check runs with total time and status, sorted in ascending order (oldest first). If there are fewer than 24 runs, empty datapoints are left-padded.
+                      minItems: 24
+                      maxItems: 24
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            nullable: true
+                            description: Unique identifier for the check run
+                            example: 550e8400-e29b-41d4-a716-446655440000
+                          timestamp:
+                            type: string
+                            format: date-time
+                            nullable: true
+                            description: Timestamp when the check run was created
+                            example: "2024-01-15T10:30:00Z"
+                          total_time_ms:
+                            type: integer
+                            nullable: true
+                            description: Total response time in milliseconds
+                            example: 150
+                          status:
+                            type: string
+                            enum: [passing, degraded, failing, unknown]
+                            nullable: true
+                            description: Status of the check run
+                            example: passing
+                    uptime_24h:
+                      type: string
+                      nullable: true
+                      description: Uptime percentage over the last 24 hours (rounded down to 0 decimal places)
+                      example: "99"
+                    uptime_7d:
+                      type: string
+                      nullable: true
+                      description: Uptime percentage over the last 7 days (rounded down to 0 decimal places)
+                      example: "99"
+                    avg_response_time_24h_ms:
+                      type: string
+                      nullable: true
+                      description: Average response time in milliseconds over the last 24 hours (rounded down to 0 decimal places)
+                      example: "145"
+                    p95_response_time_24h_ms:
+                      type: string
+                      nullable: true
+                      description: 95th percentile response time in milliseconds over the last 24 hours (rounded down to 0 decimal places)
+                      example: "250"
         "400":
           $ref: "#/components/responses/Error"
         "401":

@@ -214,16 +214,16 @@ useHead({
             <SparklineChart />
           </TableCell>
           <TableCell class="text-center">
-            <!-- <span class="text-sm">{{ formatUptime(check) }}</span> -->
+            <FormattedNumber class="text-sm" :options="{ style: 'unit', unit: 'percent' }" :value="check.uptime_24h" />
           </TableCell>
           <TableCell class="text-center">
-            <!-- <span class="text-sm">{{ formatUptime(check) }}</span> -->
+            <FormattedNumber class="text-sm" :options="{ style: 'unit', unit: 'percent' }" :value="check.uptime_7d" />
           </TableCell>
           <TableCell class="text-center">
-            <!-- <span class="text-sm">{{ formatResponseTime(check) }}</span> -->
+            <span class="text-sm">{{ check.avg_response_time_24h_ms }} ms</span>
           </TableCell>
           <TableCell class="text-center">
-            <!-- <span class="text-sm">{{ formatResponseTime(check) }}</span> -->
+            <span class="text-sm">{{ check.p95_response_time_24h_ms }} ms</span>
           </TableCell>
           <TableCell class="text-center">
             <span class="text-sm">{{ check.interval }}</span>
