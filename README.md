@@ -1,5 +1,9 @@
 <div align="center">
-  <img width="140" src="./public/logo.svg"  alt="Pulse"/>
+  <picture width="140">
+     <source media="(prefers-color-scheme: dark)" srcset="./public/icon-white-512.png">
+    <source media="(prefers-color-scheme: light)" srcset="./public/icon-black-512.png">
+    <img width="140" src="./public/icon-black-512.png" alt="Pulse"/>
+  </picture>
   <h2 align="center">Pulse</h2>
   <p align="center">🔥 Self-hosted synthetic monitoring made simple.</p>
 </div>
