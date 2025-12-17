@@ -4,7 +4,7 @@ properties:
     type: string
     format: date-time
     description: Timestamp for this data point (time bucket start)
-    example: "2024-01-01T00:00:00Z"
+    example: '2024-01-01T00:00:00Z'
   uptime_percentage:
     type: number
     format: float

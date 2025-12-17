@@ -74,7 +74,7 @@ paths:
             Only returns check runs created at or before this time.
             Example: `2024-01-01T23:59:59Z`
       responses:
-        "200":
+        '200':
           description: Paginated list of check runs
           content:
             application/json:
@@ -86,7 +86,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/CheckRun"
+                      $ref: '#/components/schemas/CheckRun'
                     description: Array of check runs, sorted from latest to oldest
                   prev_cursor:
                     type: string
@@ -104,8 +104,8 @@ paths:
                       Cursor to retrieve older items (next page).
                       Use this value with the `after` parameter.
                       Null if there are no older items available.
-        "400":
-          $ref: "#/components/responses/Error"
+        '400':
+          $ref: '#/components/responses/Error'
           description: |
             Bad request. Possible reasons:
             - Invalid project ID format
@@ -113,14 +113,14 @@ paths:
             - Invalid limit value
             - Invalid cursor format (after/before)
             - Invalid date format for start/end (must be RFC3339)
-        "401":
-          $ref: "#/components/responses/Error"
+        '401':
+          $ref: '#/components/responses/Error'
           description: Unauthorized. Authentication token is missing or invalid.
-        "403":
-          $ref: "#/components/responses/Error"
+        '403':
+          $ref: '#/components/responses/Error'
           description: Forbidden. User does not have access to the project.
-        "404":
-          $ref: "#/components/responses/Error"
+        '404':
+          $ref: '#/components/responses/Error'
           description: Check not found or user does not have access.
 
   /internal/projects/{projectId}/checks/{checkId}/uptime:
@@ -189,7 +189,7 @@ paths:
             Must be after `start`.
             Example: `2024-01-01T23:59:59Z`
       responses:
-        "200":
+        '200':
           description: Uptime data aggregated by time buckets
           content:
             application/json:
@@ -205,24 +205,24 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/UptimeDataPoint"
+                      $ref: '#/components/schemas/UptimeDataPoint'
                     description: Array of uptime data points, sorted chronologically
                   period:
                     type: string
                     description: |
                       Period identifier. Either one of the preset values (today, 1hr, 3hr, 24hr, 7d, 30d)
                       or "custom" if using start/end datetime range.
-                    example: "24hr"
+                    example: 24hr
                   start_time:
                     type: string
                     format: date-time
                     description: Start time of the data range (RFC3339 format)
-                    example: "2024-01-01T00:00:00Z"
+                    example: '2024-01-01T00:00:00Z'
                   end_time:
                     type: string
                     format: date-time
                     description: End time of the data range (RFC3339 format)
-                    example: "2024-01-01T23:59:59Z"
+                    example: '2024-01-01T23:59:59Z'
                   time_bucket:
                     type: string
                     enum: [minute, hour, day]
@@ -231,23 +231,23 @@ paths:
                       - `minute`: For ranges less than 3 hours
                       - `hour`: For ranges less than 7 days
                       - `day`: For ranges 7 days or more
-                    example: "hour"
-        "400":
-          $ref: "#/components/responses/Error"
+                    example: hour
+        '400':
+          $ref: '#/components/responses/Error'
           description: |
             Bad request. Possible reasons:
             - Invalid period value
             - Invalid datetime format for start/end
             - Start time is after end time
             - Only one of start/end provided (both required)
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "404":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
 
   /internal/projects/{projectId}/checks/{checkId}/runs/{runId}:
     get:
@@ -284,27 +284,27 @@ paths:
             format: uuid
           description: The ID of the check run
       responses:
-        "200":
+        '200':
           description: Check run details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CheckRun"
-        "400":
-          $ref: "#/components/responses/Error"
+                $ref: '#/components/schemas/CheckRun'
+        '400':
+          $ref: '#/components/responses/Error'
           description: |
             Bad request. Possible reasons:
             - Invalid project ID format
             - Invalid check ID format
             - Invalid check run ID format
-        "401":
-          $ref: "#/components/responses/Error"
+        '401':
+          $ref: '#/components/responses/Error'
           description: Unauthorized. Authentication token is missing or invalid.
-        "403":
-          $ref: "#/components/responses/Error"
+        '403':
+          $ref: '#/components/responses/Error'
           description: Forbidden. User does not have access to the project.
-        "404":
-          $ref: "#/components/responses/Error"
+        '404':
+          $ref: '#/components/responses/Error'
           description: |
             Not found. Possible reasons:
             - Check run does not exist

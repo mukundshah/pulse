@@ -15,7 +15,7 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
+        '200':
           description: List of checks with metrics
           content:
             application/json:
@@ -53,7 +53,7 @@ paths:
                       format: date-time
                       nullable: true
                       description: Timestamp of the last check run
-                      example: "2024-01-15T10:30:00Z"
+                      example: '2024-01-15T10:30:00Z'
                     last_status:
                       type: string
                       enum: [passing, degraded, failing, unknown]
@@ -78,7 +78,7 @@ paths:
                             format: date-time
                             nullable: true
                             description: Timestamp when the check run was created
-                            example: "2024-01-15T10:30:00Z"
+                            example: '2024-01-15T10:30:00Z'
                           total_time_ms:
                             type: integer
                             nullable: true
@@ -94,30 +94,30 @@ paths:
                       type: string
                       nullable: true
                       description: Uptime percentage over the last 24 hours (rounded down to 0 decimal places)
-                      example: "99"
+                      example: '99'
                     uptime_7d:
                       type: string
                       nullable: true
                       description: Uptime percentage over the last 7 days (rounded down to 0 decimal places)
-                      example: "99"
+                      example: '99'
                     avg_response_time_24h_ms:
                       type: string
                       nullable: true
                       description: Average response time in milliseconds over the last 24 hours (rounded down to 0 decimal places)
-                      example: "145"
+                      example: '145'
                     p95_response_time_24h_ms:
                       type: string
                       nullable: true
                       description: 95th percentile response time in milliseconds over the last 24 hours (rounded down to 0 decimal places)
-                      example: "250"
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+                      example: '250'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
     post:
       operationId: createProjectCheck
       summary: Create a new check in a project
@@ -195,30 +195,28 @@ paths:
                       source:
                         type: string
                         enum:
-                          [
-                            status_code,
-                            response_body,
-                            response_headers,
-                            response_time_ms,
-                          ]
+                          - status_code
+                          - response_body
+                          - response_headers
+                          - response_time_ms
+
                       property:
                         type: string
                         nullable: true
                       comparison:
                         type: string
                         enum:
-                          [
-                            equals,
-                            not_equals,
-                            contains,
-                            not_contains,
-                            is_empty,
-                            is_not_empty,
-                            is_less_than,
-                            is_less_than_or_equal_to,
-                            is_greater_than,
-                            is_greater_than_or_equal_to,
-                          ]
+                          - equals
+                          - not_equals
+                          - contains
+                          - not_contains
+                          - is_empty
+                          - is_not_empty
+                          - is_less_than
+                          - is_less_than_or_equal_to
+                          - is_greater_than
+                          - is_greater_than_or_equal_to
+
                       target:
                         type: string
                     required:
@@ -315,20 +313,20 @@ paths:
                   nullable: true
                   description: DNS resolver protocol
       responses:
-        "201":
+        '201':
           description: Check created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Check"
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+                $ref: '#/components/schemas/Check'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
 
   /internal/projects/{projectId}/checks/{checkId}:
     get:
@@ -352,20 +350,20 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
+        '200':
           description: Check details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Check"
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "404":
-          $ref: "#/components/responses/Error"
+                $ref: '#/components/schemas/Check'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
     put:
       operationId: updateCheck
       summary: Update a check
@@ -438,30 +436,28 @@ paths:
                       source:
                         type: string
                         enum:
-                          [
-                            status_code,
-                            response_body,
-                            response_headers,
-                            response_time_ms,
-                          ]
+                          - status_code
+                          - response_body
+                          - response_headers
+                          - response_time_ms
+
                       property:
                         type: string
                         nullable: true
                       comparison:
                         type: string
                         enum:
-                          [
-                            equals,
-                            not_equals,
-                            contains,
-                            not_contains,
-                            is_empty,
-                            is_not_empty,
-                            is_less_than,
-                            is_less_than_or_equal_to,
-                            is_greater_than,
-                            is_greater_than_or_equal_to,
-                          ]
+                          - equals
+                          - not_equals
+                          - contains
+                          - not_contains
+                          - is_empty
+                          - is_not_empty
+                          - is_less_than
+                          - is_less_than_or_equal_to
+                          - is_greater_than
+                          - is_greater_than_or_equal_to
+
                       target:
                         type: string
                     required:
@@ -552,22 +548,22 @@ paths:
                   nullable: true
                   description: DNS resolver protocol
       responses:
-        "200":
+        '200':
           description: Check updated successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Check"
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "404":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+                $ref: '#/components/schemas/Check'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
     delete:
       operationId: deleteCheck
       summary: Delete a check
@@ -589,7 +585,7 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
+        '200':
           description: Check deleted successfully
           content:
             application/json:
@@ -599,11 +595,11 @@ paths:
                   message:
                     type: string
                     example: Check deleted successfully
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'

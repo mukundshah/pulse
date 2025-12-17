@@ -15,22 +15,22 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
+        '200':
           description: List of project members
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ProjectMember"
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+                  $ref: '#/components/schemas/ProjectMember'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
 
   /internal/projects/{projectId}/members/{userId}:
     put:
@@ -67,7 +67,7 @@ paths:
                   enum: [admin, member, viewer]
                   example: member
       responses:
-        "200":
+        '200':
           description: Member role updated successfully
           content:
             application/json:
@@ -77,14 +77,14 @@ paths:
                   message:
                     type: string
                     example: member role updated
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
     delete:
       operationId: removeProjectMember
       summary: Remove a member from a project
@@ -106,7 +106,7 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
+        '200':
           description: Member removed successfully
           content:
             application/json:
@@ -116,11 +116,11 @@ paths:
                   message:
                     type: string
                     example: member removed
-        "400":
-          $ref: "#/components/responses/Error"
-        "401":
-          $ref: "#/components/responses/Error"
-        "403":
-          $ref: "#/components/responses/Error"
-        "500":
-          $ref: "#/components/responses/Error"
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
