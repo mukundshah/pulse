@@ -53,7 +53,11 @@ This is primarily a learning project, and active maintenance isn't guaranteed. T
 
 ## Screenshots
 
-![Screenshot 1](./public/screenshots/screenshot-1.jpeg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-1-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-1-light.png">
+  <img alt="Screenshot 1" src="./public/screenshots/screenshot-1-light.png">
+</picture>
 
 ## 📄 License
 
