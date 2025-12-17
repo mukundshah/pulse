@@ -220,10 +220,10 @@ useHead({
             <FormattedNumber class="text-sm" :options="{ style: 'unit', unit: 'percent' }" :value="check.uptime_7d" />
           </TableCell>
           <TableCell class="text-center">
-            <span class="text-sm">{{ check.avg_response_time_24h_ms }} ms</span>
+            <FormattedNumber class="text-sm" :options="{ style: 'unit', unit: 'millisecond' }" :value="check.avg_response_time_24h_ms" />
           </TableCell>
           <TableCell class="text-center">
-            <span class="text-sm">{{ check.p95_response_time_24h_ms }} ms</span>
+            <FormattedNumber class="text-sm" :options="{ style: 'unit', unit: 'millisecond' }" :value="check.p95_response_time_24h_ms" />
           </TableCell>
           <TableCell class="text-center">
             <span class="text-sm">{{ check.interval }}</span>

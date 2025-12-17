@@ -217,7 +217,7 @@ const timelineData = computed(() => {
             </div>
             <div class="flex items-center gap-2 text-sm font-mono">
               <Icon class="w-4 h-4 text-muted-foreground" name="lucide:clock" />
-              <span>{{ (run as Record<string, unknown>)?.total_time_ms || 0 }}ms</span>
+              <FormattedNumber class="text-sm font-mono text-muted-foreground" :options="{ style: 'unit', unit: 'millisecond' }" :value="(run as Record<string, unknown>)?.total_time_ms as number || 0" />
             </div>
           </div>
         </div>

@@ -106,9 +106,7 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
           />
         </p>
       </div>
-      <span class="text-xs font-mono text-muted-foreground">
-        {{ run.total_time_ms }}ms
-      </span>
+      <FormattedNumber class="text-xs font-mono text-muted-foreground" :options="{ style: 'unit', unit: 'millisecond' }" :value="run.total_time_ms" />
     </NuxtLink>
 
     <template v-if="pending || isFetchingMore">
