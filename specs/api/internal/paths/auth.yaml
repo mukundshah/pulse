@@ -83,8 +83,6 @@ paths:
                   token:
                     type: string
                     description: JWT authentication token
-                  user:
-                    $ref: "#/components/schemas/User"
         "400":
           $ref: "#/components/responses/Error"
         "401":

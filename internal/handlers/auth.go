@@ -193,12 +193,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Don't return password hash
-	user.PasswordHash = ""
-
-	c.JSON(http.StatusOK, AuthResponse{
-		Token: jwtToken,
-		User:  user,
+	c.JSON(http.StatusOK, gin.H{
+		"token": jwtToken,
 	})
 }
 
