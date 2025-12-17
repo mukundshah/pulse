@@ -148,7 +148,7 @@ useHead({
         </CardHeader>
         <CardContent>
           <div>
-            <PerformanceChart />
+            <PerformanceChart :check-id="checkId" :project-id="projectId" />
           </div>
         </CardContent>
       </Card>

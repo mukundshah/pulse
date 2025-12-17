@@ -1,0 +1,31 @@
+type: object
+properties:
+  run_id:
+    type: string
+    format: uuid
+    description: The ID of the check run
+    example: '01234567-89ab-cdef-0123-456789abcdef'
+  timestamp:
+    type: string
+    format: date-time
+    description: Timestamp when the check run was created
+    example: '2024-01-01T00:00:00Z'
+  network_timings:
+    type: object
+    description: |
+      Network timing data from the check run. Contains detailed timing information
+      including DNS, TCP, TLS, request, TTFB, and download phases.
+      All durations are in microseconds.
+    additionalProperties: true
+    example:
+      response_time_us: 150000
+      dns_duration_us: 5000
+      tcp_duration_us: 10000
+      tls_duration_us: 20000
+      request_duration_us: 5000
+      ttfb_us: 50000
+      download_us: 60000
+required:
+  - run_id
+  - timestamp
+  - network_timings

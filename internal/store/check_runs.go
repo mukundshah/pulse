@@ -1,12 +1,14 @@
 package store
 
 import (
+	"encoding/json"
 	"sort"
 	"time"
 
 	"pulse/internal/models"
 
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 )
 
 func (s *Store) CreateCheckRun(run *models.CheckRun) error {
@@ -197,4 +199,53 @@ func DetermineTimeBucket(startTime, endTime time.Time) string {
 	}
 	// 7 days or more: use day buckets
 	return "day"
+}
+
+// TimingDataPoint represents a single timing data point from a check run
+type TimingDataPoint struct {
+	RunID         uuid.UUID              `json:"run_id"`
+	Timestamp     time.Time              `json:"timestamp"`
+	NetworkTimings map[string]interface{} `json:"network_timings"`
+}
+
+// GetCheckTimingsData returns timing data for all check runs within a specified time range
+// startTime and endTime define the time range (inclusive)
+// Returns a list of timing data points, one per check run
+func (s *Store) GetCheckTimingsData(checkID uuid.UUID, startTime, endTime time.Time) ([]TimingDataPoint, error) {
+	var runs []struct {
+		ID            uuid.UUID      `gorm:"column:id"`
+		CreatedAt     time.Time      `gorm:"column:created_at"`
+		NetworkTimings datatypes.JSON `gorm:"column:network_timings;type:jsonb"`
+	}
+
+	err := s.db.Table("check_runs").
+		Select("id, created_at, network_timings").
+		Where("check_id = ?", checkID).
+		Where("created_at >= ?", startTime).
+		Where("created_at <= ?", endTime).
+		Where("deleted_at IS NULL").
+		Where("network_timings IS NOT NULL").
+		Order("created_at ASC").
+		Find(&runs).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	dataPoints := make([]TimingDataPoint, 0, len(runs))
+	for _, run := range runs {
+		// Unmarshal the JSONB data
+		var timings map[string]interface{}
+		if len(run.NetworkTimings) > 0 {
+			if err := json.Unmarshal(run.NetworkTimings, &timings); err == nil && len(timings) > 0 {
+				dataPoints = append(dataPoints, TimingDataPoint{
+					RunID:         run.ID,
+					Timestamp:     run.CreatedAt,
+					NetworkTimings: timings,
+				})
+			}
+		}
+	}
+
+	return dataPoints, nil
 }

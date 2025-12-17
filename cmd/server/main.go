@@ -208,6 +208,7 @@ func main() {
 		protected.GET("/projects/:projectId/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
 		protected.GET("/projects/:projectId/checks/:checkId/runs/:runId", checkRunHandler.GetCheckRun)
 		protected.GET("/projects/:projectId/checks/:checkId/uptime", checkRunHandler.GetCheckUptime)
+		protected.GET("/projects/:projectId/checks/:checkId/timings", checkRunHandler.GetCheckTimings)
 		protected.POST("/projects/:projectId/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
 		protected.DELETE("/projects/:projectId/checks/:checkId/tags/:tagId", tagHandler.RemoveTagFromCheck)
 

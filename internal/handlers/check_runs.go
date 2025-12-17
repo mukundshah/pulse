@@ -323,3 +323,108 @@ func (h *CheckRunHandler) GetCheckUptime(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+// GetCheckTimings handles GET /projects/:projectId/checks/:checkId/timings
+// Supports both period presets and explicit datetime ranges:
+//   - Query params: period (today, 1hr, 3hr, 24hr, 7d, 30d) OR start/end (RFC3339 datetime)
+//   - If both are provided, start/end takes precedence
+// Returns a list of timing data points from all check runs in the time range
+func (h *CheckRunHandler) GetCheckTimings(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	checkID, err := uuid.Parse(c.Param("checkId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
+		return
+	}
+
+	now := time.Now().UTC()
+	var startTime, endTime time.Time
+	var period string
+
+	// Check if explicit datetime range is provided
+	startStr := c.Query("start")
+	endStr := c.Query("end")
+
+	if startStr != "" && endStr != "" {
+		// Parse explicit datetime range
+		startTime, err = time.Parse(time.RFC3339, startStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start time format. Use RFC3339 (e.g., 2024-01-01T00:00:00Z)"})
+			return
+		}
+
+		endTime, err = time.Parse(time.RFC3339, endStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end time format. Use RFC3339 (e.g., 2024-01-01T23:59:59Z)"})
+			return
+		}
+
+		if startTime.After(endTime) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Start time must be before end time"})
+			return
+		}
+
+		period = "custom"
+	} else {
+		// Use period preset
+		periodParam := c.DefaultQuery("period", "24hr")
+		period = periodParam
+
+		switch periodParam {
+		case "today":
+			// Start of today to now
+			startTime = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+			endTime = now
+		case "1hr":
+			startTime = now.Add(-1 * time.Hour)
+			endTime = now
+		case "3hr":
+			startTime = now.Add(-3 * time.Hour)
+			endTime = now
+		case "24hr":
+			startTime = now.Add(-24 * time.Hour)
+			endTime = now
+		case "7d":
+			startTime = now.Add(-7 * 24 * time.Hour)
+			endTime = now
+		case "30d":
+			startTime = now.Add(-30 * 24 * time.Hour)
+			endTime = now
+		default:
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid period. Must be one of: today, 1hr, 3hr, 24hr, 7d, 30d, or provide start/end datetime range"})
+			return
+		}
+	}
+
+	timingsData, err := h.store.GetCheckTimingsData(checkID, startTime, endTime)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch timings data"})
+		return
+	}
+
+	response := gin.H{
+		"data":       timingsData,
+		"period":     period,
+		"start_time": startTime.Format(time.RFC3339),
+		"end_time":   endTime.Format(time.RFC3339),
+	}
+
+	c.JSON(http.StatusOK, response)
+}

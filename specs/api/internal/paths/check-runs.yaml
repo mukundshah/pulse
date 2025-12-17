@@ -249,6 +249,123 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
+  /internal/projects/{projectId}/checks/{checkId}/timings:
+    get:
+      operationId: getCheckTimings
+      summary: Get timing data for a check
+      description: |
+        Returns timing data for all check runs within a specified time period.
+        Unlike the uptime endpoint, this returns raw timing data points (one per check run)
+        without aggregation. Each data point includes the network timings from the check run.
+        Supports both period presets and custom datetime ranges.
+      tags:
+        - Check Runs
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the project
+        - name: checkId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the check
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [today, 1hr, 3hr, 24hr, 7d, 30d]
+            default: 24hr
+          description: |
+            Time period preset. Options:
+            - `today`: From start of today to now
+            - `1hr`: Last 1 hour
+            - `3hr`: Last 3 hours
+            - `24hr`: Last 24 hours
+            - `7d`: Last 7 days
+            - `30d`: Last 30 days
+
+            If both `period` and `start`/`end` are provided, `start`/`end` takes precedence.
+        - name: start
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: |
+            Start time for custom datetime range (RFC3339 format).
+            Must be provided together with `end`.
+            Example: `2024-01-01T00:00:00Z`
+        - name: end
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: |
+            End time for custom datetime range (RFC3339 format).
+            Must be provided together with `start`.
+            Must be after `start`.
+            Example: `2024-01-01T23:59:59Z`
+      responses:
+        '200':
+          description: Timing data for check runs
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - period
+                  - start_time
+                  - end_time
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimingDataPoint'
+                    description: Array of timing data points, one per check run, sorted chronologically
+                  period:
+                    type: string
+                    description: |
+                      Period identifier. Either one of the preset values (today, 1hr, 3hr, 24hr, 7d, 30d)
+                      or "custom" if using start/end datetime range.
+                    example: 24hr
+                  start_time:
+                    type: string
+                    format: date-time
+                    description: Start time of the data range (RFC3339 format)
+                    example: '2024-01-01T00:00:00Z'
+                  end_time:
+                    type: string
+                    format: date-time
+                    description: End time of the data range (RFC3339 format)
+                    example: '2024-01-01T23:59:59Z'
+        '400':
+          $ref: '#/components/responses/Error'
+          description: |
+            Bad request. Possible reasons:
+            - Invalid period value
+            - Invalid datetime format for start/end
+            - Start time is after end time
+            - Only one of start/end provided (both required)
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
   /internal/projects/{projectId}/checks/{checkId}/runs/{runId}:
     get:
       operationId: getCheckRunById
