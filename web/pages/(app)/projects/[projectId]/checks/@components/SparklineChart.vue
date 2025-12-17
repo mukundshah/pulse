@@ -36,10 +36,9 @@ const STATUS_MAP = {
 </script>
 
 <template>
-  <ChartContainer class="h-12 w-full" :config="chartConfig" :cursor="true">
-    <VisXYContainer :data="props.runs" :padding="{ top: 10, right: 0, bottom: 0, left: 0 }">
+  <ChartContainer class="h-10 w-full max-w-56" :config="chartConfig" :cursor="true">
+    <VisXYContainer :data="props.runs" :padding="{ top: 4, right: 6, bottom: 0, left: 6 }">
       <VisStackedBar
-        :bar-max-width="6"
         :bar-padding="0.4"
         :color="(d: Run) => STATUS_MAP[d.status as keyof typeof STATUS_MAP].color"
         :x="(d: Run) => new Date(d.timestamp as string)"
