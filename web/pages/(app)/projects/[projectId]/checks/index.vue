@@ -211,7 +211,7 @@ useHead({
             </Badge>
           </TableCell>
           <TableCell>
-            <SparklineChart />
+            <SparklineChart :runs="check.last_24_runs" />
           </TableCell>
           <TableCell class="text-center">
             <FormattedNumber class="text-sm" :options="{ style: 'unit', unit: 'percent' }" :value="check.uptime_24h" />
