@@ -18,6 +18,7 @@ const (
 	FailureConnectionTimeout  FailureReason = "connection_timeout"
 	FailureConnectionRefused  FailureReason = "connection_refused"
 	FailureNetworkUnreachable FailureReason = "network_unreachable"
+	FailureIPVersionMismatch  FailureReason = "ip_version_mismatch"
 
 	// Timeouts
 	FailureRequestTimeout  FailureReason = "request_timeout"

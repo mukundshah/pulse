@@ -630,6 +630,9 @@ func (e *httpCheckExecutor) classifyError(err error) *models.FailureReason {
 	errStr := err.Error()
 
 	// Network errors
+	if contains(errStr, "ip version mismatch") {
+		return failureReasonPtr(models.FailureIPVersionMismatch)
+	}
 	if contains(errStr, "no such host") || contains(errStr, "dns") {
 		return failureReasonPtr(models.FailureDNS)
 	}
