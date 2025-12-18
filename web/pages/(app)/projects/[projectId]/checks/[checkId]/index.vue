@@ -76,8 +76,10 @@ const handleTriggerCheck = async () => {
         </div>
 
         <div class="flex items-center gap-2.5">
-          <Button size="sm" variant="outline">
-            Edit
+          <Button as-child size="sm" variant="outline">
+            <NuxtLink :to="`/projects/${projectId}/checks/${checkId}/edit`">
+              Edit
+            </NuxtLink>
           </Button>
 
           <Button loading-auto size="sm" @click="handleTriggerCheck">
