@@ -310,7 +310,7 @@ const timelineData = computed(() => {
                 {{ formatDuration(timing.length) }}
               </div>
             </div>
-            <div class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center bg-muted">
+            <div v-if="timelineData.length > 3" class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center bg-muted">
               <div class="text-xs font-semibold uppercase px-3">
                 Request/Response
               </div>
