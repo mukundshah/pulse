@@ -74,10 +74,17 @@ func newHTTPCheckExecutor(check *models.Check) *httpCheckExecutor {
 	// Enforce strict IP version usage
 	transport.DialContext = createIPVersionDialer(check.IPVersion)
 
+	// Configure TLS based on SkipSSLVerification setting
 	if check.SkipSSLVerification {
+		// Skip SSL certificate verification
 		transport.TLSClientConfig = &tls.Config{
 			InsecureSkipVerify: true,
 			MinVersion:         tls.VersionTLS12,
+		}
+	} else {
+		// Use secure TLS defaults with certificate verification
+		transport.TLSClientConfig = &tls.Config{
+			MinVersion: tls.VersionTLS12,
 		}
 	}
 
@@ -642,7 +649,9 @@ func (e *httpCheckExecutor) classifyError(err error) *models.FailureReason {
 	if contains(errStr, "timeout") || contains(errStr, "deadline exceeded") {
 		return failureReasonPtr(models.FailureRequestTimeout)
 	}
-	if contains(errStr, "tls") || contains(errStr, "certificate") || contains(errStr, "handshake") {
+	// TLS/SSL errors - check before other connection errors
+	if contains(errStr, "tls") || contains(errStr, "ssl") || contains(errStr, "certificate") ||
+		contains(errStr, "handshake") || contains(errStr, "x509") || contains(errStr, "certificate verify failed") {
 		return failureReasonPtr(models.FailureTLS)
 	}
 	if contains(errStr, "connection") && contains(errStr, "reset") {
