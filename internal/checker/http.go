@@ -71,6 +71,9 @@ func newHTTPCheckExecutor(check *models.Check) *httpCheckExecutor {
 		DisableKeepAlives:  false,
 	}
 
+	// Enforce strict IP version usage
+	transport.DialContext = createIPVersionDialer(check.IPVersion)
+
 	if check.SkipSSLVerification {
 		transport.TLSClientConfig = &tls.Config{
 			InsecureSkipVerify: true,
@@ -95,6 +98,101 @@ func newHTTPCheckExecutor(check *models.Check) *httpCheckExecutor {
 		timings:          &timingTracker{},
 		responseSize:     0,
 		connectionReused: false,
+	}
+}
+
+// createIPVersionDialer creates a dialer that enforces strict IP version usage.
+func createIPVersionDialer(ipVersion models.IPVersionType) func(context.Context, string, string) (net.Conn, error) {
+	baseDialer := &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
+
+	return func(ctx context.Context, network, address string) (net.Conn, error) {
+		host, port, err := net.SplitHostPort(address)
+		if err != nil {
+			return nil, fmt.Errorf("invalid address format: %w", err)
+		}
+
+		// Determine the network type based on IP version requirement
+		// Use tcp4 or tcp6 for strict enforcement
+		var targetNetwork string
+		if ipVersion == models.IPVersionTypeIPv4 {
+			targetNetwork = "tcp4"
+		} else {
+			targetNetwork = "tcp6"
+		}
+
+		// Check if host is already an IP address
+		ip := net.ParseIP(host)
+		if ip != nil {
+			// Direct IP address - verify it matches the required version
+			isIPv4 := ip.To4() != nil
+			requiresIPv4 := ipVersion == models.IPVersionTypeIPv4
+
+			if isIPv4 != requiresIPv4 {
+				if requiresIPv4 {
+					return nil, fmt.Errorf("IP version mismatch: required IPv4 but got IPv6 address %s", host)
+				}
+				return nil, fmt.Errorf("IP version mismatch: required IPv6 but got IPv4 address %s", host)
+			}
+
+			// IP version matches, proceed with connection using strict network type
+			return baseDialer.DialContext(ctx, targetNetwork, address)
+		}
+
+		// Hostname - resolve and filter by IP version
+		var addrs []net.IP
+		if ipVersion == models.IPVersionTypeIPv4 {
+			// Resolve only IPv4 addresses
+			ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+			if err != nil {
+				return nil, fmt.Errorf("DNS lookup failed: %w", err)
+			}
+
+			for _, ipAddr := range ips {
+				if ipAddr.IP.To4() != nil {
+					addrs = append(addrs, ipAddr.IP)
+				}
+			}
+
+			if len(addrs) == 0 {
+				return nil, fmt.Errorf("IP version mismatch: no IPv4 addresses found for host %s", host)
+			}
+		} else {
+			// Resolve only IPv6 addresses
+			ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+			if err != nil {
+				return nil, fmt.Errorf("DNS lookup failed: %w", err)
+			}
+
+			for _, ipAddr := range ips {
+				if ipAddr.IP.To4() == nil {
+					addrs = append(addrs, ipAddr.IP)
+				}
+			}
+
+			if len(addrs) == 0 {
+				return nil, fmt.Errorf("IP version mismatch: no IPv6 addresses found for host %s", host)
+			}
+		}
+
+		// Try connecting to each resolved address using strict network type
+		var lastErr error
+		for _, addr := range addrs {
+			addrStr := net.JoinHostPort(addr.String(), port)
+			conn, err := baseDialer.DialContext(ctx, targetNetwork, addrStr)
+			if err == nil {
+				return conn, nil
+			}
+			lastErr = err
+		}
+
+		if lastErr != nil {
+			return nil, fmt.Errorf("failed to connect to any %s address for %s: %w", ipVersion, host, lastErr)
+		}
+
+		return nil, fmt.Errorf("no %s addresses available for %s", ipVersion, host)
 	}
 }
 
