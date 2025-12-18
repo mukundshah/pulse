@@ -2,7 +2,9 @@
 import type { PulseAPIResponse } from '#open-fetch'
 import type { ChartConfig } from '@/components/ui/chart'
 import { VisAxis, VisStackedBar, VisXYContainer } from '@unovis/vue'
+
 import { ChartContainer, ChartCrosshair, ChartTooltip, ChartTooltipContent, componentToString } from '@/components/ui/chart'
+import { TIME_FORMAT } from '@/constants/intl'
 
 const props = withDefaults(defineProps<{
   projectId: string
@@ -29,33 +31,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const TIME_FORMAT = {
-  second: {
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-  },
-  minute: {
-    hour: 'numeric',
-    minute: 'numeric',
-  },
-  hour: {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-  },
-  day: {
-    day: 'numeric',
-    month: 'short',
-  },
-  week: {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  },
-} satisfies Record<string, Intl.DateTimeFormatOptions>
-
-// Fetch uptime data
 const { data: response, pending, error, refresh } = useLazyPulseAPI('/internal/projects/{projectId}/checks/{checkId}/uptime', {
   path: {
     projectId: props.projectId,

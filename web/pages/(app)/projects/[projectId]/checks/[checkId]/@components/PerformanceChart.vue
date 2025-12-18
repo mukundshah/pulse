@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { PulseAPIResponse } from '#open-fetch'
 import type { ChartConfig } from '@/components/ui/chart'
-
 import { Scale } from '@unovis/ts'
 import { VisAxis, VisLine, VisXYContainer } from '@unovis/vue'
 
 import { ChartContainer, ChartCrosshair, ChartTooltip, ChartTooltipContent, componentToString } from '@/components/ui/chart'
+import { TIME_FORMAT } from '@/constants/intl'
 
 const props = withDefaults(defineProps<{
   projectId: string
@@ -43,23 +43,6 @@ const chartConfig = {
     color: 'oklch(72.3% 0.219 149.579)',
   },
 } satisfies ChartConfig
-
-const TIME_FORMAT = {
-  minute: {
-    hour: 'numeric',
-    minute: 'numeric',
-  },
-  hour: {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-    minute: 'numeric',
-  },
-  day: {
-    day: 'numeric',
-    month: 'short',
-  },
-} satisfies Record<string, Intl.DateTimeFormatOptions>
 
 const durationFormatter = (duration: number) => {
   if (duration < 1000) {
