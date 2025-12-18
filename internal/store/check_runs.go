@@ -11,8 +11,11 @@ import (
 	"gorm.io/datatypes"
 )
 
-func (s *Store) CreateCheckRun(run *models.CheckRun) error {
-	return s.db.Create(run).Error
+func (s *Store) CreateCheckRun(run *models.CheckRun) (*models.CheckRun, error) {
+	if err := s.db.Create(run).Error; err != nil {
+		return nil, err
+	}
+	return run, nil
 }
 
 func (s *Store) GetCheckRun(id uuid.UUID) (*models.CheckRun, error) {

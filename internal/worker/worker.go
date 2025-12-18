@@ -142,8 +142,10 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 		CheckID:  check.ID,
 	}
 
-	if err := w.store.CreateCheckRun(checkRun); err != nil {
+	createdRun, err := w.store.CreateCheckRun(checkRun)
+	if err != nil {
 		log.Printf("Worker %d: Error saving check run for %s: %v", workerID, checkID, err)
+		return
 	}
 
 	// Process alerts
