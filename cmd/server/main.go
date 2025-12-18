@@ -16,6 +16,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
+	"pulse/internal/alerter"
 	"pulse/internal/clickhouse"
 	"pulse/internal/config"
 	"pulse/internal/db"
@@ -78,6 +79,9 @@ func main() {
 		MaxAge:           12 * time.Hour,
 		AllowAllOrigins:  true, //TODO: remove this later in favor of explicit control
 	}))
+
+	// Create alerter
+	a := alerter.New(s)
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(s)
