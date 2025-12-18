@@ -218,8 +218,8 @@ func DetermineTimeBucket(startTime, endTime time.Time) string {
 
 // TimingDataPoint represents a single timing data point from a check run
 type TimingDataPoint struct {
-	RunID         uuid.UUID              `json:"run_id"`
-	Timestamp     time.Time              `json:"timestamp"`
+	RunID          uuid.UUID              `json:"run_id"`
+	Timestamp      time.Time              `json:"timestamp"`
 	NetworkTimings map[string]interface{} `json:"network_timings"`
 }
 
@@ -228,8 +228,8 @@ type TimingDataPoint struct {
 // Returns a list of timing data points, one per check run
 func (s *Store) GetCheckTimingsData(checkID uuid.UUID, startTime, endTime time.Time) ([]TimingDataPoint, error) {
 	var runs []struct {
-		ID            uuid.UUID      `gorm:"column:id"`
-		CreatedAt     time.Time      `gorm:"column:created_at"`
+		ID             uuid.UUID      `gorm:"column:id"`
+		CreatedAt      time.Time      `gorm:"column:created_at"`
 		NetworkTimings datatypes.JSON `gorm:"column:network_timings;type:jsonb"`
 	}
 
@@ -254,8 +254,8 @@ func (s *Store) GetCheckTimingsData(checkID uuid.UUID, startTime, endTime time.T
 		if len(run.NetworkTimings) > 0 {
 			if err := json.Unmarshal(run.NetworkTimings, &timings); err == nil && len(timings) > 0 {
 				dataPoints = append(dataPoints, TimingDataPoint{
-					RunID:         run.ID,
-					Timestamp:     run.CreatedAt,
+					RunID:          run.ID,
+					Timestamp:      run.CreatedAt,
 					NetworkTimings: timings,
 				})
 			}
