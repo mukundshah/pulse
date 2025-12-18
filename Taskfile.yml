@@ -6,6 +6,7 @@ output: prefixed
 vars:
   PORT_API: '8080'
   PORT_WEB: '3001'
+  PORT_DUMMY_SERVER: '9999'
 
 dotenv:
   - .env
@@ -61,6 +62,8 @@ tasks:
 
   run:dummy-server:
     desc: Run dummy HTTP server for testing
+    env:
+      PORT: '{{.PORT_DUMMY_SERVER}}'
     cmds:
       - go run cmd/dummy-server/main.go
 

@@ -149,7 +149,7 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 	}
 
 	// Process alerts
-	w.alerter.ProcessCheckResult(check, result)
+	w.alerter.ProcessCheckResult(check, createdRun)
 
 	// Parse interval and update check status
 	interval, err := time.ParseDuration(check.Interval)
