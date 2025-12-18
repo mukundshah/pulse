@@ -59,6 +59,11 @@ tasks:
     cmds:
       - go run cmd/worker/main.go
 
+  run:dummy-server:
+    desc: Run dummy HTTP server for testing
+    cmds:
+      - go run cmd/dummy-server/main.go
+
   # Build tasks
   build:api:
     desc: Build server binary
