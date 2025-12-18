@@ -307,6 +307,36 @@ func (h *CheckRunHandler) GetCheckUptime(c *gin.Context) {
 		}
 	}
 
+	// Get the actual data range to determine if we should narrow the time bucket
+	actualStart, actualEnd, err := h.store.GetCheckRunsDataRange(checkID, startTime, endTime)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch data range"})
+		return
+	}
+
+	// If we have data, check if the actual data span is much smaller than the requested range
+	// If so, adjust the time bucket based on the actual data range
+	if actualStart != nil && actualEnd != nil {
+		requestedDuration := endTime.Sub(startTime)
+		actualDuration := actualEnd.Sub(*actualStart)
+
+		// If actual data spans less than 50% of the requested range, use a more granular bucket
+		// based on the actual data range. This handles cases like requesting 7d but only having
+		// data for today - we'll use hour/minute buckets instead of day buckets.
+		if actualDuration > 0 && requestedDuration > 0 {
+			// Calculate percentage: (actualDuration / requestedDuration) * 100
+			// Use float64 to avoid integer division issues
+			percentage := float64(actualDuration) / float64(requestedDuration) * 100.0
+			if percentage < 50.0 {
+				adjustedBucket := store.DetermineTimeBucket(*actualStart, *actualEnd)
+				// Only narrow down (never widen) - e.g., if we had "day" but data is only 3 hours, use "hour"
+				if shouldNarrowBucket(timeBucket, adjustedBucket) {
+					timeBucket = adjustedBucket
+				}
+			}
+		}
+	}
+
 	uptimeData, err := h.store.GetCheckUptimeData(checkID, startTime, endTime, timeBucket)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch uptime data"})
@@ -324,10 +354,33 @@ func (h *CheckRunHandler) GetCheckUptime(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// shouldNarrowBucket determines if we should narrow the time bucket based on actual data
+// Returns true if adjustedBucket is more granular than currentBucket
+func shouldNarrowBucket(currentBucket, adjustedBucket string) bool {
+	bucketGranularity := map[string]int{
+		"second": 0,
+		"minute": 1,
+		"hour":   2,
+		"day":    3,
+		"week":   4,
+	}
+
+	currentGranularity, ok1 := bucketGranularity[currentBucket]
+	adjustedGranularity, ok2 := bucketGranularity[adjustedBucket]
+
+	if !ok1 || !ok2 {
+		return false
+	}
+
+	// Narrow if adjusted is more granular (lower number)
+	return adjustedGranularity < currentGranularity
+}
+
 // GetCheckTimings handles GET /projects/:projectId/checks/:checkId/timings
 // Supports both period presets and explicit datetime ranges:
 //   - Query params: period (today, 1hr, 3hr, 24hr, 7d, 30d) OR start/end (RFC3339 datetime)
 //   - If both are provided, start/end takes precedence
+//
 // Returns a list of timing data points from all check runs in the time range
 func (h *CheckRunHandler) GetCheckTimings(c *gin.Context) {
 	userID, ok := middleware.GetUserID(c)

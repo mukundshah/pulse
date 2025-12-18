@@ -223,6 +223,37 @@ type TimingDataPoint struct {
 	NetworkTimings map[string]interface{} `json:"network_timings"`
 }
 
+// GetCheckRunsDataRange returns the actual data range (first and last timestamps) for check runs
+// within the specified time range. Returns nil, nil if no data exists.
+func (s *Store) GetCheckRunsDataRange(checkID uuid.UUID, startTime, endTime time.Time) (*time.Time, *time.Time, error) {
+	var result struct {
+		MinTime time.Time `gorm:"column:min_time"`
+		MaxTime time.Time `gorm:"column:max_time"`
+	}
+
+	err := s.db.Raw(`
+		SELECT
+			MIN(created_at) as min_time,
+			MAX(created_at) as max_time
+		FROM check_runs
+		WHERE check_id = ?
+			AND created_at >= ?
+			AND created_at <= ?
+			AND deleted_at IS NULL
+	`, checkID, startTime, endTime).Scan(&result).Error
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Check if we got any data (zero time means no data)
+	if result.MinTime.IsZero() || result.MaxTime.IsZero() {
+		return nil, nil, nil
+	}
+
+	return &result.MinTime, &result.MaxTime, nil
+}
+
 // GetCheckTimingsData returns timing data for all check runs within a specified time range
 // startTime and endTime define the time range (inclusive)
 // Returns a list of timing data points, one per check run
