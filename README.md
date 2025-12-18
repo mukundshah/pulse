@@ -1,8 +1,8 @@
 <div align="center">
   <picture width="140">
-     <source media="(prefers-color-scheme: dark)" srcset="./public/icon-white-512.png">
-    <source media="(prefers-color-scheme: light)" srcset="./public/icon-black-512.png">
-    <img width="140" src="./public/icon-black-512.png" alt="Pulse"/>
+     <source media="(prefers-color-scheme: dark)" srcset="./public/icon-dark-512.png">
+    <source media="(prefers-color-scheme: light)" srcset="./public/icon-light-512.png">
+    <img width="140" src="./public/icon-light-512.png" alt="Pulse"/>
   </picture>
   <h2 align="center">Pulse</h2>
   <p align="center">🔥 Self-hosted synthetic monitoring made simple.</p>
