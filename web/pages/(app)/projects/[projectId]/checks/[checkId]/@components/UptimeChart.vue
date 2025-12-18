@@ -30,6 +30,11 @@ const chartConfig = {
 } satisfies ChartConfig
 
 const TIME_FORMAT = {
+  second: {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  },
   minute: {
     hour: 'numeric',
     minute: 'numeric',
@@ -42,6 +47,11 @@ const TIME_FORMAT = {
   day: {
     day: 'numeric',
     month: 'short',
+  },
+  week: {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
   },
 } satisfies Record<string, Intl.DateTimeFormatOptions>
 

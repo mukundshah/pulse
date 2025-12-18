@@ -91,10 +91,10 @@ type UptimeDataPoint struct {
 
 // GetCheckUptimeData returns aggregated uptime data for a check over a specified time range
 // startTime and endTime define the time range (inclusive)
-// timeBucket determines the aggregation interval: "minute", "hour", or "day"
+// timeBucket determines the aggregation interval: "second", "minute", "hour", "day", or "week"
 func (s *Store) GetCheckUptimeData(checkID uuid.UUID, startTime, endTime time.Time, timeBucket string) ([]UptimeDataPoint, error) {
 	// Validate time bucket
-	if timeBucket != "minute" && timeBucket != "hour" && timeBucket != "day" {
+	if timeBucket != "second" && timeBucket != "minute" && timeBucket != "hour" && timeBucket != "day" && timeBucket != "week" {
 		timeBucket = "hour" // Default to hour
 	}
 
@@ -176,22 +176,30 @@ func (s *Store) GetCheckUptimeData(checkID uuid.UUID, startTime, endTime time.Ti
 // getTruncateDuration returns the duration to truncate time buckets
 func getTruncateDuration(bucket string) time.Duration {
 	switch bucket {
+	case "second":
+		return time.Second
 	case "minute":
 		return time.Minute
 	case "hour":
 		return time.Hour
 	case "day":
 		return 24 * time.Hour
+	case "week":
+		return 7 * 24 * time.Hour
 	default:
 		return time.Hour
 	}
 }
 
 // DetermineTimeBucket automatically determines the appropriate time bucket based on the time range
-// Returns "minute", "hour", or "day"
+// Returns "second", "minute", "hour", "day", or "week"
 func DetermineTimeBucket(startTime, endTime time.Time) string {
 	duration := endTime.Sub(startTime)
 
+	// Less than 5 minutes: use second buckets
+	if duration < 5*time.Minute {
+		return "second"
+	}
 	// Less than 3 hours: use minute buckets
 	if duration < 3*time.Hour {
 		return "minute"
@@ -200,8 +208,12 @@ func DetermineTimeBucket(startTime, endTime time.Time) string {
 	if duration < 7*24*time.Hour {
 		return "hour"
 	}
-	// 7 days or more: use day buckets
-	return "day"
+	// Less than 30 days: use day buckets
+	if duration < 30*24*time.Hour {
+		return "day"
+	}
+	// 30 days or more: use week buckets
+	return "week"
 }
 
 // TimingDataPoint represents a single timing data point from a check run
