@@ -14,8 +14,8 @@ func executeOnce(check *models.Check) Result {
 	switch check.Type {
 	case models.CheckTypeHTTP:
 		return ExecuteHTTPCheck(context.Background(), check)
-	// case models.CheckTypeTCP:
-	// 	return executeTCPCheck(check)
+	case models.CheckTypeTCP:
+		return ExecuteTCPCheck(context.Background(), check)
 	// case models.CheckTypeDNS:
 	// 	return executeDNSCheck(check)
 	// case models.CheckTypeBrowser:
