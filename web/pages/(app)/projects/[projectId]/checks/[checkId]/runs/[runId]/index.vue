@@ -1,5 +1,6 @@
 <script lang="ts">
 import { ASSERTION_PROPERTIES } from '@/constants/http'
+import { formatDuration } from '@/utils/formatters'
 import { constructURL } from '@/utils/url'
 
 const STATUS_ICON_COLOR_MAP = {
@@ -27,17 +28,6 @@ const STATUS_TEXT_MAP = {
   degraded: 'Degraded',
   unknown: 'Unknown',
 } as const
-
-const durationFormatter = (duration: number) => {
-  if (duration < 1000) {
-    return `${duration} µs`
-  }
-  if (duration < 1000000) {
-    return `${(duration / 1000).toFixed(0)} ms`
-  }
-
-  return `${(duration / 1000000).toFixed(2)} s`
-}
 
 const parseTimestamp = (ts: string): number => {
   return new Date(ts).getTime() * 1000
@@ -317,7 +307,7 @@ const timelineData = computed(() => {
                 <div class="absolute inset-0" :style="{ left: `${timing.left}%`, width: `${timing.width}%`, backgroundColor: timing.color }"></div>
               </div>
               <div class="text-right text-sm font-semibold px-3">
-                {{ durationFormatter(timing.length) }}
+                {{ formatDuration(timing.length) }}
               </div>
             </div>
             <div class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center bg-muted">
@@ -337,7 +327,7 @@ const timelineData = computed(() => {
                 <div class="absolute inset-0" :style="{ left: `${timing.left}%`, width: `${timing.width}%`, backgroundColor: timing.color }"></div>
               </div>
               <div class="text-right text-sm font-semibold px-3">
-                {{ durationFormatter(timing.length) }}
+                {{ formatDuration(timing.length) }}
               </div>
             </div>
           </div>

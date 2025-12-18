@@ -6,6 +6,7 @@ import { VisAxis, VisLine, VisXYContainer } from '@unovis/vue'
 
 import { ChartContainer, ChartCrosshair, ChartTooltip, ChartTooltipContent, componentToString } from '@/components/ui/chart'
 import { TIME_FORMAT } from '@/constants/intl'
+import { formatDuration } from '@/utils/formatters'
 
 const props = withDefaults(defineProps<{
   projectId: string
@@ -43,27 +44,6 @@ const chartConfig = {
     color: 'oklch(72.3% 0.219 149.579)',
   },
 } satisfies ChartConfig
-
-const durationFormatter = (duration: number) => {
-  if (duration < 1000) {
-    return duration.toLocaleString('en-US', {
-      style: 'unit',
-      unit: 'microsecond',
-    })
-  }
-  if (duration < 1000000) {
-    return (duration / 1000).toLocaleString('en-US', {
-      style: 'unit',
-      unit: 'millisecond',
-    })
-  }
-
-  return (duration / 1000000).toLocaleString('en-US', {
-    style: 'unit',
-    unit: 'second',
-    maximumFractionDigits: 2,
-  })
-}
 
 const { data: response, pending, error, refresh } = useLazyPulseAPI('/internal/projects/{projectId}/checks/{checkId}/timings', {
   path: {
@@ -202,7 +182,7 @@ const timeBucket = computed(() => {
           type="y"
           :domain-line="false"
           :grid-line="true"
-          :tick-format="(d: number) => durationFormatter(d)"
+          :tick-format="(d: number) => formatDuration(d)"
           :tick-line="false"
           :tick-values="[10, 100, 1000, 10000, 100000, 200000, 300000, 500000, 1000000, 2500000, 5000000, 10000000]"
         />
@@ -224,7 +204,7 @@ const timeBucket = computed(() => {
             },
             valueFormatter: (d: unknown) => {
               if (typeof d === 'number') {
-                return durationFormatter(d)
+                return formatDuration(d)
               }
               return String(d)
             },
