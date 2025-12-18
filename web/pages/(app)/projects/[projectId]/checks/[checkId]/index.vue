@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import StatusBadge from '../@components/StatusBadge.vue'
 import AlertsTable from './@components/Alerts.vue'
 import PerformanceChart from './@components/PerformanceChart.vue'
@@ -18,6 +19,37 @@ const { data: check } = await usePulseAPI('/internal/projects/{projectId}/checks
 useHead({
   title: `Check ${check.value?.name}`,
 })
+
+const { $pulseAPI } = useNuxtApp()
+
+const handleTriggerCheck = async () => {
+  try {
+    const result: any = await $pulseAPI('/internal/projects/{projectId}/checks/{checkId}/runs/trigger', {
+      method: 'POST',
+      path: {
+        projectId,
+        checkId,
+      },
+    })
+
+    const labels = {
+      passing: 'Passed',
+      failing: 'Failed',
+      degraded: 'Degraded',
+      unknown: 'Unknown',
+    } as const
+
+    const statusText = labels[result.status as keyof typeof labels]
+    const responseTime = formatDuration(result.total_time_ms * 1000)
+
+    // TODO: use a proper component for this
+    toast.success(`Check ${statusText}`, {
+      description: `Response time: ${responseTime}`,
+    })
+  } catch (error: any) {
+    toast.error(error?.message || 'Failed to trigger check run')
+  }
+}
 </script>
 
 <template>
@@ -48,7 +80,7 @@ useHead({
             Edit
           </Button>
 
-          <Button size="sm">
+          <Button loading-auto size="sm" @click="handleTriggerCheck">
             Schedule now
           </Button>
         </div>

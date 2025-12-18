@@ -86,6 +86,7 @@ func main() {
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(s)
 	checkHandler := handlers.NewCheckHandler(s)
+	checkRunHandler := handlers.NewCheckRunHandler(s, redisClient, a)
 	alertHandler := handlers.NewAlertHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
 	regionHandler := handlers.NewRegionHandler(s)
@@ -210,6 +211,7 @@ func main() {
 		protected.PUT("/projects/:projectId/checks/:checkId", checkHandler.UpdateCheck)
 		protected.DELETE("/projects/:projectId/checks/:checkId", checkHandler.DeleteCheck)
 		protected.GET("/projects/:projectId/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
+		protected.POST("/projects/:projectId/checks/:checkId/runs/trigger", checkRunHandler.TriggerCheckRun)
 		protected.GET("/projects/:projectId/checks/:checkId/runs/:runId", checkRunHandler.GetCheckRun)
 		protected.GET("/projects/:projectId/checks/:checkId/alerts", alertHandler.ListAlerts)
 		protected.GET("/projects/:projectId/checks/:checkId/uptime", checkRunHandler.GetCheckUptime)

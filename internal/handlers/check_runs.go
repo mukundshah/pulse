@@ -8,17 +8,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"pulse/internal/alerter"
+	"pulse/internal/checker"
 	"pulse/internal/middleware"
 	"pulse/internal/models"
+	"pulse/internal/redis"
 	"pulse/internal/store"
 )
 
 type CheckRunHandler struct {
-	store *store.Store
+	store   *store.Store
+	redis   *redis.Client
+	alerter *alerter.Alerter
 }
 
-func NewCheckRunHandler(s *store.Store) *CheckRunHandler {
-	return &CheckRunHandler{store: s}
+func NewCheckRunHandler(s *store.Store, r *redis.Client, a *alerter.Alerter) *CheckRunHandler {
+	return &CheckRunHandler{store: s, redis: r, alerter: a}
 }
 
 // GetCheckRun handles GET /projects/:projectId/checks/:checkId/runs/:runId
@@ -479,5 +484,120 @@ func (h *CheckRunHandler) GetCheckTimings(c *gin.Context) {
 		"end_time":   endTime.Format(time.RFC3339),
 	}
 
+	c.JSON(http.StatusOK, response)
+}
+
+// TriggerCheckRun handles POST /projects/:projectId/checks/:checkId/runs/trigger
+// This endpoint manually triggers a check run synchronously and returns the results
+func (h *CheckRunHandler) TriggerCheckRun(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	checkID, err := uuid.Parse(c.Param("checkId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid check ID"})
+		return
+	}
+
+	// Verify the check exists and belongs to the project
+	check, err := h.store.GetCheck(checkID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
+		return
+	}
+
+	if check.ProjectID != projectID {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Check not found"})
+		return
+	}
+
+	// Ensure check has at least one region
+	if len(check.Regions) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Check has no regions configured"})
+		return
+	}
+
+	// Use the first region for execution
+	regionID := check.Regions[0].ID
+
+	// Track run start time
+	runStartedAt := time.Now().UTC()
+
+	// Execute check synchronously
+	result := checker.Execute(check)
+
+	// Track run end time
+	runEndedAt := time.Now().UTC()
+
+	// Convert checker.Result to models.CheckRun
+	checkRun := &models.CheckRun{
+		Status:             result.Status,
+		FailureReason:      result.FailureReason,
+		ResponseStatusCode: result.ResponseStatus,
+
+		// Run timeline
+		RunStartedAt: runStartedAt,
+		RunEndedAt:   runEndedAt,
+
+		// Request timeline (from result)
+		RequestStartedAt: result.RequestStartedAt,
+		FirstByteAt:      result.FirstByteAt,
+		ResponseEndedAt:  result.ResponseEndedAt,
+
+		// Metadata
+		ConnectionReused:  result.ConnectionReused,
+		IPVersion:         result.IPVersion,
+		IPAddress:         result.IPAddress,
+		ResponseSizeBytes: result.ResponseSizeBytes,
+
+		// JSON fields
+		AssertionResults: result.AssertionResults,
+		PlaywrightReport: result.PlaywrightReport,
+		NetworkTimings:   result.NetworkTimings,
+
+		RegionID: regionID,
+		CheckID:  check.ID,
+	}
+
+	// Create the check run
+	createdRun, err := h.store.CreateCheckRun(checkRun)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save check run"})
+		return
+	}
+
+	// Process alerts
+	if h.alerter != nil {
+		h.alerter.ProcessCheckResult(check, createdRun)
+	}
+
+	// Update check status
+	interval, err := time.ParseDuration(check.Interval)
+	if err != nil {
+		interval = 10 * time.Minute // Default to 10 minutes if parsing fails
+	}
+	nextRun := time.Now().UTC().Add(interval)
+	if err := h.store.UpdateCheckStatus(checkID, nextRun, result.Status); err != nil {
+		// Log error but don't fail the request
+		_ = err
+	}
+
+	// Convert to response with computed total_time_ms
+	response := toCheckRunResponse(createdRun)
 	c.JSON(http.StatusOK, response)
 }

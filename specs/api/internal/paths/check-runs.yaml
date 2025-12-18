@@ -123,6 +123,60 @@ paths:
           $ref: '#/components/responses/Error'
           description: Check not found or user does not have access.
 
+  /internal/projects/{projectId}/checks/{checkId}/runs/trigger:
+    post:
+      operationId: triggerCheckRun
+      summary: Trigger a check run manually
+      description: |
+        Manually triggers a check run synchronously and returns the execution results.
+        The check is executed immediately using the first configured region.
+        The check run is saved to the database and alerts are processed.
+      tags:
+        - Check Runs
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the project
+        - name: checkId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the check to trigger
+      responses:
+        "200":
+          description: Check run executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckRun"
+        "400":
+          $ref: "#/components/responses/Error"
+          description: |
+            Bad request. Possible reasons:
+            - Invalid project ID format
+            - Invalid check ID format
+            - Check has no regions configured
+        "401":
+          $ref: "#/components/responses/Error"
+          description: Unauthorized. Authentication token is missing or invalid.
+        "403":
+          $ref: "#/components/responses/Error"
+          description: Forbidden. User does not have access to the project.
+        "404":
+          $ref: "#/components/responses/Error"
+          description: Check not found or does not belong to the specified project.
+        "500":
+          $ref: "#/components/responses/Error"
+          description: Internal server error. Failed to execute or save the check run.
+
   /internal/projects/{projectId}/checks/{checkId}/uptime:
     get:
       operationId: getCheckUptime
