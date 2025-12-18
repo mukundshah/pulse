@@ -84,6 +84,8 @@ type CheckRun struct {
 	CheckID uuid.UUID `gorm:"type:uuid;index;not null" json:"check_id"`
 	Check   *Check    `gorm:"foreignKey:CheckID" json:"check,omitempty"`
 
+	RunNumber int `gorm:"type:integer;not null" json:"run_number"`
+
 	CreatedAt time.Time      `gorm:"type:timestamptz" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"type:timestamptz" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"type:timestamptz;index" json:"-"`
