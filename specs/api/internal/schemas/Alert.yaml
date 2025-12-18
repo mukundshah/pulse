@@ -1,0 +1,61 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the alert
+    example: 550e8400-e29b-41d4-a716-446655440000
+  status:
+    type: string
+    enum: [passing, degraded, failing, unknown]
+    description: Status of the check run that triggered the alert
+    example: failing
+  run_id:
+    type: string
+    format: uuid
+    description: ID of the check run that triggered the alert
+  run:
+    $ref: "#/components/schemas/CheckRun"
+    nullable: true
+    description: The check run that triggered the alert
+  region_id:
+    type: string
+    format: uuid
+    description: ID of the region where the check was executed
+  region:
+    $ref: "#/components/schemas/Region"
+    nullable: true
+    description: The region where the check was executed
+  project_id:
+    type: string
+    format: uuid
+    description: ID of the project that owns the check
+  project:
+    $ref: "#/components/schemas/Project"
+    nullable: true
+    description: The project that owns the check
+  check_id:
+    type: string
+    format: uuid
+    description: ID of the check that triggered the alert
+  check:
+    $ref: "#/components/schemas/Check"
+    nullable: true
+    description: The check that triggered the alert
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the alert was created
+  updated_at:
+    type: string
+    format: date-time
+    description: Timestamp when the alert was last updated
+required:
+  - id
+  - status
+  - run_id
+  - region_id
+  - project_id
+  - check_id
+  - created_at
+  - updated_at

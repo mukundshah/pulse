@@ -1,0 +1,60 @@
+paths:
+  /internal/projects/{projectId}/checks/{checkId}/alerts:
+    get:
+      operationId: listAlertsByCheck
+      summary: List alerts for a check
+      description: |
+        Returns the last 10 alerts for the specified check, sorted from latest to oldest.
+        Alerts are created when a check's status changes (e.g., from passing to failing).
+      tags:
+        - Alerts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the project
+        - name: checkId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the check
+      responses:
+        "200":
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Alert"
+                    description: Array of alerts, sorted from latest to oldest (maximum 10)
+        "400":
+          $ref: "#/components/responses/Error"
+          description: |
+            Bad request. Possible reasons:
+            - Invalid project ID format
+            - Invalid check ID format
+        "401":
+          $ref: "#/components/responses/Error"
+          description: Unauthorized. Authentication token is missing or invalid.
+        "403":
+          $ref: "#/components/responses/Error"
+          description: Forbidden. User does not have access to the project.
+        "404":
+          $ref: "#/components/responses/Error"
+          description: Not found. The project or check does not exist.
+        "500":
+          $ref: "#/components/responses/Error"
+          description: Internal server error. Failed to retrieve alerts.

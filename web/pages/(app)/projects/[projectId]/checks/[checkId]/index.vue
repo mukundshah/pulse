@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StatusBadge from '../@components/StatusBadge.vue'
+import AlertsTable from './@components/Alerts.vue'
 import PerformanceChart from './@components/PerformanceChart.vue'
 import RunResults from './@components/RunResults.vue'
 import UptimeChart from './@components/UptimeChart.vue'
@@ -123,13 +124,18 @@ useHead({
         </CardContent>
       </Card>
 
-      <!-- Alerts Table -->
-      <!-- <Card class="bg-card border-border p-6 mb-6">
-        <h2 class="text-base font-semibold text-foreground mb-4">
-          Alerts
-        </h2>
-        <AlertsList />
-      </Card> -->
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Alerts
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <AlertsTable :check-id="checkId" :project-id="projectId" />
+          </div>
+        </CardContent>
+      </Card>
 
       <!-- Locations -->
       <!-- <Card class="bg-card border-border p-6 mb-6">

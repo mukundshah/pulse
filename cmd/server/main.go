@@ -82,7 +82,7 @@ func main() {
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(s)
 	checkHandler := handlers.NewCheckHandler(s)
-	checkRunHandler := handlers.NewCheckRunHandler(s)
+	alertHandler := handlers.NewAlertHandler(s)
 	tagHandler := handlers.NewTagHandler(s)
 	regionHandler := handlers.NewRegionHandler(s)
 	authHandler := handlers.NewAuthHandler(s, cfg, emailService)
@@ -207,6 +207,7 @@ func main() {
 		protected.DELETE("/projects/:projectId/checks/:checkId", checkHandler.DeleteCheck)
 		protected.GET("/projects/:projectId/checks/:checkId/runs", checkRunHandler.ListCheckRuns)
 		protected.GET("/projects/:projectId/checks/:checkId/runs/:runId", checkRunHandler.GetCheckRun)
+		protected.GET("/projects/:projectId/checks/:checkId/alerts", alertHandler.ListAlerts)
 		protected.GET("/projects/:projectId/checks/:checkId/uptime", checkRunHandler.GetCheckUptime)
 		protected.GET("/projects/:projectId/checks/:checkId/timings", checkRunHandler.GetCheckTimings)
 		protected.POST("/projects/:projectId/checks/:checkId/tags/:tagId", tagHandler.AddTagToCheck)
