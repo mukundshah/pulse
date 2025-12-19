@@ -8,6 +8,7 @@ import StatusBadge from '../@components/StatusBadge.vue'
 import AlertsTable from './@components/Alerts.vue'
 import HTTPPerformanceChart from './@components/HTTPPerformanceChart.vue'
 import RunResults from './@components/RunResults.vue'
+import TCPPerformanceChart from './@components/TCPPerformanceChart.vue'
 import UptimeChart from './@components/UptimeChart.vue'
 
 const route = useRoute()
@@ -202,7 +203,7 @@ const handleTriggerCheck = () => {
       </Card> -->
 
       <!-- Performance Chart -->
-      <Card>
+      <Card v-if="check?.type === 'http' || check?.type === 'tcp'">
         <CardHeader>
           <CardTitle>
             Performance
@@ -210,7 +211,8 @@ const handleTriggerCheck = () => {
         </CardHeader>
         <CardContent>
           <div>
-            <HTTPPerformanceChart :check-id="checkId" :project-id="projectId" />
+            <HTTPPerformanceChart v-if="check?.type === 'http'" :check-id="checkId" :project-id="projectId" />
+            <TCPPerformanceChart v-else-if="check?.type === 'tcp'" :check-id="checkId" :project-id="projectId" />
           </div>
         </CardContent>
       </Card>
