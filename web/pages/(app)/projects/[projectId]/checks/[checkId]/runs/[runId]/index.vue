@@ -47,7 +47,7 @@ const { data: run } = await usePulseAPI('/internal/projects/{projectId}/checks/{
 })
 
 useHead({
-  title: `Run #${run.value?.id.slice(0, 8)}`,
+  title: `Run #${run.value?.run_number}`,
 })
 
 const timelineData = computed(() => {
@@ -184,20 +184,43 @@ const timelineData = computed(() => {
           </div>
         </div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-mono text-foreground">
-            <Badge class="mr-2" variant="secondary">
-              {{ run?.check?.method || 'GET' }}
+          <div class="flex items-center gap-2">
+            <Badge class="text-xs font-mono" variant="secondary">
+              {{ run?.check?.type.toUpperCase() }}
             </Badge>
-            {{ constructURL({
-              host: run?.check?.host!,
-              port: run?.check?.port,
-              path: run?.check?.path,
-              queryParams: run?.check?.query_params as Record<string, string> | undefined,
-              secure: run?.check?.secure,
-            }) }}
+
+            <div v-if="run?.check?.type === 'http'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+              <Badge class="text-xs" variant="secondary">
+                {{ run?.check?.method }}
+              </Badge>
+
+              <Badge class="text-xs" variant="secondary">
+                {{ constructURL({
+                  host: run?.check?.host!,
+                  port: run?.check?.port,
+                  path: run?.check?.path,
+                  queryParams: run?.check?.query_params as Record<string, string> | undefined,
+                  secure: run?.check?.secure,
+                }) }}
+              </Badge>
+            </div>
+            <div v-else-if="run?.check?.type === 'tcp'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+              <Badge class="text-xs" variant="secondary">
+                {{ run?.check?.host }}{{ ':' }}{{ run?.check?.port }}
+              </Badge>
+            </div>
+            <div v-else-if="run?.check?.type === 'dns'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+              <Badge class="text-xs" variant="secondary">
+                {{ run?.check?.dns_record_type?.toUpperCase() }}
+              </Badge>
+              <Badge class="text-xs" variant="secondary">
+                {{ run?.check?.host }}
+              </Badge>
+            </div>
           </div>
+
           <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
+            <div v-if="run?.check?.type === 'http'" class="flex items-center gap-2">
               <Badge
                 class="px-3 text-base font-mono"
                 :variant="(run as Record<string, unknown>)?.response_status_code && (run as Record<string, unknown>).response_status_code as number >= 200 && (run as Record<string, unknown>).response_status_code as number < 300 ? 'default' : 'destructive'"
