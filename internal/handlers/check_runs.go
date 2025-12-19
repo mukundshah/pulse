@@ -569,6 +569,7 @@ func (h *CheckRunHandler) TriggerCheckRun(c *gin.Context) {
 		AssertionResults: result.AssertionResults,
 		PlaywrightReport: result.PlaywrightReport,
 		NetworkTimings:   result.NetworkTimings,
+		Response:         result.Response,
 
 		RegionID: regionID,
 		CheckID:  check.ID,

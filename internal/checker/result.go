@@ -29,6 +29,7 @@ type Result struct {
 	AssertionResults datatypes.JSON
 	PlaywrightReport datatypes.JSON
 	NetworkTimings   datatypes.JSON
+	Response         datatypes.JSON
 
 	Error error
 }

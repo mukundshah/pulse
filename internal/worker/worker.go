@@ -137,6 +137,7 @@ func (w *Worker) processCheck(ctx context.Context, checkID uuid.UUID, workerID i
 		AssertionResults: result.AssertionResults,
 		PlaywrightReport: result.PlaywrightReport,
 		NetworkTimings:   result.NetworkTimings,
+		Response:         result.Response,
 
 		RegionID: w.regionID,
 		CheckID:  check.ID,
