@@ -53,6 +53,8 @@ type httpCheckExecutor struct {
 	connectionReused bool
 	ipVersion        string
 	ipAddress        string
+	responseBody     []byte
+	responseHeaders  map[string][]string
 }
 
 // ExecuteHTTPCheck performs an HTTP check and returns the result.
@@ -236,6 +238,13 @@ func (e *httpCheckExecutor) execute(ctx context.Context) Result {
 	// NOW stop the timer (after body is fully read)
 	e.timings.responseEnd = time.Now().UTC()
 	e.responseSize = int64(len(bodyBytes))
+
+	// Store response body and headers for result
+	e.responseBody = bodyBytes
+	e.responseHeaders = make(map[string][]string)
+	for k, v := range resp.Header {
+		e.responseHeaders[k] = v
+	}
 
 	// Create new reader for assertions (they may need the body)
 	resp.Body = io.NopCloser(bytes.NewReader(bodyBytes))
@@ -573,6 +582,10 @@ func (e *httpCheckExecutor) buildResult(resp *http.Response, assertionResults []
 		responseStatus = &code
 	}
 
+	// Build response object using unified builder
+	rb := &ResponseBuilder{}
+	responseData := rb.BuildHTTPResponse(e.responseHeaders, e.responseBody, resp.Header.Get("Content-Type"), resp.Proto)
+
 	return Result{
 		Status:            status,
 		FailureReason:     failureReason,
@@ -587,9 +600,11 @@ func (e *httpCheckExecutor) buildResult(resp *http.Response, assertionResults []
 		AssertionResults:  mustMarshalJSON(assertionResults),
 		PlaywrightReport:  emptyJSONObject(),
 		NetworkTimings:    mustMarshalJSON(networkTimings),
+		Response:          responseData,
 		Error:             nil,
 	}
 }
+
 
 // createErrorResult creates a result for a failed check.
 func (e *httpCheckExecutor) createErrorResult(err error) Result {
@@ -619,6 +634,7 @@ func (e *httpCheckExecutor) createErrorResult(err error) Result {
 		AssertionResults:  emptyJSONObject(),
 		PlaywrightReport:  emptyJSONObject(),
 		NetworkTimings:    emptyJSONObject(),
+		Response:          EmptyResponse(),
 		Error:             err,
 	}
 }

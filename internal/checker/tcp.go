@@ -320,6 +320,11 @@ func (e *tcpCheckExecutor) buildResult() Result {
 		}
 	}
 
+	// Build response data using unified builder
+	// Note: IP info and connection_reused are already in CheckRun fields, not duplicated here
+	rb := &ResponseBuilder{}
+	responseData := rb.BuildTCPResponse()
+
 	return Result{
 		Status:            status,
 		FailureReason:     failureReason,
@@ -334,6 +339,7 @@ func (e *tcpCheckExecutor) buildResult() Result {
 		AssertionResults:  emptyJSONObject(), // TCP checks don't have assertions yet
 		PlaywrightReport:  emptyJSONObject(),
 		NetworkTimings:    mustMarshalJSON(networkTimings),
+		Response:          responseData,
 		Error:             nil,
 	}
 }
@@ -363,6 +369,7 @@ func (e *tcpCheckExecutor) createErrorResult(err error) Result {
 		AssertionResults:  emptyJSONObject(),
 		PlaywrightReport:  emptyJSONObject(),
 		NetworkTimings:    emptyJSONObject(),
+		Response:          EmptyResponse(),
 		Error:             err,
 	}
 }
