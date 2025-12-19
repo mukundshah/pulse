@@ -237,9 +237,11 @@ useHead({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <Icon class="mr-2 h-4 w-4" name="lucide:edit" />
-                  Edit
+                <DropdownMenuItem as-child>
+                  <NuxtLink :to="`/projects/${projectId}/checks/${check.id}/edit`">
+                    <Icon class="mr-2 h-4 w-4" name="lucide:edit" />
+                    Edit
+                  </NuxtLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Icon class="mr-2 h-4 w-4" name="lucide:copy" />
