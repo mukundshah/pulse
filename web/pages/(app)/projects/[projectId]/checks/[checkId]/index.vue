@@ -67,14 +67,33 @@ const handleTriggerCheck = () => {
             <StatusBadge :status="check?.last_status ?? 'unknown'" />
           </div>
 
-          <div class="text-sm text-muted-foreground font-mono flex items-center gap-2">
-            <Badge class="text-xs" variant="secondary">
-              {{ check?.method }}
+          <div class="flex items-center gap-2">
+            <Badge class="text-xs font-mono" variant="secondary">
+              {{ check?.type.toUpperCase() }}
             </Badge>
 
-            <span>
-              {{ constructURL({ host: check?.host!, port: check?.port!, path: check?.path!, queryParams: check?.query_params as Record<string, string> | undefined, secure: check?.secure }) }}
-            </span>
+            <div v-if="check?.type === 'http'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+              <Badge class="text-xs" variant="secondary">
+                {{ check?.method }}
+              </Badge>
+
+              <span>
+                {{ constructURL({ host: check?.host!, port: check?.port!, path: check?.path!, queryParams: check?.query_params as Record<string, string> | undefined, secure: check?.secure }) }}
+              </span>
+            </div>
+            <div v-else-if="check?.type === 'tcp'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+              <Badge class="text-xs" variant="secondary">
+                {{ check?.host }}{{ ':' }}{{ check?.port }}
+              </Badge>
+            </div>
+            <div v-else-if="check?.type === 'dns'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+              <Badge class="text-xs" variant="secondary">
+                {{ check?.dns_record_type?.toUpperCase() }}
+              </Badge>
+              <Badge class="text-xs" variant="secondary">
+                {{ check?.host }}
+              </Badge>
+            </div>
           </div>
         </div>
 
