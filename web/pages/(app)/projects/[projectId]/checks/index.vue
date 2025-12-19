@@ -99,8 +99,8 @@ useHead({
           <CardDescription class="text-green-600 dark:text-green-400">
             Passing
           </CardDescription>
-          <Skeleton v-if="statusCountsLoading" class="h-4 w-24" />
-          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-green-600 dark:text-green-400">
+          <Skeleton v-if="statusCountsLoading" class="h-9 w-24" />
+          <CardTitle v-else class="font-semibold tabular-nums text-3xl text-green-600 dark:text-green-400">
             {{ counts?.passing }}
           </CardTitle>
           <CardAction>
@@ -113,8 +113,8 @@ useHead({
           <CardDescription class="text-yellow-600 dark:text-yellow-400">
             Degraded
           </CardDescription>
-          <Skeleton v-if="statusCountsLoading" class="h-4 w-24" />
-          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-yellow-600 dark:text-yellow-400">
+          <Skeleton v-if="statusCountsLoading" class="h-9 w-24" />
+          <CardTitle v-else class="font-semibold tabular-nums text-3xl text-yellow-600 dark:text-yellow-400">
             {{ counts?.degraded }}
           </CardTitle>
           <CardAction>
@@ -127,8 +127,8 @@ useHead({
           <CardDescription class="text-red-600 dark:text-red-400">
             Failing
           </CardDescription>
-          <Skeleton v-if="statusCountsLoading" class="h-4 w-24" />
-          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-red-600 dark:text-red-400">
+          <Skeleton v-if="statusCountsLoading" class="h-9 w-24" />
+          <CardTitle v-else class="font-semibold tabular-nums text-3xl text-red-600 dark:text-red-400">
             {{ counts?.failing }}
           </CardTitle>
           <CardAction>
