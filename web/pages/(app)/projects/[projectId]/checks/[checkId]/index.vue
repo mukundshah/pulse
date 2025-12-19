@@ -6,7 +6,7 @@ import { toast } from 'vue-sonner'
 
 import StatusBadge from '../@components/StatusBadge.vue'
 import AlertsTable from './@components/Alerts.vue'
-import PerformanceChart from './@components/PerformanceChart.vue'
+import HTTPPerformanceChart from './@components/HTTPPerformanceChart.vue'
 import RunResults from './@components/RunResults.vue'
 import UptimeChart from './@components/UptimeChart.vue'
 
@@ -210,7 +210,7 @@ const handleTriggerCheck = () => {
         </CardHeader>
         <CardContent>
           <div>
-            <PerformanceChart :check-id="checkId" :project-id="projectId" />
+            <HTTPPerformanceChart :check-id="checkId" :project-id="projectId" />
           </div>
         </CardContent>
       </Card>
