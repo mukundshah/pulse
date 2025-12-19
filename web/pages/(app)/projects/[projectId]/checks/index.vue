@@ -94,45 +94,45 @@ useHead({
     </div>
 
     <div class="grid grid-cols-1 gap-4 @xl/main:grid-cols-3 py-4">
-      <Card class="@container/card from-green-200/30 to-green-200/5 bg-linear-to-t shadow-none border-green-500/20 py-4 *:data-[slot=card-header]:px-4">
+      <Card class="@container/card from-green-200/30 to-green-200/5 dark:from-green-900/30 dark:to-green-900/5 bg-linear-to-t shadow-none border-green-500/20 dark:border-green-900/30 py-4 *:data-[slot=card-header]:px-4">
         <CardHeader>
-          <CardDescription class="text-green-600">
+          <CardDescription class="text-green-600 dark:text-green-400">
             Passing
           </CardDescription>
           <Skeleton v-if="statusCountsLoading" class="h-4 w-24" />
-          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-green-600">
+          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-green-600 dark:text-green-400">
             {{ counts?.passing }}
           </CardTitle>
           <CardAction>
-            <Icon class="size-4 text-green-600" name="lucide:check-circle" />
+            <Icon class="size-4 text-green-600 dark:text-green-400" name="lucide:check-circle" />
           </CardAction>
         </CardHeader>
       </Card>
-      <Card class="@container/card from-yellow-200/30 to-yellow-200/5 bg-linear-to-t shadow-none border-yellow-500/30 py-4 *:data-[slot=card-header]:px-4">
+      <Card class="@container/card from-yellow-200/30 to-yellow-200/5 dark:from-yellow-900/30 dark:to-yellow-900/5 bg-linear-to-t shadow-none border-yellow-500/30 dark:border-yellow-900/30 py-4 *:data-[slot=card-header]:px-4">
         <CardHeader>
-          <CardDescription class="text-yellow-600">
+          <CardDescription class="text-yellow-600 dark:text-yellow-400">
             Degraded
           </CardDescription>
           <Skeleton v-if="statusCountsLoading" class="h-4 w-24" />
-          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-yellow-600">
+          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-yellow-600 dark:text-yellow-400">
             {{ counts?.degraded }}
           </CardTitle>
           <CardAction>
-            <Icon class="size-4 text-yellow-600" name="lucide:alert-circle" />
+            <Icon class="size-4 text-yellow-600 dark:text-yellow-400" name="lucide:alert-circle" />
           </CardAction>
         </CardHeader>
       </Card>
-      <Card class="@container/card from-red-200/30 to-red-200/5 bg-linear-to-t shadow-none border-red-500/20 py-4 *:data-[slot=card-header]:px-4">
+      <Card class="@container/card from-red-200/30 to-red-200/5 dark:from-red-900/30 dark:to-red-900/5 bg-linear-to-t shadow-none border-red-500/20 dark:border-red-900/30 py-4 *:data-[slot=card-header]:px-4">
         <CardHeader>
-          <CardDescription class="text-red-600">
+          <CardDescription class="text-red-600 dark:text-red-400">
             Failing
           </CardDescription>
           <Skeleton v-if="statusCountsLoading" class="h-4 w-24" />
-          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-red-600">
+          <CardTitle v-else class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-red-600 dark:text-red-400">
             {{ counts?.failing }}
           </CardTitle>
           <CardAction>
-            <Icon class="size-4 text-red-600" name="lucide:x-circle" />
+            <Icon class="size-4 text-red-600 dark:text-red-400" name="lucide:x-circle" />
           </CardAction>
         </CardHeader>
       </Card>
