@@ -20,6 +20,10 @@ func New(s *store.Store) *Alerter {
 // ProcessCheckResult processes the check result and creates an alert if the status has changed
 // check is the check that was executed, run is the check run that was just created
 func (a *Alerter) ProcessCheckResult(check *models.Check, run *models.CheckRun) {
+	if check.LastStatus == models.CheckRunStatusUnknown {
+		return
+	}
+
 	if check.LastStatus == run.Status {
 		return
 	}
