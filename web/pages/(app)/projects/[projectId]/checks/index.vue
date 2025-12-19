@@ -20,7 +20,7 @@ const checkTypes = [
     checks: [
       { id: 'http', name: 'HTTP', icon: 'lucide:globe', implemented: true },
       { id: 'tcp', name: 'TCP', icon: 'lucide:network', implemented: true },
-      { id: 'dns', name: 'DNS', icon: 'lucide:server', implemented: false },
+      { id: 'dns', name: 'DNS', icon: 'lucide:server', implemented: true },
     ],
   },
 ]

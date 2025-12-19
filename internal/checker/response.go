@@ -70,6 +70,28 @@ func (rb *ResponseBuilder) BuildTCPResponse() datatypes.JSON {
 	return mustMarshalJSON(response)
 }
 
+// BuildDNSResponse builds a uniform DNS response structure.
+func (rb *ResponseBuilder) BuildDNSResponse(records interface{}, dnsServer string, rawFormat interface{}, jsonFormat map[string]interface{}) datatypes.JSON {
+	response := make(map[string]interface{})
+	response["type"] = "dns"
+	response["records"] = records
+	response["dns_server"] = dnsServer
+
+	// Add formatted outputs if available
+	if rawFormat != nil || jsonFormat != nil {
+		formats := make(map[string]interface{})
+		if rawFormat != nil {
+			formats["raw"] = rawFormat
+		}
+		if jsonFormat != nil {
+			formats["json"] = jsonFormat
+		}
+		response["formats"] = formats
+	}
+
+	return mustMarshalJSON(response)
+}
+
 // isTextContent checks if the content type indicates text-based content.
 func (rb *ResponseBuilder) isTextContent(contentType string) bool {
 	if contentType == "" {
