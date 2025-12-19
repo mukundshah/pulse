@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import type { PulseAPIResponse } from '#open-fetch'
+
+import { h } from 'vue'
 import { toast } from 'vue-sonner'
+
 import StatusBadge from '../@components/StatusBadge.vue'
 import AlertsTable from './@components/Alerts.vue'
 import PerformanceChart from './@components/PerformanceChart.vue'
@@ -22,33 +26,32 @@ useHead({
 
 const { $pulseAPI } = useNuxtApp()
 
-const handleTriggerCheck = async () => {
-  try {
-    const result: any = await $pulseAPI('/internal/projects/{projectId}/checks/{checkId}/runs/trigger', {
-      method: 'POST',
-      path: {
-        projectId,
-        checkId,
-      },
-    })
+const handleTriggerCheck = () => {
+  const promise = $pulseAPI('/internal/projects/{projectId}/checks/{checkId}/runs/trigger', {
+    method: 'POST',
+    path: {
+      projectId,
+      checkId,
+    },
+  })
 
-    const labels = {
-      passing: 'Passed',
-      failing: 'Failed',
-      degraded: 'Degraded',
-      unknown: 'Unknown',
-    } as const
-
-    const statusText = labels[result.status as keyof typeof labels]
-    const responseTime = formatDuration(result.total_time_ms * 1000)
-
-    // TODO: use a proper component for this
-    toast.success(`Check ${statusText}`, {
-      description: `Response time: ${responseTime}`,
-    })
-  } catch (error: any) {
-    toast.error(error?.message || 'Failed to trigger check run')
-  }
+  toast.promise(promise, {
+    loading: 'Running check',
+    success: (data: PulseAPIResponse<'triggerCheckRun'>) => {
+      const labels = {
+        passing: ['passed', 'success'],
+        failing: ['failed', 'error'],
+        degraded: ['degraded', 'warning'],
+        unknown: ['unknown', 'info'],
+      } as const
+      return {
+        type: labels[data.status as keyof typeof labels][1],
+        message: data.status === 'unknown' ? 'Unknown status' : `Check ${labels[data.status as keyof typeof labels][0]}`,
+        description: data.total_time_ms ? () => h('span', { class: 'text-muted-foreground text-xs font-mono' }, formatDuration(data.total_time_ms! * 1000)) : undefined,
+      }
+    },
+    error: (error: Error) => error.message,
+  })
 }
 </script>
 
