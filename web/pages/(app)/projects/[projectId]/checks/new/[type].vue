@@ -354,12 +354,12 @@ const onSubmit = handleSubmit(async (data) => {
 
     <form id="new-check-form" class="flex flex-col gap-6" @submit="onSubmit">
       <VisuallyHidden>
-        <VeeField v-slot="{ field, errors }" name="type">
+        <VeeField v-slot="{ componentField, errors }" name="type">
           <Field :data-invalid="!!errors.length">
             <FieldLabel for="type">
               Type
             </FieldLabel>
-            <Input id="type" v-bind="field" :aria-invalid="!!errors.length" />
+            <Input id="type" v-bind="componentField" :aria-invalid="!!errors.length" />
             <FieldError v-if="errors.length" :errors="errors" />
           </Field>
         </VeeField>
@@ -368,12 +368,12 @@ const onSubmit = handleSubmit(async (data) => {
       <Card>
         <CardContent>
           <FieldGroup>
-            <VeeField v-slot="{ field, errors }" name="name">
+            <VeeField v-slot="{ componentField, errors }" name="name">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="name">
                   Name
                 </FieldLabel>
-                <Input id="name" v-bind="field" :aria-invalid="!!errors.length" />
+                <Input id="name" v-bind="componentField" :aria-invalid="!!errors.length" />
                 <FieldError v-if="errors.length" :errors="errors" />
               </Field>
             </VeeField>
@@ -488,14 +488,14 @@ const onSubmit = handleSubmit(async (data) => {
                     <FieldError v-if="errors.length" :errors="errors" />
                   </Field>
                 </VeeField>
-                <VeeField v-slot="{ field, errors }" name="url">
+                <VeeField v-slot="{ componentField, errors }" name="url">
                   <Field class="flex-1" :data-invalid="!!errors.length">
                     <FieldLabel class="sr-only" for="url">
                       URL
                     </FieldLabel>
                     <Input
                       id="url"
-                      v-bind="field"
+                      v-bind="componentField"
                       placeholder="https://example.com"
                       :aria-invalid="!!errors.length"
                     />
@@ -585,7 +585,7 @@ const onSubmit = handleSubmit(async (data) => {
                   :class="fields.length > 1 ? 'grid-cols-[1fr_2fr_auto]' : 'grid-cols-[1fr_2fr]'"
                 >
                   <VeeField
-                    v-slot="{ field: keyField, errors: keyErrors }"
+                    v-slot="{ componentField: keyField, errors: keyErrors }"
                     :name="`headers[${idx}].key`"
                   >
                     <Field :data-invalid="!!keyErrors.length">
@@ -603,7 +603,7 @@ const onSubmit = handleSubmit(async (data) => {
                     </Field>
                   </VeeField>
                   <VeeField
-                    v-slot="{ field: valueField, errors: valueErrors }"
+                    v-slot="{ componentField: valueField, errors: valueErrors }"
                     :name="`headers[${idx}].value`"
                   >
                     <Field :data-invalid="!!valueErrors.length">
@@ -637,14 +637,14 @@ const onSubmit = handleSubmit(async (data) => {
               <Separator class="my-4" />
 
               <div class="flex flex-col gap-4">
-                <VeeField v-slot="{ field, errors }" name="body">
+                <VeeField v-slot="{ componentField, errors }" name="body">
                   <Field :data-invalid="!!errors.length">
                     <FieldLabel for="body">
                       Body
                     </FieldLabel>
                     <Textarea
                       id="body"
-                      v-bind="field"
+                      v-bind="componentField"
                       class="min-h-[120px]"
                       :aria-invalid="!!errors.length"
                     />
@@ -713,7 +713,7 @@ const onSubmit = handleSubmit(async (data) => {
                   </Field>
                 </VeeField>
                 <VeeField
-                  v-slot="{ field: propertyField, errors: propertyErrors }"
+                  v-slot="{ componentField: propertyField, errors: propertyErrors }"
                   :name="`assertions[${idx}].property`"
                 >
                   <Field :data-invalid="!!propertyErrors.length">
@@ -761,7 +761,7 @@ const onSubmit = handleSubmit(async (data) => {
                   </Field>
                 </VeeField>
                 <VeeField
-                  v-slot="{ field: targetField, errors: targetErrors }"
+                  v-slot="{ componentField: targetField, errors: targetErrors }"
                   :name="`assertions[${idx}].target`"
                 >
                   <Field :data-invalid="!!targetErrors.length">
@@ -825,28 +825,28 @@ const onSubmit = handleSubmit(async (data) => {
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
-              <VeeField v-slot="{ field, errors }" name="host">
+              <VeeField v-slot="{ componentField, errors }" name="host">
                 <Field class="flex-1" :data-invalid="!!errors.length">
                   <FieldLabel for="host">
                     Host
                   </FieldLabel>
                   <Input
                     id="host"
-                    v-bind="field"
+                    v-bind="componentField"
                     :aria-invalid="!!errors.length"
                     :placeholder="values.ip_version === 'ipv6' ? '2001:0db8::1 or example.com' : '192.168.1.1 or example.com'"
                   />
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
-              <VeeField v-slot="{ field, errors }" name="port">
+              <VeeField v-slot="{ componentField, errors }" name="port">
                 <Field class="w-36" :data-invalid="!!errors.length">
                   <FieldLabel for="port">
                     Port
                   </FieldLabel>
                   <Input
                     id="port"
-                    v-bind="field"
+                    v-bind="componentField"
                     placeholder="1-65535"
                     type="number"
                     :aria-invalid="!!errors.length"
@@ -909,14 +909,14 @@ const onSubmit = handleSubmit(async (data) => {
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
-              <VeeField v-slot="{ field, errors }" name="domain">
+              <VeeField v-slot="{ componentField, errors }" name="domain">
                 <Field class="flex-1" :data-invalid="!!errors.length">
                   <FieldLabel for="domain">
                     Domain
                   </FieldLabel>
                   <Input
                     id="domain"
-                    v-bind="field"
+                    v-bind="componentField"
                     placeholder="example.com"
                     :aria-invalid="!!errors.length"
                   />
@@ -926,28 +926,28 @@ const onSubmit = handleSubmit(async (data) => {
             </div>
 
             <div class="grid grid-cols-4 gap-4">
-              <VeeField v-slot="{ field, errors }" name="dns_resolver">
+              <VeeField v-slot="{ componentField, errors }" name="dns_resolver">
                 <Field class="col-span-2" :data-invalid="!!errors.length">
                   <FieldLabel for="dns_resolver">
                     DNS Resolver
                   </FieldLabel>
                   <Input
                     id="dns_resolver"
-                    v-bind="field"
+                    v-bind="componentField"
                     placeholder="1.1.1.1"
                     :aria-invalid="!!errors.length"
                   />
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
-              <VeeField v-slot="{ field, errors }" name="dns_resolver_port">
+              <VeeField v-slot="{ componentField, errors }" name="dns_resolver_port">
                 <Field :data-invalid="!!errors.length">
                   <FieldLabel for="dns_resolver_port">
                     Port
                   </FieldLabel>
                   <Input
                     id="dns_resolver_port"
-                    v-bind="field"
+                    v-bind="componentField"
                     placeholder="53"
                     :aria-invalid="!!errors.length"
                   />
@@ -987,14 +987,14 @@ const onSubmit = handleSubmit(async (data) => {
         </CardHeader>
         <CardContent>
           <div class="space-y-6">
-            <VeeField v-slot="{ field, errors }" name="pre_script">
+            <VeeField v-slot="{ componentField, errors }" name="pre_script">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="pre_script">
                   Pre Script
                 </FieldLabel>
                 <Textarea
                   id="pre_script"
-                  v-bind="field"
+                  v-bind="componentField"
                   placeholder="Pre-execution script"
                   rows="4"
                   :aria-invalid="!!errors.length"
@@ -1003,14 +1003,14 @@ const onSubmit = handleSubmit(async (data) => {
               </Field>
             </VeeField>
 
-            <VeeField v-slot="{ field, errors }" name="playwright_script">
+            <VeeField v-slot="{ componentField, errors }" name="playwright_script">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="playwright_script">
                   Playwright Script
                 </FieldLabel>
                 <Textarea
                   id="playwright_script"
-                  v-bind="field"
+                  v-bind="componentField"
                   placeholder="Playwright script for browser checks"
                   rows="4"
                   :aria-invalid="!!errors.length"
@@ -1019,14 +1019,14 @@ const onSubmit = handleSubmit(async (data) => {
               </Field>
             </VeeField>
 
-            <VeeField v-slot="{ field, errors }" name="post_script">
+            <VeeField v-slot="{ componentField, errors }" name="post_script">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="post_script">
                   Post Script
                 </FieldLabel>
                 <Textarea
                   id="post_script"
-                  v-bind="field"
+                  v-bind="componentField"
                   placeholder="Post-execution script"
                   rows="4"
                   :aria-invalid="!!errors.length"

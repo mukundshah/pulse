@@ -48,14 +48,14 @@ const onSubmit = handleSubmit(async (data) => {
         </CardHeader>
         <CardContent>
           <form class="flex flex-col gap-y-6" @submit="onSubmit">
-            <VeeField v-slot="{ field, errors }" name="email">
+            <VeeField v-slot="{ componentField, errors }" name="email">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="email">
                   Email
                 </FieldLabel>
                 <Input
                   id="email"
-                  v-bind="field"
+                  v-bind="componentField"
                   autocomplete="email"
                   placeholder="you@example.com"
                   type="email"

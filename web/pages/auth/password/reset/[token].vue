@@ -55,14 +55,14 @@ const onSubmit = handleSubmit(async (data) => {
         </CardHeader>
         <CardContent>
           <form class="flex flex-col gap-y-6" @submit="onSubmit">
-            <VeeField v-slot="{ field, errors }" name="password">
+            <VeeField v-slot="{ componentField, errors }" name="password">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="password">
                   Password
                 </FieldLabel>
                 <PasswordInput
                   id="password"
-                  v-bind="field"
+                  v-bind="componentField"
                   autocomplete="new-password"
                   placeholder="••••••••"
                   :aria-invalid="!!errors.length"
@@ -71,14 +71,14 @@ const onSubmit = handleSubmit(async (data) => {
               </Field>
             </VeeField>
 
-            <VeeField v-slot="{ field, errors }" name="confirmPassword">
+            <VeeField v-slot="{ componentField, errors }" name="confirmPassword">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel for="confirmPassword">
                   Confirm Password
                 </FieldLabel>
                 <PasswordInput
                   id="confirmPassword"
-                  v-bind="field"
+                  v-bind="componentField"
                   autocomplete="new-password"
                   placeholder="••••••••"
                   :aria-invalid="!!errors.length"
