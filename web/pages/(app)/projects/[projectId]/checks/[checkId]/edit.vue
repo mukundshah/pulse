@@ -332,8 +332,7 @@ if (!success || !params) {
 
 const { projectId, checkId } = params
 
-// Fetch the check data
-const { data: check } = await usePulseAPI('/internal/projects/{projectId}/checks/{checkId}', {
+const { data: check, refresh: refreshCheck } = await usePulseAPI('/internal/projects/{projectId}/checks/{checkId}', {
   path: {
     projectId,
     checkId,
@@ -425,6 +424,7 @@ const onSubmit = handleSubmit(async (data) => {
     body: payload,
   })
 
+  await refreshCheck()
   await navigateTo(`/projects/${projectId}/checks/${checkId}`)
 })
 </script>
