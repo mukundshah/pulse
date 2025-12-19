@@ -5,6 +5,7 @@ import { VisStackedBar, VisXYContainer } from '@unovis/vue'
 import { ChartContainer, ChartCrosshair, ChartTooltip, ChartTooltipContent, componentToString } from '@/components/ui/chart'
 
 type Run = PulseAPIResponse<'listProjectChecks'>[number]['last_24_runs'][number]
+type FormattedRun = Run & { index: number }
 
 const props = defineProps<{
   runs: Run[]
@@ -32,39 +33,48 @@ const STATUS_MAP = {
     color: 'oklch(63.7% 0.237 25.331)',
     label: 'Failed',
   },
+  unknown: {
+    color: 'oklch(55.1% 0.027 264.364)',
+    label: 'Unknown',
+  },
 }
+
+const formattedRuns = computed(() => {
+  return props.runs.map((d, i) => ({
+    ...d,
+    index: i,
+    timestamp: new Date(d.timestamp as string).toLocaleString('en-US', {
+      day: 'numeric',
+      month: 'short',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+    }),
+  }))
+})
 </script>
 
 <template>
   <ChartContainer class="h-10 w-full max-w-56" :config="chartConfig" :cursor="true">
-    <VisXYContainer :data="props.runs" :padding="{ top: 4, right: 6, bottom: 0, left: 6 }">
+    <VisXYContainer :data="formattedRuns" :padding="{ top: 4, right: 6, bottom: 0, left: 6 }">
       <VisStackedBar
+        bar-min-height-1-px
         :bar-padding="0.4"
-        :color="(d: Run) => STATUS_MAP[d.status as keyof typeof STATUS_MAP].color"
-        :x="(d: Run) => new Date(d.timestamp as string)"
-        :y="[(d: Run) => d.total_time_ms]"
+        :color="(d: FormattedRun) => STATUS_MAP[d.status as keyof typeof STATUS_MAP].color"
+        :x="(d: FormattedRun) => d.index"
+        :y="[(d: FormattedRun) => d.total_time_ms]"
       />
 
       <ChartTooltip />
       <ChartCrosshair
-        :color="(d: Run) => STATUS_MAP[d.status as keyof typeof STATUS_MAP].color"
+        :color="(d: FormattedRun) => STATUS_MAP[d.status as keyof typeof STATUS_MAP].color"
         :template="componentToString(chartConfig, ChartTooltipContent, {
-          class: 'min-w-40',
+          class: 'min-w-44',
           hideIndicator: true,
-          labelFormatter: (d) => {
-            return new Date(d).toLocaleString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              hour: 'numeric',
-              minute: 'numeric',
-            })
-          },
+          labelKey: 'timestamp',
           valueFormatter: (d: unknown) => {
             if (typeof d === 'number') {
-              return d.toLocaleString('en-US', {
-                style: 'unit',
-                unit: 'millisecond',
-              })
+              return formatDuration(d * 1000)
             }
             return STATUS_MAP[d as keyof typeof STATUS_MAP].label
           },
