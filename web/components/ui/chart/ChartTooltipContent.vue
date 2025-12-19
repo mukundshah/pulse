@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   nameKey?: string
   labelKey?: string
   labelFormatter?: (d: number | Date) => string
-  valueFormatter?: (d: number) => string
+  valueFormatter?: (d: unknown, key: string) => string
   payload?: Record<string, any>
   config?: ChartConfig
   class?: HTMLAttributes['class']
@@ -89,7 +89,7 @@ const tooltipLabel = computed(() => {
               </span>
             </div>
             <span v-if="value !== undefined || value !== null" class="text-foreground font-mono font-medium tabular-nums">
-              {{ valueFormatter ? valueFormatter(value) : value.toLocaleString() }}
+              {{ valueFormatter ? valueFormatter(value, key) : value.toLocaleString() }}
             </span>
           </div>
         </div>

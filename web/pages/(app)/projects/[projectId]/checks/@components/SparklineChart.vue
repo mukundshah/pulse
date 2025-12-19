@@ -72,11 +72,19 @@ const formattedRuns = computed(() => {
           class: 'min-w-44',
           hideIndicator: true,
           labelKey: 'timestamp',
-          valueFormatter: (d: unknown) => {
-            if (typeof d === 'number') {
-              return formatDuration(d * 1000)
+          valueFormatter: (d: unknown, key: string) => {
+            switch (key) {
+            case 'total_time_ms':
+              if (typeof d === 'number') {
+                return formatDuration(d * 1000)
+              }
+              break
+            case 'status':
+              return STATUS_MAP[d as keyof typeof STATUS_MAP].label
+            default:
+              return String(d)
             }
-            return STATUS_MAP[d as keyof typeof STATUS_MAP].label
+            return String(d)
           },
         })"
       />
