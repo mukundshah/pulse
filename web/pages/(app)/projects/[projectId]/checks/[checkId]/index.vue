@@ -77,9 +77,9 @@ const handleTriggerCheck = () => {
                 {{ check?.method }}
               </Badge>
 
-              <span>
+              <Badge class="text-xs" variant="secondary">
                 {{ constructURL({ host: check?.host!, port: check?.port!, path: check?.path!, queryParams: check?.query_params as Record<string, string> | undefined, secure: check?.secure }) }}
-              </span>
+              </Badge>
             </div>
             <div v-else-if="check?.type === 'tcp'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
               <Badge class="text-xs" variant="secondary">
