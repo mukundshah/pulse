@@ -386,7 +386,7 @@ func (h *CheckHandler) ListChecks(c *gin.Context) {
 							WHEN request_started_at IS NOT NULL AND response_ended_at IS NOT NULL
 								AND response_ended_at > request_started_at
 							THEN EXTRACT(EPOCH FROM (response_ended_at - request_started_at)) * 1000
-							ELSE NULL
+							ELSE 0
 						END,
 						'status', status
 					) ORDER BY created_at ASC, id ASC
@@ -523,9 +523,33 @@ func (h *CheckHandler) ListChecks(c *gin.Context) {
 		numRuns := len(last24Runs)
 		emptyCount := 24 - numRuns
 
-		// Fill left side with empty datapoints
+		// Parse interval to calculate timestamps for padded runs
+		interval, err := time.ParseDuration(row.Interval)
+		if err != nil {
+			// Default to 10 minutes if parsing fails
+			interval = 10 * time.Minute
+		}
+
+		// Determine base timestamp: use first actual run's timestamp, or now if no runs
+		var baseTimestamp time.Time
+		if numRuns > 0 && last24Runs[0].Timestamp != nil {
+			baseTimestamp = *last24Runs[0].Timestamp
+		} else {
+			baseTimestamp = time.Now().UTC()
+		}
+
+		// Fill left side with empty datapoints, calculating timestamps backwards from base
 		for j := 0; j < emptyCount; j++ {
-			paddedRuns[j] = RunSummary{}
+			// Calculate timestamp: base - (emptyCount - j) * interval
+			// This ensures the first padded run is the earliest, and they progress forward
+			offset := time.Duration(emptyCount-j) * interval
+			timestamp := baseTimestamp.Add(-offset)
+			paddedRuns[j] = RunSummary{
+				TotalTimeMs: &[]int{0}[0],
+				Status:      &[]string{"unknown"}[0],
+				Timestamp:   &timestamp,
+				ID:          &[]uuid.UUID{uuid.Nil}[0],
+			}
 		}
 
 		// Fill right side with actual runs (already sorted ascending)
