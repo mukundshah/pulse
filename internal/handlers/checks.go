@@ -852,3 +852,60 @@ func (h *CheckHandler) DeleteCheck(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Check deleted successfully"})
 }
+
+// GetCheckCountsByStatus handles GET /projects/:projectId/checks/status/counts
+func (h *CheckHandler) GetCheckCountsByStatus(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	isMember, err := h.store.IsProjectMember(projectID, userID)
+	if err != nil || !isMember {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	type StatusCount struct {
+		Status string `gorm:"column:status" json:"status"`
+		Count  int    `gorm:"column:count" json:"count"`
+	}
+
+	var counts []StatusCount
+	err = h.store.DB().Raw(`
+		SELECT
+			COALESCE(last_status, 'unknown') as status,
+			COUNT(*) as count
+		FROM checks
+		WHERE project_id = ? AND deleted_at IS NULL
+		GROUP BY last_status
+		ORDER BY last_status
+	`, projectID).Scan(&counts).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get check counts"})
+		return
+	}
+
+	// Initialize all possible statuses with 0 counts
+	result := map[string]int{
+		"passing":  0,
+		"degraded": 0,
+		"failing":  0,
+		"unknown":  0,
+	}
+
+	// Update with actual counts
+	for _, count := range counts {
+		result[count.Status] = count.Count
+	}
+
+	c.JSON(http.StatusOK, result)
+}

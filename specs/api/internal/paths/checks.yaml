@@ -328,6 +328,59 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
+  /internal/projects/{projectId}/checks/status/counts:
+    get:
+      operationId: getCheckCountsByStatus
+      summary: Get total number of checks per status in a project
+      tags:
+        - Checks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Check counts by status
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - passing
+                  - degraded
+                  - failing
+                  - unknown
+                properties:
+                  passing:
+                    type: integer
+                    description: Number of checks with passing status
+                    example: 5
+                  degraded:
+                    type: integer
+                    description: Number of checks with degraded status
+                    example: 2
+                  failing:
+                    type: integer
+                    description: Number of checks with failing status
+                    example: 1
+                  unknown:
+                    type: integer
+                    description: Number of checks with unknown status
+                    example: 0
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
   /internal/projects/{projectId}/checks/{checkId}:
     get:
       operationId: getCheckById

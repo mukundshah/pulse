@@ -207,6 +207,7 @@ func main() {
 
 		protected.POST("/projects/:projectId/checks", checkHandler.CreateCheck)
 		protected.GET("/projects/:projectId/checks", checkHandler.ListChecks)
+		protected.GET("/projects/:projectId/checks/status/counts", checkHandler.GetCheckCountsByStatus)
 		protected.GET("/projects/:projectId/checks/:checkId", checkHandler.GetCheck)
 		protected.PUT("/projects/:projectId/checks/:checkId", checkHandler.UpdateCheck)
 		protected.DELETE("/projects/:projectId/checks/:checkId", checkHandler.DeleteCheck)
