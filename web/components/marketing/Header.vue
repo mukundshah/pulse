@@ -16,14 +16,7 @@ const handleLogout = async () => {
 
 <template>
   <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-    <div class="bg-foreground text-background">
-      <div class="container py-2">
-        <p class="text-center text-xs tracking-wide font-medium flex items-center justify-center gap-2">
-          <Icon class="h-4 w-4" name="lucide:alert-triangle" /> The contents shown are dummy data and for illustration purposes only.
-        </p>
-      </div>
-    </div>
-    <div class="container flex h-16 items-center justify-between">
+    <div class="container grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4">
       <div class="flex items-center gap-2">
         <NuxtLink class="flex items-center gap-2" to="/">
           <div class="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background font-semibold">
@@ -33,11 +26,10 @@ const handleLogout = async () => {
         </NuxtLink>
       </div>
       <nav class="hidden items-center gap-6 md:flex">
+        <a class="text-sm text-muted-foreground transition-colors hover:text-foreground" href="/#story">Story</a>
         <a class="text-sm text-muted-foreground transition-colors hover:text-foreground" href="/#features">Features</a>
-        <a class="text-sm text-muted-foreground transition-colors hover:text-foreground" href="/#how-it-works">How it works</a>
-        <a class="text-sm text-muted-foreground transition-colors hover:text-foreground" href="/#integrations">Integrations</a>
       </nav>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center justify-end gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button class="-mr-2" size="icon" variant="ghost">

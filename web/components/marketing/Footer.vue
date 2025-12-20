@@ -10,17 +10,6 @@
             <span class="text-sm font-medium">Pulse</span>
           </NuxtLink>
         </div>
-        <nav class="flex items-center gap-6">
-          <NuxtLink class="text-sm text-muted-foreground transition-colors hover:text-foreground" to="/terms">
-            Terms
-          </NuxtLink>
-          <NuxtLink class="text-sm text-muted-foreground transition-colors hover:text-foreground" to="/privacy">
-            Privacy
-          </NuxtLink>
-          <NuxtLink class="text-sm text-muted-foreground transition-colors hover:text-foreground" to="/contact">
-            Contact
-          </NuxtLink>
-        </nav>
         <p class="text-sm text-muted-foreground">
           &copy; {{ new Date().getFullYear() }} Pulse. All rights reserved.
         </p>
