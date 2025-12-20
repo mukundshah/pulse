@@ -98,7 +98,9 @@
             <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
               <Icon class="h-6 w-6" name="lucide:globe" />
             </div>
-            <h3 class="mb-2 text-xl font-semibold">HTTP & API Monitoring</h3>
+            <h3 class="mb-2 text-xl font-semibold">
+              HTTP & API Monitoring
+            </h3>
             <p class="text-muted-foreground">
               Watch your APIs and web services. Know instantly when they're down, slow, or returning errors. Verify responses, check headers, validate that everything works as expected.
             </p>
@@ -107,7 +109,9 @@
             <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
               <Icon class="h-6 w-6" name="lucide:network" />
             </div>
-            <h3 class="mb-2 text-xl font-semibold">Infrastructure Checks</h3>
+            <h3 class="mb-2 text-xl font-semibold">
+              Infrastructure Checks
+            </h3>
             <p class="text-muted-foreground">
               Monitor TCP connections, DNS resolution, and network services. Ensure your databases, caches, and critical infrastructure are reachable and responding.
             </p>
@@ -116,7 +120,9 @@
             <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
               <Icon class="h-6 w-6" name="lucide:bell" />
             </div>
-            <h3 class="mb-2 text-xl font-semibold">Smart Alerting</h3>
+            <h3 class="mb-2 text-xl font-semibold">
+              Smart Alerting
+            </h3>
             <p class="text-muted-foreground">
               Get notified the moment something changes. Email alerts, status tracking, and a complete history of every incident. Know what happened, when, and why.
             </p>
@@ -257,7 +263,7 @@
               </NuxtLink>
             </Button>
             <Button as-child size="lg" variant="outline">
-              <a href="https://github.com/mukundshah/pulse" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/mukundshah/pulse" rel="noopener noreferrer" target="_blank">
                 <Icon class="mr-2 h-4 w-4" name="lucide:github" />
                 Explore the code
               </a>
