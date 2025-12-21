@@ -181,7 +181,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	session := &models.Session{
 		UserID:       user.ID,
 		JTI:          jti,
-		UserAgent:    c.GetHeader("User-Agent"),
+		UserAgent:    c.Request.UserAgent(),
 		IPAddress:    c.ClientIP(),
 		IsActive:     true,
 		ExpiresAt:    time.Now().UTC().Add(24 * time.Hour), // Match JWT validity
