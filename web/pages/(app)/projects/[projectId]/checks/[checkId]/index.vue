@@ -72,6 +72,26 @@ const handleTriggerCheck = () => {
     error: (error: Error) => error.message,
   })
 }
+
+const handleDeleteCheck = async () => {
+  // TODO: Add confirmation dialog
+  try {
+    await $pulseAPI('/internal/projects/{projectId}/checks/{checkId}', {
+      method: 'DELETE',
+      path: {
+        projectId,
+        checkId,
+      },
+    })
+
+    toast.success(`${check.value?.name} deleted`)
+    await navigateTo(`/projects/${projectId}/checks`)
+  } catch (error) {
+    toast.error('Failed to delete check', {
+      description: error instanceof Error ? error.message : 'Unknown error',
+    })
+  }
+}
 </script>
 
 <template>
@@ -117,11 +137,28 @@ const handleTriggerCheck = () => {
         </div>
 
         <div class="flex items-center gap-2.5">
-          <Button as-child size="sm" variant="outline">
-            <NuxtLink :to="`/projects/${projectId}/checks/${checkId}/edit`">
-              Edit
-            </NuxtLink>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button size="icon-sm" variant="outline">
+                <Icon name="lucide:ellipsis-vertical" />
+                <span class="sr-only">
+                  Actions
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem as-child>
+                <NuxtLink :to="`/projects/${projectId}/checks/${checkId}/edit`">
+                  <Icon name="lucide:edit" />
+                  Edit
+                </NuxtLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive" @click="handleDeleteCheck">
+                <Icon name="lucide:trash" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Button loading-auto size="sm" @click="handleTriggerCheck">
             Schedule now
