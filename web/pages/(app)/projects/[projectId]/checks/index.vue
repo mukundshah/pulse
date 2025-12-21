@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { BREADCRUMB_OVERRIDE } from '@/constants/symbols'
 import SparklineChart from './@components/SparklineChart.vue'
 import StatusBadge from './@components/StatusBadge.vue'
 
