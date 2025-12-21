@@ -311,7 +311,7 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
                     Edit
                   </NuxtLink>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem disabled>
                   <Icon class="mr-2 h-4 w-4" name="lucide:copy" />
                   Duplicate
                 </DropdownMenuItem>
