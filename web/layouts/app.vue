@@ -222,7 +222,7 @@ const handleLogout = async () => {
                           {{ breadcrumb.label }}
                         </NuxtLink>
                       </BreadcrumbLink>
-                      <BreadcrumbPage v-else>
+                      <BreadcrumbPage v-else as="h1">
                         {{ breadcrumb.label }}
                       </BreadcrumbPage>
                     </BreadcrumbItem>
