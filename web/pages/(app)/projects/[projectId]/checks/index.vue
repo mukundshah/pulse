@@ -54,6 +54,7 @@ useLayoutContext({
     {
       label: project?.value?.name || 'Project',
       to: `/projects/${projectId}/checks`,
+      active: true,
     }, // Project
     false, // Checks
   ]),
