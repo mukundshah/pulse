@@ -280,6 +280,16 @@ useLayoutContext({
     false, // New Check
     false, // false to hide the current breadcrumb item
   ]),
+  actions: [{
+    label: 'Create Monitor',
+    icon: 'lucide:save',
+    props: {
+      variant: 'default',
+      size: 'sm',
+      type: 'submit',
+      form: 'new-check-form',
+    },
+  }],
 })
 
 const { data: regions, pending: isLoadingRegions, error: regionsFetchError } = await useLazyPulseAPI('/internal/regions')
@@ -362,20 +372,6 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <div class="flex flex-col gap-6 p-4 md:p-6">
-    <div class="flex flex-row items-center gap-2 justify-between">
-      <h1 class="text-2xl font-bold">
-        New {{ TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP] }}
-      </h1>
-      <Button
-        form="new-check-form"
-        type="submit"
-        variant="default"
-        :loading="isSubmitting"
-      >
-        Create Monitor
-      </Button>
-    </div>
-
     <form id="new-check-form" class="flex flex-col gap-6" @submit="onSubmit">
       <VisuallyHidden>
         <VeeField v-slot="{ componentField, errors }" name="type">

@@ -51,6 +51,7 @@ useHead({
 })
 
 useLayoutContext({
+  actions: [],
   breadcrumbOverrides: computed(() => [
     undefined, // Root
     undefined, // Projects
