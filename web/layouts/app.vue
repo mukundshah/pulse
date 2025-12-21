@@ -13,6 +13,9 @@ const THEME_ICONS = {
 } as const
 
 const isMobile = useMediaQuery('(max-width: 768px)')
+const breadcrumbs = useBreadcrumbItems({
+  hideRoot: true,
+})
 
 const { data: user, pending: userPending } = useAsyncData('user', () => me())
 
@@ -204,6 +207,24 @@ const handleLogout = async () => {
         <header class="bg-background/90 sticky top-0 z-10 flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) backdrop-blur-md">
           <div class="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
             <SidebarTrigger />
+            <!-- Breadcrumbs -->
+            <Breadcrumb>
+              <BreadcrumbList>
+                <template v-for="(breadcrumb, idx) in breadcrumbs" :key="breadcrumb.id">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink v-if="!breadcrumb.active" as-child>
+                      <NuxtLink :to="breadcrumb.to">
+                        {{ breadcrumb.label }}
+                      </NuxtLink>
+                    </BreadcrumbLink>
+                    <BreadcrumbPage v-else>
+                      {{ breadcrumb.label }}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator v-if="idx < breadcrumbs.length - 1" />
+                </template>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
         </header>
         <div class="flex flex-1 flex-col gap-4">
