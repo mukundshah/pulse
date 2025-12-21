@@ -3,6 +3,14 @@ useHead({
   title: 'Dashboard',
 })
 
+useLayoutContext({
+  actions: [],
+  breadcrumbOverrides: computed(() => [
+    undefined, // Root
+    undefined, // Dashboard
+  ]),
+})
+
 const { me } = useAuth()
 
 const { data: user, pending: userPending } = useAsyncData('user', () => me())
