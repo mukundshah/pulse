@@ -1,7 +1,7 @@
 import type { useBreadcrumbItems } from '#imports'
-import type { UnwrapRef } from 'vue'
+import { toValue } from 'vue'
 
-type BreadcrumbOverride = NonNullable<UnwrapRef<NonNullable<Parameters<typeof useBreadcrumbItems>[0]>['overrides']>>
+type BreadcrumbOverride = NonNullable<Parameters<typeof useBreadcrumbItems>[0]>['overrides']
 
 export interface LayoutContext {
   breadcrumbOverrides: BreadcrumbOverride
@@ -20,6 +20,6 @@ export const useLayoutContext = (context: Partial<LayoutContext> = {}) => {
   }
 
   return {
-    breadcrumbOverrides: computed(() => layoutContext.value.breadcrumbOverrides),
+    breadcrumbOverrides: computed(() => toValue(layoutContext.value.breadcrumbOverrides)),
   }
 }
