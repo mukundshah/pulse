@@ -47,7 +47,7 @@ const { data: run } = await usePulseAPI('/internal/projects/{projectId}/checks/{
 })
 
 useHead({
-  title: `Run #${run.value?.run_number}`,
+  title: `${run.value?.check?.name} - #${run.value?.run_number}`,
 })
 
 const timelineData = computed(() => {
