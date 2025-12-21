@@ -347,7 +347,28 @@ if (!check.value) {
 }
 
 useHead({
-  title: `Edit ${TYPE_TITLE_MAP[check.value.type as keyof typeof TYPE_TITLE_MAP]}`,
+  title: `${check.value?.project?.name} - Edit ${check.value?.name}`,
+})
+
+useLayoutContext({
+  breadcrumbOverrides: computed(() => [
+    undefined, // Root
+    undefined, // Projects
+    {
+      label: check.value?.project?.name || 'Project',
+      to: `/projects/${projectId}/checks`,
+    }, // Project
+    {
+      label: check.value?.name || 'Check',
+      to: `/projects/${projectId}/checks/${checkId}`,
+    }, // Check
+    {
+      label: `Edit`,
+      to: `/projects/${projectId}/checks/${checkId}/edit`,
+      active: true,
+    }, // Edit Check
+    false, // false to hide the current breadcrumb item
+  ]),
 })
 
 const { data: regions, pending: isLoadingRegions, error: regionsFetchError } = await useLazyPulseAPI('/internal/regions')

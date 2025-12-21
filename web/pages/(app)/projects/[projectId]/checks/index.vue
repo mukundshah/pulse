@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BREADCRUMB_OVERRIDE } from '@/constants/symbols'
 import SparklineChart from './@components/SparklineChart.vue'
 import StatusBadge from './@components/StatusBadge.vue'
 
@@ -45,6 +46,18 @@ const { data: counts, pending: statusCountsLoading } = useLazyPulseAPI('/interna
 
 useHead({
   title: `Checks for ${project.value?.name}`,
+})
+
+useLayoutContext({
+  breadcrumbOverrides: computed(() => [
+    undefined, // Root
+    undefined, // Projects
+    {
+      label: project?.value?.name || 'Project',
+      to: `/projects/${projectId}/checks`,
+    }, // Project
+    false, // Checks
+  ]),
 })
 </script>
 

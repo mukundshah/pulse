@@ -25,6 +25,23 @@ useHead({
   title: `Check ${check.value?.name}`,
 })
 
+useLayoutContext({
+  breadcrumbOverrides: computed(() => [
+    undefined, // Root
+    undefined, // Projects
+    {
+      label: check.value?.project?.name || 'Project',
+      to: `/projects/${projectId}/checks`,
+    }, // Project
+    {
+      label: check.value?.name || 'Check',
+      to: `/projects/${projectId}/checks/${checkId}`,
+      active: true,
+    }, // Check
+    false, // false to hide the current breadcrumb item
+  ]),
+})
+
 const { $pulseAPI } = useNuxtApp()
 
 const handleTriggerCheck = () => {

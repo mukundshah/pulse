@@ -254,8 +254,32 @@ if (!success || !params) {
 
 const { projectId, type } = params
 
+const { data: project } = await usePulseAPI('/internal/projects/{projectId}', {
+  path: {
+    projectId,
+  },
+})
+
 useHead({
-  title: `New ${TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP]}`,
+  title: `${project.value?.name} - New ${TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP]}`,
+})
+
+useLayoutContext({
+  breadcrumbOverrides: computed(() => [
+    undefined, // Root
+    undefined, // Projects
+    {
+      label: project.value?.name || 'Project',
+      to: `/projects/${projectId}/checks`,
+    }, // Project
+    {
+      label: `New ${TYPE_TITLE_MAP[type as keyof typeof TYPE_TITLE_MAP]}`,
+      to: `/projects/${projectId}/checks/new/${type}`,
+      active: true,
+    },
+    false, // New Check
+    false, // false to hide the current breadcrumb item
+  ]),
 })
 
 const { data: regions, pending: isLoadingRegions, error: regionsFetchError } = await useLazyPulseAPI('/internal/regions')

@@ -50,6 +50,28 @@ useHead({
   title: `${run.value?.check?.name} - #${run.value?.run_number}`,
 })
 
+useLayoutContext({
+  breadcrumbOverrides: computed(() => [
+    undefined, // Root
+    undefined, // Projects
+    {
+      label: run.value?.check?.project?.name || 'Project',
+      to: `/projects/${projectId}/checks`,
+    }, // Project
+    {
+      label: run.value?.check?.name || 'Check',
+      to: `/projects/${projectId}/checks/${checkId}`,
+    }, // Check
+    false, // false to hide the check id
+    {
+      label: `#${run.value?.run_number}`,
+      to: `/projects/${projectId}/checks/${checkId}/runs/${runId}`,
+      active: true,
+    }, // Run
+    false, // false to hide the current breadcrumb item
+  ]),
+})
+
 const timelineData = computed(() => {
   if (!run.value?.network_timings || typeof run.value.network_timings !== 'object') {
     return []
