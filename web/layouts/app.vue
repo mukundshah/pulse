@@ -13,8 +13,12 @@ const THEME_ICONS = {
 } as const
 
 const isMobile = useMediaQuery('(max-width: 768px)')
+
+const { breadcrumbOverrides } = useLayoutContext()
 const breadcrumbs = useBreadcrumbItems({
   hideRoot: true,
+  // @ts-expect-error - TODO: fix the typing of the breadcrumb overrides
+  overrides: breadcrumbOverrides,
 })
 
 const { data: user, pending: userPending } = useAsyncData('user', () => me())
