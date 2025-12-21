@@ -58,54 +58,32 @@ useLayoutContext({
     }, // Project
     false, // Checks
   ]),
+  actions: [
+    {
+      label: 'New Check',
+      icon: 'lucide:plus',
+      props: {
+        variant: 'outline',
+        size: 'sm',
+      },
+      children: checkTypes.map(type => ({
+        label: type.name,
+        children: type.checks.map(check => ({
+          label: check.name,
+          icon: check.icon,
+          to: `/projects/${projectId}/checks/new/${check.id}`,
+          props: {
+            disabled: !check.implemented,
+          },
+        })),
+      })),
+    },
+  ],
 })
 </script>
 
 <template>
   <div class="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-semibold tracking-tight">
-          {{ project?.name }}
-        </h1>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button size="sm" variant="outline">
-            <Icon class="mr-2 h-4 w-4" name="lucide:plus" />
-            New Check
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" class="w-56">
-          <template v-for="(type, idx) in checkTypes" :key="type.id">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>{{ type.name }}</DropdownMenuLabel>
-              <DropdownMenuItem
-                v-for="check in type.checks"
-                :key="check.id"
-                as-child
-                :disabled="!check.implemented"
-              >
-                <NuxtLink
-                  class="flex w-full items-center justify-between"
-                  :to="`/projects/${projectId}/checks/new/${check.id}`"
-                >
-                  <div class="flex items-center gap-2">
-                    <Icon class="h-4 w-4" :name="check.icon" />
-                    <span>{{ check.name }}</span>
-                  </div>
-                  <Badge v-if="!check.implemented" class="text-xs" variant="secondary">
-                    WIP
-                  </Badge>
-                </NuxtLink>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator v-if="idx < checkTypes.length - 1" />
-          </template>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-
     <div class="grid grid-cols-1 gap-4 @xl/main:grid-cols-3 py-4">
       <Card class="@container/card from-green-200/30 to-green-200/5 dark:from-green-900/30 dark:to-green-900/5 bg-linear-to-t shadow-none border-green-500/20 dark:border-green-900/30 py-4 *:data-[slot=card-header]:px-4">
         <CardHeader>
