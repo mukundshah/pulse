@@ -145,6 +145,64 @@ const timelineData = computed(() => {
     width: (phase.length / totalDuration) * 100,
   }))
 })
+
+interface DNSAnswer {
+  name: string
+  type: string
+  TTL: number
+  data: string | string[] | Record<string, unknown>
+  preference?: number
+  port?: number
+  priority?: number
+  weight?: number
+}
+
+interface DNSAuthority {
+  name: string
+  type: string
+  TTL: number
+}
+
+interface DNSQuestion {
+  Name: string
+  Type: string
+}
+
+interface DNSJSONFormat {
+  Status?: string
+  TC?: boolean
+  AD?: boolean
+  CD?: boolean
+  ID?: number
+  Question?: DNSQuestion[]
+  Answer?: DNSAnswer[]
+  Authority?: DNSAuthority[]
+  Additional?: DNSAuthority[]
+}
+
+const dnsResponse = computed(() => {
+  const runData = run.value as Record<string, unknown> | undefined
+  if (!runData?.response || typeof runData.response !== 'object') {
+    return null
+  }
+
+  const response = runData.response as Record<string, unknown>
+
+  // Check if it's a DNS response
+  if (response.type !== 'dns') {
+    return null
+  }
+
+  return {
+    type: response.type,
+    records: response.records,
+    dns_server: response.dns_server,
+    formats: response.formats as {
+      raw?: string
+      json?: DNSJSONFormat
+    } | undefined,
+  }
+})
 </script>
 
 <template>
@@ -354,6 +412,175 @@ const timelineData = computed(() => {
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <!-- DNS Response -->
+      <Card v-if="run?.check?.type === 'dns' && dnsResponse">
+        <CardHeader>
+          <CardTitle>DNS Response</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <!-- DNS Server -->
+          <div v-if="dnsResponse.dns_server" class="mb-6 flex items-center gap-3 rounded-lg border bg-muted/30 p-4">
+            <Icon class="size-5 text-muted-foreground" name="lucide:server" />
+            <div>
+              <div class="text-xs font-medium uppercase text-muted-foreground">
+                DNS Server
+              </div>
+              <div class="font-mono text-sm font-semibold">
+                {{ dnsResponse.dns_server }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs for Structured, JSON, and Raw -->
+          <Tabs default-value="structured">
+            <TabsList class="mb-4">
+              <TabsTrigger value="structured">
+                <Icon class="size-4" name="lucide:table" />
+                Structured
+              </TabsTrigger>
+              <TabsTrigger value="json">
+                <Icon class="size-4" name="lucide:file-json" />
+                JSON
+              </TabsTrigger>
+              <TabsTrigger value="raw">
+                <Icon class="size-4" name="lucide:code" />
+                Raw
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent class="space-y-6" value="structured">
+              <!-- Records -->
+              <div v-if="dnsResponse.formats?.json && dnsResponse.formats.json.Answer && dnsResponse.formats.json.Answer.length > 0" class="space-y-3">
+                <div class="flex items-center gap-2">
+                  <Icon class="size-4 text-muted-foreground" name="lucide:check-circle" />
+                  <h3 class="text-sm font-semibold">
+                    Records
+                  </h3>
+                  <Badge class="ml-auto" variant="secondary">
+                    {{ dnsResponse.formats.json.Answer.length }}
+                  </Badge>
+                </div>
+                <div class="overflow-x-auto rounded-lg border">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="border-b bg-muted/50">
+                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                          Name
+                        </th>
+                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                          Type
+                        </th>
+                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                          TTL
+                        </th>
+                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                          Data
+                        </th>
+                        <th v-if="dnsResponse.formats.json.Answer.some(a => a.preference !== undefined || a.port !== undefined || a.priority !== undefined)" class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                          Additional
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(answer, index) in dnsResponse.formats.json.Answer" :key="index" class="border-b border-border/50 transition-colors hover:bg-muted/30">
+                        <td class="py-3 px-4 font-mono text-sm">
+                          {{ answer.name }}
+                        </td>
+                        <td class="py-3 px-4">
+                          <Badge variant="secondary">
+                            {{ answer.type }}
+                          </Badge>
+                        </td>
+                        <td class="py-3 px-4 font-mono text-sm">
+                          {{ answer.TTL }}s
+                        </td>
+                        <td class="py-3 px-4">
+                          <div class="flex flex-wrap gap-1">
+                            <Badge
+                              v-if="Array.isArray(answer.data)"
+                              class="font-mono text-xs"
+                              variant="secondary"
+                            >
+                              {{ answer.data.join(', ') }}
+                            </Badge>
+                            <Badge
+                              v-else-if="typeof answer.data === 'object'"
+                              class="font-mono text-xs"
+                              variant="secondary"
+                            >
+                              {{ JSON.stringify(answer.data) }}
+                            </Badge>
+                            <Badge
+                              v-else
+                              class="font-mono text-xs"
+                              variant="secondary"
+                            >
+                              {{ answer.data }}
+                            </Badge>
+                          </div>
+                        </td>
+                        <td v-if="answer.preference !== undefined || answer.port !== undefined || answer.priority !== undefined" class="py-3 px-4">
+                          <div class="flex flex-wrap gap-2 text-xs">
+                            <Badge v-if="answer.preference !== undefined" class="font-mono" variant="outline">
+                              Pref: {{ answer.preference }}
+                            </Badge>
+                            <Badge v-if="answer.priority !== undefined" class="font-mono" variant="outline">
+                              Priority: {{ answer.priority }}
+                            </Badge>
+                            <Badge v-if="answer.weight !== undefined" class="font-mono" variant="outline">
+                              Weight: {{ answer.weight }}
+                            </Badge>
+                            <Badge v-if="answer.port !== undefined" class="font-mono" variant="outline">
+                              Port: {{ answer.port }}
+                            </Badge>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div v-else class="rounded-lg border border-dashed p-8 text-center">
+                <Icon class="mx-auto mb-2 size-8 text-muted-foreground" name="lucide:inbox" />
+                <p class="text-sm text-muted-foreground">
+                  No answer records available
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="json">
+              <!-- JSON Format -->
+              <div v-if="dnsResponse.formats?.json">
+                <div class="rounded-lg border bg-muted/30 p-4">
+                  <pre class="overflow-x-auto text-xs font-mono leading-relaxed whitespace-pre-wrap text-foreground">{{ JSON.stringify(dnsResponse.formats.json, null, 2) }}</pre>
+                </div>
+              </div>
+              <div v-else class="rounded-lg border border-dashed p-8 text-center">
+                <Icon class="mx-auto mb-2 size-8 text-muted-foreground" name="lucide:file-x" />
+                <p class="text-sm text-muted-foreground">
+                  No JSON response data available
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="raw">
+              <!-- Raw Format -->
+              <div v-if="dnsResponse.formats?.raw">
+                <div class="rounded-lg border bg-muted/30 p-4">
+                  <pre class="overflow-x-auto text-xs font-mono leading-relaxed whitespace-pre-wrap text-foreground">{{ dnsResponse.formats.raw }}</pre>
+                </div>
+              </div>
+              <div v-else class="rounded-lg border border-dashed p-8 text-center">
+                <Icon class="mx-auto mb-2 size-8 text-muted-foreground" name="lucide:file-x" />
+                <p class="text-sm text-muted-foreground">
+                  No raw response data available
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </main>
