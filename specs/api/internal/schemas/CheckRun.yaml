@@ -148,6 +148,10 @@ properties:
   check:
     $ref: '#/components/schemas/Check'
     nullable: true
+  run_number:
+    type: integer
+    description: Sequential run number for this check
+    example: 42
   created_at:
     type: string
     format: date-time
