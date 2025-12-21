@@ -14,7 +14,7 @@ const THEME_ICONS = {
 
 const isMobile = useMediaQuery('(max-width: 768px)')
 
-const { breadcrumbOverrides } = useLayoutContext()
+const { breadcrumbOverrides, actions } = useLayoutContext()
 const breadcrumbs = useBreadcrumbItems({
   hideRoot: true,
   // @ts-expect-error - TODO: fix the typing of the breadcrumb overrides
@@ -209,26 +209,98 @@ const handleLogout = async () => {
       </Sidebar>
       <SidebarInset class="overflow-auto h-svh">
         <header class="bg-background/90 sticky top-0 z-10 flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) backdrop-blur-md">
-          <div class="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-            <SidebarTrigger />
-            <!-- Breadcrumbs -->
-            <Breadcrumb>
-              <BreadcrumbList>
-                <template v-for="(breadcrumb, idx) in breadcrumbs" :key="breadcrumb.id">
-                  <BreadcrumbItem>
-                    <BreadcrumbLink v-if="!breadcrumb.active" as-child>
-                      <NuxtLink :to="breadcrumb.to">
+          <div class="flex items-center gap-2 justify-between w-full px-4 lg:px-6">
+            <div class="flex items-center gap-2">
+              <SidebarTrigger />
+              <!-- Breadcrumbs -->
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <template v-for="(breadcrumb, idx) in breadcrumbs" :key="breadcrumb.id">
+                    <BreadcrumbItem>
+                      <BreadcrumbLink v-if="!breadcrumb.active" as-child>
+                        <NuxtLink :to="breadcrumb.to">
+                          {{ breadcrumb.label }}
+                        </NuxtLink>
+                      </BreadcrumbLink>
+                      <BreadcrumbPage v-else>
                         {{ breadcrumb.label }}
-                      </NuxtLink>
-                    </BreadcrumbLink>
-                    <BreadcrumbPage v-else>
-                      {{ breadcrumb.label }}
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator v-if="idx < breadcrumbs.length - 1" />
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator v-if="idx < breadcrumbs.length - 1" />
+                  </template>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+            <div class="flex items-center gap-2">
+              <template v-for="action in actions" :key="action.label">
+                <template v-if="action.children">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                      <Button v-bind="action.props">
+                        <Icon v-if="action.icon" :name="action.icon" />
+                        {{ action.label }}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="min-w-56">
+                      <template v-for="(child, idx) in action.children" :key="child.label">
+                        <template v-if="'children' in child">
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel>
+                              {{ child.label }}
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem v-for="c in child.children" :key="c.label" :as-child="!!c.to">
+                              <template v-if="c.to">
+                                <NuxtLink :to="c.to">
+                                  <Icon v-if="c.icon" :name="c.icon" />
+                                  {{ c.label }}
+                                </NuxtLink>
+                              </template>
+                              <template v-else>
+                                <Icon v-if="c.icon" :name="c.icon" />
+                                {{ c.label }}
+                              </template>
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                          <DropdownMenuSeparator v-if="idx < action.children.length - 1" />
+                        </template>
+                        <template v-else>
+                          <DropdownMenuItem :key="child.label" :as-child="!!child.to">
+                            <template v-if="child.to">
+                              <NuxtLink :to="child.to">
+                                <Icon v-if="child.icon" :name="child.icon" />
+                                {{ child.label }}
+                              </NuxtLink>
+                            </template>
+                            <template v-else>
+                              <Icon v-if="child.icon" :name="child.icon" />
+                              {{ child.label }}
+                            </template>
+                          </DropdownMenuItem>
+                        </template>
+                      </template>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </template>
-              </BreadcrumbList>
-            </Breadcrumb>
+                <template v-else>
+                  <Button
+                    :as-child="!!action.to"
+                    v-bind="action.props"
+                    @click="action.onClick"
+                  >
+                    <template v-if="action.to">
+                      <NuxtLink :to="action.to">
+                        <Icon v-if="action.icon" :name="action.icon" />
+                        {{ action.label }}
+                      </NuxtLink>
+                    </template>
+                    <template v-else>
+                      <Icon v-if="action.icon" :name="action.icon" />
+                      {{ action.label }}
+                    </template>
+                  </Button>
+                </template>
+              </template>
+            </div>
           </div>
         </header>
         <div class="flex flex-1 flex-col gap-4">
