@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -177,12 +179,19 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	// Debug: Trace IP address
+	clientIP := c.ClientIP()
+	// Fallback: Extract IP from headers if c.ClientIP() is empty
+	if clientIP == "" {
+		clientIP = getClientIPFromHeaders(c)
+	}
+
 	// Create session
 	session := &models.Session{
 		UserID:       user.ID,
 		JTI:          jti,
 		UserAgent:    c.Request.UserAgent(),
-		IPAddress:    c.ClientIP(),
+		IPAddress:    clientIP,
 		IsActive:     true,
 		ExpiresAt:    time.Now().UTC().Add(24 * time.Hour), // Match JWT validity
 		LastActivity: time.Now().UTC(),
@@ -356,6 +365,64 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "email verified successfully"})
+}
+
+// getClientIPFromHeaders extracts the client IP from various headers
+// Priority: CF-Connecting-IP > X-Real-IP > X-Forwarded-For (first IP) > RemoteAddr
+func getClientIPFromHeaders(c *gin.Context) string {
+	if ip := c.GetHeader("CF-Connecting-IP"); ip != "" {
+		ip = strings.TrimSpace(ip)
+		if parsedIP := parseIP(ip); parsedIP != "" {
+			return parsedIP
+		}
+	}
+
+	if ip := c.GetHeader("X-Real-IP"); ip != "" {
+		ip = strings.TrimSpace(ip)
+		if parsedIP := parseIP(ip); parsedIP != "" {
+			return parsedIP
+		}
+	}
+
+	if xff := c.GetHeader("X-Forwarded-For"); xff != "" {
+		ips := strings.Split(xff, ",")
+		for _, ip := range ips {
+			ip = strings.TrimSpace(ip)
+			if ip == "" {
+				continue
+			}
+			if parsedIP := parseIP(ip); parsedIP != "" {
+				return parsedIP
+			}
+		}
+	}
+
+	if addr := c.Request.RemoteAddr; addr != "" {
+		host, _, err := net.SplitHostPort(addr)
+		if err == nil {
+			if parsedIP := parseIP(host); parsedIP != "" {
+				return parsedIP
+			}
+		}
+		if parsedIP := parseIP(addr); parsedIP != "" {
+			return parsedIP
+		}
+	}
+
+	return ""
+}
+
+// parseIP validates and returns the IP address if it's valid
+func parseIP(ip string) string {
+	ip = strings.TrimSpace(ip)
+	if ip == "" {
+		return ""
+	}
+	parsed := net.ParseIP(ip)
+	if parsed == nil {
+		return ""
+	}
+	return ip
 }
 
 type ResendVerificationRequest struct {
