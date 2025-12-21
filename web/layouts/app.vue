@@ -248,7 +248,12 @@ const handleLogout = async () => {
                             <DropdownMenuLabel>
                               {{ child.label }}
                             </DropdownMenuLabel>
-                            <DropdownMenuItem v-for="c in child.children" :key="c.label" :as-child="!!c.to">
+                            <DropdownMenuItem
+                              v-for="c in child.children"
+                              :key="c.label"
+                              :as-child="!!c.to"
+                              v-bind="c.props"
+                            >
                               <template v-if="c.to">
                                 <NuxtLink :to="c.to">
                                   <Icon v-if="c.icon" :name="c.icon" />
@@ -264,7 +269,11 @@ const handleLogout = async () => {
                           <DropdownMenuSeparator v-if="idx < action.children.length - 1" />
                         </template>
                         <template v-else>
-                          <DropdownMenuItem :key="child.label" :as-child="!!child.to">
+                          <DropdownMenuItem
+                            :key="child.label"
+                            :as-child="!!child.to"
+                            v-bind="child.props"
+                          >
                             <template v-if="child.to">
                               <NuxtLink :to="child.to">
                                 <Icon v-if="child.icon" :name="child.icon" />

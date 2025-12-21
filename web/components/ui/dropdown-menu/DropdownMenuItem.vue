@@ -7,7 +7,7 @@ import { DropdownMenuItem, useForwardProps } from 'reka-ui'
 
 import { cn } from '@/utils/style'
 
-interface Props extends DropdownMenuItemProps {
+export interface Props extends DropdownMenuItemProps {
   class?: HTMLAttributes['class']
   inset?: boolean
   variant?: 'default' | 'destructive'

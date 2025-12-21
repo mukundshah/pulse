@@ -1,4 +1,5 @@
 import type { useBreadcrumbItems } from '#imports'
+import type { DropdownMenuItemProps } from 'reka-ui'
 import type { ButtonProps } from '@/components/ui/button'
 
 import { toValue } from 'vue'
@@ -11,7 +12,7 @@ export interface LayoutAction {
   icon?: string
   onClick?: (event: MouseEvent) => void
   // children?: LayoutAction[] | { label: string, children: LayoutAction[] }
-  children?: { label: string, children: Omit<LayoutAction, 'children' | 'props'>[] } | Omit<LayoutAction, 'children' | 'props'>[]
+  children?: { label: string, children: (Omit<LayoutAction, 'children' | 'props'> & { props?: DropdownMenuItemProps })[] } | (Omit<LayoutAction, 'children' | 'props'> & { props?: DropdownMenuItemProps })[]
   props?: Omit<ButtonProps, 'onClick' | 'asChild'>
 }
 
