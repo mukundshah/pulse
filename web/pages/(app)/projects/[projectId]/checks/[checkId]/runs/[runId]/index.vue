@@ -217,15 +217,19 @@ const dnsResponse = computed(() => {
             :name="STATUS_ICON_COLOR_MAP[run?.status as keyof typeof STATUS_ICON_COLOR_MAP].icon"
           />
 
-          <h1 class="text-lg font-semibold text-foreground">
-            {{ run?.region?.name || 'Unknown region' }}
-            <span v-if="run?.region?.flag" class="ml-2">{{ run.region.flag }}</span>
-          </h1>
+          <div class="flex items-center gap-2 flex-1">
+            <h1 class="text-lg font-semibold text-foreground">
+              {{ run?.check?.name || 'Unnamed Check' }}
+            </h1>
+            <Badge v-if="run?.region" variant="secondary">
+              {{ run.region.flag }} {{ run.region.name }}
+            </Badge>
+          </div>
         </div>
 
         <div class="text-sm text-muted-foreground flex items-center gap-2">
           <div>
-            {{ STATUS_TEXT_MAP[run?.status as keyof typeof STATUS_TEXT_MAP] }} on
+            Run #{{ run?.run_number || '—' }} • {{ STATUS_TEXT_MAP[run?.status as keyof typeof STATUS_TEXT_MAP] }} on
             <NuxtTime
               :datetime="run?.created_at ?? new Date()"
               v-bind="{
