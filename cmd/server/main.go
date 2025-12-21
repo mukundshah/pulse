@@ -72,6 +72,10 @@ func main() {
 
 	// Setup routes
 	r := gin.Default()
+
+	// Trust all proxies (nginx and Cloudflare)
+	r.SetTrustedProxies(nil)
+
 	r.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
