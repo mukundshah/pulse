@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { PulseAPIResponse } from '#open-fetch'
+
+import { toast } from 'vue-sonner'
+
 import SparklineChart from './@components/SparklineChart.vue'
 import StatusBadge from './@components/StatusBadge.vue'
 
@@ -31,7 +35,7 @@ const { data: project } = await usePulseAPI('/internal/projects/{projectId}', {
   },
 })
 
-const { data: checks, pending: checksLoading } = useLazyPulseAPI('/internal/projects/{projectId}/checks', {
+const { data: checks, pending: checksLoading, refresh: refreshChecks } = useLazyPulseAPI('/internal/projects/{projectId}/checks', {
   path: {
     projectId,
   },
@@ -80,6 +84,28 @@ useLayoutContext({
     },
   ],
 })
+
+const { $pulseAPI } = useNuxtApp()
+
+const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[number]) => {
+  // TODO: Add confirmation dialog
+  try {
+    await $pulseAPI('/internal/projects/{projectId}/checks/{checkId}', {
+      method: 'DELETE',
+      path: {
+        projectId,
+        checkId: check.id,
+      },
+    })
+
+    toast.success(`${check.name} deleted`)
+    await refreshChecks()
+  } catch (error) {
+    toast.error('Failed to delete check', {
+      description: error instanceof Error ? error.message : 'Unknown error',
+    })
+  }
+}
 </script>
 
 <template>
@@ -290,7 +316,7 @@ useLayoutContext({
                   Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="text-destructive">
+                <DropdownMenuItem class="text-destructive" @click="handleDeleteCheck(check)">
                   <Icon class="mr-2 h-4 w-4" name="lucide:trash-2" />
                   Delete
                 </DropdownMenuItem>
