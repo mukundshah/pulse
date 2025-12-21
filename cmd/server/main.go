@@ -75,6 +75,8 @@ func main() {
 
 	// Trust all proxies (nginx and Cloudflare)
 	r.SetTrustedProxies(nil)
+	r.RemoteIPHeaders = []string{"CF-Connecting-IP", "X-Real-IP", "X-Forwarded-For"}
+	r.ForwardedByClientIP = true
 
 	r.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
