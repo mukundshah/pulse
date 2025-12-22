@@ -69,6 +69,18 @@ This is primarily a learning project, and active maintenance isn't guaranteed. T
   <img alt="Screenshot 2" src="./public/screenshots/screenshot-2-light.png">
 </picture>
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-3-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-3-light.png">
+  <img alt="Screenshot 3" src="./public/screenshots/screenshot-3-light.png">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-4-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-4-light.png">
+  <img alt="Screenshot 4" src="./public/screenshots/screenshot-4-light.png">
+</picture>
+
 ## 📄 License
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. See the [LICENSE](LICENSE) file for details.
