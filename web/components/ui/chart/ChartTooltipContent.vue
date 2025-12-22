@@ -49,7 +49,7 @@ const tooltipLabel = computed(() => {
 </script>
 
 <template>
-  <div :class="cn('border-border/50 bg-background grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl', props.class)">
+  <div :class="cn('border-border/50 bg-background/70 backdrop-blur-md grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl', props.class)">
     <slot>
       <div v-if="!nestLabel && tooltipLabel" class="font-medium">
         {{ tooltipLabel }}
