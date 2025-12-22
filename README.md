@@ -57,28 +57,28 @@ This is primarily a learning project, and active maintenance isn't guaranteed. T
 
 ## Screenshots
 
-<picture>
+<picture style="display: block; margin-bottom: 24px;">
   <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-1-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-1-light.png">
-  <img alt="Screenshot 1" src="./public/screenshots/screenshot-1-light.png">
+  <img alt="Screenshot 1" src="./public/screenshots/screenshot-1-light.png" style="border-radius: 6px; width: 100%; border: 1px solid rgba(0, 0, 0, 0.08);">
 </picture>
 
-<picture>
+<picture style="display: block; margin-bottom: 24px;">
   <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-2-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-2-light.png">
-  <img alt="Screenshot 2" src="./public/screenshots/screenshot-2-light.png">
+  <img alt="Screenshot 2" src="./public/screenshots/screenshot-2-light.png" style="border-radius: 6px; width: 100%; border: 1px solid rgba(0, 0, 0, 0.08);">
 </picture>
 
-<picture>
+<picture style="display: block; margin-bottom: 24px;">
   <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-3-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-3-light.png">
-  <img alt="Screenshot 3" src="./public/screenshots/screenshot-3-light.png">
+  <img alt="Screenshot 3" src="./public/screenshots/screenshot-3-light.png" style="border-radius: 6px; width: 100%; border: 1px solid rgba(0, 0, 0, 0.08);">
 </picture>
 
-<picture>
+<picture style="display: block; margin-bottom: 24px;">
   <source media="(prefers-color-scheme: dark)" srcset="./public/screenshots/screenshot-4-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="./public/screenshots/screenshot-4-light.png">
-  <img alt="Screenshot 4" src="./public/screenshots/screenshot-4-light.png">
+  <img alt="Screenshot 4" src="./public/screenshots/screenshot-4-light.png" style="border-radius: 6px; width: 100%; border: 1px solid rgba(0, 0, 0, 0.08);">
 </picture>
 
 ## 📄 License
