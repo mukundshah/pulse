@@ -82,8 +82,8 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
     }
   }
 
-  const me = async () => {
-    const response = await $pulseAPI('/internal/account/me', { method: 'GET' })
+  const me = async ({ signal }: { signal?: AbortSignal } = {}) => {
+    const response = await $pulseAPI('/internal/account/me', { method: 'GET', signal })
     return response
   }
 

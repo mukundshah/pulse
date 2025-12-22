@@ -21,7 +21,7 @@ const breadcrumbs = useBreadcrumbItems({
   overrides: breadcrumbOverrides,
 })
 
-const { data: user, pending: userPending } = useAsyncData('user', () => me())
+const { data: user, pending: userPending } = useAsyncData('me', (_nuxtApp, { signal }) => me({ signal }), { dedupe: 'cancel' })
 
 const showProjectInput = ref(false)
 
