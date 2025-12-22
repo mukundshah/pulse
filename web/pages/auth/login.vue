@@ -103,9 +103,19 @@ const onSubmit = handleSubmit(async (data) => {
               </VeeField>
               <VeeField v-slot="{ componentField, errors }" name="password">
                 <Field :data-invalid="!!errors.length">
-                  <FieldLabel for="password">
-                    Password
-                  </FieldLabel>
+                  <FieldContent class="flex flex-row items-center justify-between">
+                    <FieldLabel for="password">
+                      Password
+                    </FieldLabel>
+                    <div>
+                      <NuxtLink
+                        class="text-xs text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-2 hover:decoration-solid"
+                        to="/auth/password/forgot"
+                      >
+                        Forgot password?
+                      </NuxtLink>
+                    </div>
+                  </FieldContent>
                   <PasswordInput
                     id="password"
                     v-bind="componentField"
