@@ -65,7 +65,7 @@ const formattedRuns = computed(() => {
         :y="[(d: FormattedRun) => d.total_time_ms]"
       />
 
-      <ChartTooltip />
+      <ChartTooltip vertical-placement="bottom" />
       <ChartCrosshair
         :color="(d: FormattedRun) => STATUS_MAP[d.status as keyof typeof STATUS_MAP].color"
         :template="componentToString(chartConfig, ChartTooltipContent, {
