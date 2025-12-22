@@ -62,3 +62,12 @@ func (s *Store) IsProjectAdmin(projectID, userID uuid.UUID) (bool, error) {
 	}
 	return true, nil
 }
+
+// GetProjectMemberUserIDs returns a list of user IDs who are members of a project
+func (s *Store) GetProjectMemberUserIDs(projectID uuid.UUID) ([]uuid.UUID, error) {
+	var userIDs []uuid.UUID
+	err := s.db.Model(&models.ProjectMember{}).
+		Where("project_id = ? AND deleted_at IS NULL", projectID).
+		Pluck("user_id", &userIDs).Error
+	return userIDs, err
+}

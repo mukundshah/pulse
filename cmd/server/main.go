@@ -25,6 +25,7 @@ import (
 	"pulse/internal/middleware"
 	"pulse/internal/redis"
 	"pulse/internal/store"
+	"pulse/internal/websocket"
 )
 
 func main() {
@@ -88,6 +89,9 @@ func main() {
 
 	// Create alerter
 	a := alerter.New(s)
+
+	// Initialize WebSocket hub
+	wsHub := websocket.InitGlobalHub()
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(s)
@@ -174,6 +178,9 @@ func main() {
 			"status": "ok",
 		})
 	}))
+
+	// WebSocket endpoint (requires authentication via token query param or Authorization header)
+	r.GET("/ws", wsHub.HandleWebSocket(cfg, s))
 
 	// API routes
 	api := r.Group("/api/internal")
