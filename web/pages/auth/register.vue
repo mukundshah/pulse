@@ -132,19 +132,16 @@ const onSubmit = handleSubmit(async (data) => {
         </CardContent>
         <CardFooter class="flex flex-col gap-4">
           <div class="relative w-full text-center text-sm">
-            <span class="bg-card px-2 text-muted-foreground">
+            <span class="text-muted-foreground">
               Already have an account?
             </span>
-          </div>
-          <Button
-            as-child
-            class="w-full"
-            variant="outline"
-          >
-            <NuxtLink to="/auth/login">
-              Sign in
+            <NuxtLink
+              class="text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-2 hover:decoration-solid"
+              to="/auth/login"
+            >
+              Sign in here
             </NuxtLink>
-          </Button>
+          </div>
         </CardFooter>
       </Card>
     </div>
