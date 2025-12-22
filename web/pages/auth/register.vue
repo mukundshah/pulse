@@ -36,8 +36,8 @@ const onSubmit = handleSubmit(async (data) => {
   <div class="-mt-[52px] flex min-h-screen items-center justify-center p-4">
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
-        <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-md bg-foreground text-background">
-          <span class="text-xl font-semibold">P</span>
+        <div class="mb-4 inline-flex items-center justify-center">
+          <AppIcon class="text-foreground size-12" />
         </div>
         <h1 class="mb-2 text-3xl font-semibold tracking-tight">
           Create an account

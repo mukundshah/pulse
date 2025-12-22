@@ -44,10 +44,8 @@ const handleLogout = async () => {
       <Sidebar class="h-auto border-r" collapsible="offcanvas">
         <SidebarHeader class="border-b">
           <NuxtLink class="flex items-center gap-2.5 px-2 py-1.5" to="/dashboard">
-            <div class="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background font-semibold">
-              P
-            </div>
-            <span class="text-base font-semibold">Pulse</span>
+            <AppIcon class="text-foreground size-8" />
+            <span class="text-base font-semibold tracking-wider">Pulse</span>
           </NuxtLink>
         </SidebarHeader>
         <SidebarContent class="gap-y-0">

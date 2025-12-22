@@ -19,10 +19,8 @@ const handleLogout = async () => {
     <div class="container grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4">
       <div class="flex items-center gap-2">
         <NuxtLink class="flex items-center gap-2" to="/">
-          <div class="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background font-semibold">
-            P
-          </div>
-          <span class="text-lg font-semibold">Pulse</span>
+          <AppIcon class="text-foreground size-10" />
+          <span class="text-lg font-semibold tracking-wider">Pulse</span>
         </NuxtLink>
       </div>
       <nav class="hidden items-center gap-6 md:flex">
@@ -53,19 +51,19 @@ const handleLogout = async () => {
           </DropdownMenuContent>
         </DropdownMenu>
         <template v-if="!isAuthenticated">
-        <Button as-child size="sm" variant="ghost">
-          <NuxtLink to="/auth/login">
-            Sign in
-          </NuxtLink>
-        </Button>
-        <Button as-child size="sm">
-          <NuxtLink to="/auth/register">
-            Get started
-          </NuxtLink>
-        </Button>
+          <Button as-child size="sm" variant="ghost">
+            <NuxtLink to="/auth/login">
+              Sign in
+            </NuxtLink>
+          </Button>
+          <Button as-child size="sm">
+            <NuxtLink to="/auth/register">
+              Get started
+            </NuxtLink>
+          </Button>
         </template>
         <template v-else>
-          <Button size="sm" @click="handleLogout" variant="ghost">
+          <Button size="sm" variant="ghost" @click="handleLogout">
             Logout
           </Button>
           <Button as-child size="sm" variant="outline">
