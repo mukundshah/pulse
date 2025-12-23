@@ -3,8 +3,8 @@ import type { PulseAPIRequestBody } from '#open-fetch'
 // @ts-expect-error vfs
 import authconfig from '#build/auth.config'
 
-import { getStorage } from './storage'
 import { NotImplementedError } from './error'
+import { getStorage } from './storage'
 
 export const useAuthConfiguration = ({ namespace }: { namespace?: string } = {}) => {
   const { $pulseAPI } = useNuxtApp()
