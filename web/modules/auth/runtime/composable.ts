@@ -69,14 +69,15 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
 
   const syncAuthenticationStatus = async () => {
     try {
-      const response = await $pulseAPI('/internal/auth/session', { method: 'GET' })
-      return response
+      await $pulseAPI('/internal/auth/session', { method: 'GET' })
+      return true
     } catch (error: any) {
       // If unauthorized, clear auth state
       if (error?.status === 401) {
         storage.setSessionToken(null)
         storage.setAuthenticationStatus(false)
         storage.setOnboardingStatus(false)
+        return false
       }
       throw error
     }
