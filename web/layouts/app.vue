@@ -211,102 +211,120 @@ const handleLogout = async () => {
             <div class="flex items-center gap-2">
               <SidebarTrigger />
               <!-- Breadcrumbs -->
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <template v-for="(breadcrumb, idx) in breadcrumbs" :key="breadcrumb.id">
-                    <BreadcrumbItem>
-                      <BreadcrumbLink v-if="!breadcrumb.active" as-child>
-                        <NuxtLink :to="breadcrumb.to">
+              <ClientOnly>
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    <template v-for="(breadcrumb, idx) in breadcrumbs" :key="breadcrumb.id">
+                      <BreadcrumbItem>
+                        <BreadcrumbLink v-if="!breadcrumb.active" as-child>
+                          <NuxtLink :to="breadcrumb.to">
+                            {{ breadcrumb.label }}
+                          </NuxtLink>
+                        </BreadcrumbLink>
+                        <BreadcrumbPage v-else as="h1">
                           {{ breadcrumb.label }}
-                        </NuxtLink>
-                      </BreadcrumbLink>
-                      <BreadcrumbPage v-else as="h1">
-                        {{ breadcrumb.label }}
-                      </BreadcrumbPage>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator v-if="idx < breadcrumbs.length - 1" />
-                  </template>
-                </BreadcrumbList>
-              </Breadcrumb>
+                        </BreadcrumbPage>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator v-if="idx < breadcrumbs.length - 1" />
+                    </template>
+                  </BreadcrumbList>
+                </Breadcrumb>
+
+                <template #fallback>
+                  <div class="flex items-center gap-2">
+                    <Skeleton class="rounded-sm h-5 w-16" />
+                    <Skeleton class="rounded-sm h-5 w-4" />
+                    <Skeleton class="rounded-sm h-5 w-24" />
+                  </div>
+                </template>
+              </ClientOnly>
             </div>
             <div class="flex items-center gap-2">
-              <template v-for="action in actions" :key="action.label">
-                <template v-if="action.children">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button v-bind="action.props">
-                        <Icon v-if="action.icon" :name="action.icon" />
-                        {{ action.label }}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" class="min-w-56">
-                      <template v-for="(child, idx) in action.children" :key="child.label">
-                        <template v-if="'children' in child">
-                          <DropdownMenuGroup>
-                            <DropdownMenuLabel>
-                              {{ child.label }}
-                            </DropdownMenuLabel>
-                            <DropdownMenuItem
-                              v-for="c in child.children"
-                              :key="c.label"
-                              :as-child="!!c.to"
-                              v-bind="c.props"
-                            >
-                              <template v-if="c.to">
-                                <NuxtLink :to="c.to">
+              <ClientOnly>
+                <template v-for="action in actions" :key="action.label">
+                  <template v-if="action.children">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger as-child>
+                        <Button v-bind="action.props">
+                          <Icon v-if="action.icon" :name="action.icon" />
+                          {{ action.label }}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" class="min-w-56">
+                        <template v-for="(child, idx) in action.children" :key="child.label">
+                          <template v-if="'children' in child">
+                            <DropdownMenuGroup>
+                              <DropdownMenuLabel>
+                                {{ child.label }}
+                              </DropdownMenuLabel>
+                              <DropdownMenuItem
+                                v-for="c in child.children"
+                                :key="c.label"
+                                :as-child="!!c.to"
+                                v-bind="c.props"
+                              >
+                                <template v-if="c.to">
+                                  <NuxtLink :to="c.to">
+                                    <Icon v-if="c.icon" :name="c.icon" />
+                                    {{ c.label }}
+                                  </NuxtLink>
+                                </template>
+                                <template v-else>
                                   <Icon v-if="c.icon" :name="c.icon" />
                                   {{ c.label }}
+                                </template>
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator v-if="idx < action.children.length - 1" />
+                          </template>
+                          <template v-else>
+                            <DropdownMenuItem
+                              :key="child.label"
+                              :as-child="!!child.to"
+                              v-bind="child.props"
+                            >
+                              <template v-if="child.to">
+                                <NuxtLink :to="child.to">
+                                  <Icon v-if="child.icon" :name="child.icon" />
+                                  {{ child.label }}
                                 </NuxtLink>
                               </template>
                               <template v-else>
-                                <Icon v-if="c.icon" :name="c.icon" />
-                                {{ c.label }}
-                              </template>
-                            </DropdownMenuItem>
-                          </DropdownMenuGroup>
-                          <DropdownMenuSeparator v-if="idx < action.children.length - 1" />
-                        </template>
-                        <template v-else>
-                          <DropdownMenuItem
-                            :key="child.label"
-                            :as-child="!!child.to"
-                            v-bind="child.props"
-                          >
-                            <template v-if="child.to">
-                              <NuxtLink :to="child.to">
                                 <Icon v-if="child.icon" :name="child.icon" />
                                 {{ child.label }}
-                              </NuxtLink>
-                            </template>
-                            <template v-else>
-                              <Icon v-if="child.icon" :name="child.icon" />
-                              {{ child.label }}
-                            </template>
-                          </DropdownMenuItem>
+                              </template>
+                            </DropdownMenuItem>
+                          </template>
                         </template>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </template>
+                  <template v-else>
+                    <Button
+                      :as-child="!!action.to"
+                      v-bind="action.props"
+                      @click="action.onClick"
+                    >
+                      <template v-if="action.to">
+                        <NuxtLink :to="action.to">
+                          <Icon v-if="action.icon" :name="action.icon" />
+                          {{ action.label }}
+                        </NuxtLink>
                       </template>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </template>
-                <template v-else>
-                  <Button
-                    :as-child="!!action.to"
-                    v-bind="action.props"
-                    @click="action.onClick"
-                  >
-                    <template v-if="action.to">
-                      <NuxtLink :to="action.to">
+                      <template v-else>
                         <Icon v-if="action.icon" :name="action.icon" />
                         {{ action.label }}
-                      </NuxtLink>
-                    </template>
-                    <template v-else>
-                      <Icon v-if="action.icon" :name="action.icon" />
-                      {{ action.label }}
-                    </template>
-                  </Button>
+                      </template>
+                    </Button>
+                  </template>
                 </template>
-              </template>
+                <template #fallback>
+                  <div class="flex items-center gap-2">
+                    <Skeleton class="h-8 rounded-sm w-24" />
+                    <Skeleton class="h-8 rounded-sm w-24" />
+                  </div>
+                </template>
+              </ClientOnly>
             </div>
           </div>
         </header>
