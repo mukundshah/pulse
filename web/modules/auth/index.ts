@@ -82,7 +82,6 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     nuxt.hook('modules:done', () => {
-      addPlugin({ src: resolve('./runtime/plugin/session') }, { append: true })
       addPlugin({ src: resolve('./runtime/plugin/openfetch') }, { append: true })
       addRouteMiddleware({ name: 'authz', path: resolve('./runtime/middleware/authz'), global: true })
     })

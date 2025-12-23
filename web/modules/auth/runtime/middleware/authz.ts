@@ -4,7 +4,7 @@ import config from '#build/auth.config'
 import { defineNuxtRouteMiddleware } from '#imports'
 import { usePermissions } from '../composable'
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
   if (to.name === undefined) return
 
   const authRequired = to.meta?.auth?.required ?? false
@@ -17,8 +17,12 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const routeRoles = to.meta?.auth?.roles
   const routePermissions = to.meta?.auth?.permissions
 
-  const { isAuthenticated, isOnboarded } = useAuth({ namespace: authNamespace })
   const { hasAnyRole, hasAnyPermission } = usePermissions({ namespace: authNamespace })
+  const { isAuthenticated, isOnboarded, syncAuthenticationStatus } = useAuth({ namespace: authNamespace })
+
+  await callOnce(async () => {
+    await syncAuthenticationStatus()
+  })
 
   if (typeof redirectIfLoggedIn === 'string' && redirectIfLoggedIn && isAuthenticated.value) {
     return navigateTo({ path: redirectIfLoggedIn }, { redirectCode: 302 })
