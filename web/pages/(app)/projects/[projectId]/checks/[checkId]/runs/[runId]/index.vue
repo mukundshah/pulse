@@ -1,4 +1,5 @@
 <script lang="ts">
+import { FAVICONS } from '@/constants/favicon'
 import { ASSERTION_PROPERTIES } from '@/constants/http'
 import { formatDuration } from '@/utils/formatters'
 import { constructURL } from '@/utils/url'
@@ -48,6 +49,7 @@ const { data: run } = await usePulseAPI('/internal/projects/{projectId}/checks/{
 
 useHead({
   title: `${run.value?.check?.name} - #${run.value?.run_number}`,
+  link: FAVICONS[run.value?.status as keyof typeof FAVICONS],
 })
 
 useLayoutContext({

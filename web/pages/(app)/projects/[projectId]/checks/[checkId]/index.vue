@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { PulseAPIResponse } from '#open-fetch'
-
 import { h } from 'vue'
+
 import { toast } from 'vue-sonner'
+
+import { FAVICONS } from '@/constants/favicon'
 
 import StatusBadge from '../@components/StatusBadge.vue'
 import AlertsTable from './@components/Alerts.vue'
@@ -23,6 +25,7 @@ const { data: check } = await usePulseAPI('/internal/projects/{projectId}/checks
 
 useHead({
   title: `Check ${check.value?.name}`,
+  link: FAVICONS[check.value?.last_status as keyof typeof FAVICONS],
 })
 
 useLayoutContext({
