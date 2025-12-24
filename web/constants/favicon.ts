@@ -8,6 +8,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:svg:light:any',
     },
     {
       rel: 'icon',
@@ -15,6 +16,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:png:light:48x48',
     },
     {
       rel: 'icon',
@@ -22,6 +24,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:svg:dark:any',
     },
     {
       rel: 'icon',
@@ -29,6 +32,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:png:dark:48x48',
     },
   ],
   degraded: [
@@ -38,6 +42,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:svg:light:any',
     },
     {
       rel: 'icon',
@@ -45,6 +50,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:png:light:48x48',
     },
     {
       rel: 'icon',
@@ -52,6 +58,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:svg:dark:any',
     },
     {
       rel: 'icon',
@@ -59,6 +66,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:png:dark:48x48',
     },
   ],
   failing: [
@@ -68,6 +76,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:svg:light:any',
     },
     {
       rel: 'icon',
@@ -75,6 +84,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:png:light:48x48',
     },
     {
       rel: 'icon',
@@ -82,6 +92,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:svg:dark:any',
     },
     {
       rel: 'icon',
@@ -89,6 +100,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:png:dark:48x48',
     },
   ],
   unknown: [
@@ -98,6 +110,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:svg:light:any',
     },
     {
       rel: 'icon',
@@ -105,12 +118,14 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: light)',
+      key: 'icon:png:light:48x48',
     },
     {
       rel: 'icon',
       href: '/favicons/icon-unknown-dark.svg',
       type: 'image/svg+xml',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:svg:dark:any',
     },
     {
       rel: 'icon',
@@ -118,6 +133,41 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: dark)',
+      key: 'icon:png:dark:48x48',
+    },
+  ],
+  default: [
+    {
+      rel: 'icon',
+      href: '/icon-light.svg',
+      type: 'image/svg+xml',
+      sizes: 'any',
+      media: '(prefers-color-scheme: light)',
+      key: 'icon:svg:light:any',
+    },
+    {
+      rel: 'icon',
+      href: '/icon-dark.svg',
+      type: 'image/svg+xml',
+      sizes: 'any',
+      media: '(prefers-color-scheme: dark)',
+      key: 'icon:svg:dark:any',
+    },
+    {
+      rel: 'icon',
+      href: '/icon-light.png',
+      sizes: '48x48',
+      type: 'image/png',
+      media: '(prefers-color-scheme: light)',
+      key: 'icon:png:light:48x48',
+    },
+    {
+      rel: 'icon',
+      href: '/icon-dark.png',
+      sizes: '48x48',
+      type: 'image/png',
+      media: '(prefers-color-scheme: dark)',
+      key: 'icon:png:dark:48x48',
     },
   ],
 } as const
