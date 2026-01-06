@@ -57,6 +57,8 @@ export default defineNuxtConfig({
 
   colorMode: {
     classSuffix: '',
+    storage: 'cookie',
+    storageKey: 'theme',
   },
 
   eslint: {
