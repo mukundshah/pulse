@@ -16,7 +16,7 @@ export default defineNuxtModule({
           'module/nuxt-schema-org.d.ts',
           'module/nuxt-seo-utils.assets.d.ts',
           'module/nuxt-seo-utils.d.ts',
-        ].map(path => ({ path }))
+        ].map(path => ({ path })),
       )
     })
   },
