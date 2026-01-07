@@ -73,7 +73,7 @@ export const useAuth = ({ namespace }: { namespace?: string } = {}) => {
       return true
     } catch (error: any) {
       // If unauthorized, clear auth state
-      if (error?.status === 401) {
+      if (error?.status === 401 || error?.status === 410) {
         storage.setSessionToken(null)
         storage.setAuthenticationStatus(false)
         storage.setOnboardingStatus(false)
