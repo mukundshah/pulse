@@ -46,7 +46,7 @@ const config = statusConfig[props.status || 'unknown']
 <template>
   <div :style="config.style">
     <span class="relative flex size-2.5">
-      <span v-if="props.status !== 'unknown'" class="absolute inline-flex h-full w-full animate-ping rounded-full bg-(--color-status-secondary) opacity-75"></span>
+      <span v-if="props.status !== 'unknown'" class="absolute inline-flex size-full animate-ping rounded-full bg-(--color-status-secondary) opacity-75"></span>
       <span class="relative inline-flex size-2.5 rounded-full bg-(--color-status-primary)"></span>
     </span>
     <span class="sr-only">{{ config.label }}</span>

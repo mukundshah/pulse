@@ -66,7 +66,7 @@ const onSubmit = handleSubmit(async (data) => {
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
         <div class="mb-4 inline-flex items-center justify-center">
-          <AppIcon class="text-foreground size-12" />
+          <AppIcon class="size-12 text-foreground" />
         </div>
         <h1 class="mb-2 text-3xl font-semibold tracking-tight">
           Welcome back
@@ -109,7 +109,7 @@ const onSubmit = handleSubmit(async (data) => {
                     </FieldLabel>
                     <div>
                       <NuxtLink
-                        class="text-xs text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-2 hover:decoration-solid"
+                        class="text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground hover:decoration-solid"
                         to="/auth/password/forgot"
                       >
                         Forgot password?
@@ -142,7 +142,7 @@ const onSubmit = handleSubmit(async (data) => {
               Don't have an account?
             </span>
             <NuxtLink
-              class="text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-2 hover:decoration-solid"
+              class="text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground hover:decoration-solid"
               to="/auth/register"
             >
               Register here

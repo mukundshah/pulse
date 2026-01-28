@@ -12,7 +12,7 @@ const props = defineProps<{ class?: HTMLAttributes['class'] }>()
     data-sidebar="input"
     data-slot="sidebar-input"
     :class="cn(
-      'bg-background h-8 w-full shadow-none',
+      'h-8 w-full bg-background shadow-none',
       props.class,
     )"
   >

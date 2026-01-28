@@ -99,7 +99,7 @@ const handleDeleteCheck = async () => {
 
 <template>
   <div class="flex">
-    <main class="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100svh-61px)] flex flex-col gap-y-6">
+    <main class="flex h-[calc(100svh-61px)] flex-1 flex-col gap-y-6 overflow-y-auto p-4 md:p-6">
       <div class="flex items-start justify-between">
         <div class="flex flex-col gap-y-2">
           <div class="flex items-center gap-3">
@@ -110,11 +110,11 @@ const handleDeleteCheck = async () => {
           </div>
 
           <div class="flex items-center gap-2">
-            <Badge class="text-xs font-mono" variant="secondary">
+            <Badge class="font-mono text-xs" variant="secondary">
               {{ check?.type.toUpperCase() }}
             </Badge>
 
-            <div v-if="check?.type === 'http'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <div v-if="check?.type === 'http'" class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
               <Badge class="text-xs" variant="secondary">
                 {{ check?.method }}
               </Badge>
@@ -123,12 +123,12 @@ const handleDeleteCheck = async () => {
                 {{ constructURL({ host: check?.host!, port: check?.port!, path: check?.path!, queryParams: check?.query_params as Record<string, string> | undefined, secure: check?.secure }) }}
               </Badge>
             </div>
-            <div v-else-if="check?.type === 'tcp'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <div v-else-if="check?.type === 'tcp'" class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
               <Badge class="text-xs" variant="secondary">
                 {{ check?.host }}{{ ':' }}{{ check?.port }}
               </Badge>
             </div>
-            <div v-else-if="check?.type === 'dns'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <div v-else-if="check?.type === 'dns'" class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
               <Badge class="text-xs" variant="secondary">
                 {{ check?.dns_record_type?.toUpperCase() }}
               </Badge>
@@ -214,19 +214,19 @@ const handleDeleteCheck = async () => {
           </CardDescription>
           <CardAction>
             <div class="flex items-center justify-end gap-2">
-              <Button class="text-xs h-7" size="sm" variant="ghost">
+              <Button class="h-7 text-xs" size="sm" variant="ghost">
                 Today
               </Button>
-              <Button class="text-xs h-7" size="sm" variant="ghost">
+              <Button class="h-7 text-xs" size="sm" variant="ghost">
                 1hr
               </Button>
-              <Button class="text-xs h-7" size="sm" variant="ghost">
+              <Button class="h-7 text-xs" size="sm" variant="ghost">
                 3hr
               </Button>
-              <Button class="text-xs h-7" size="sm" variant="ghost">
+              <Button class="h-7 text-xs" size="sm" variant="ghost">
                 24hr
               </Button>
-              <Button class="text-xs h-7" size="sm" variant="secondary">
+              <Button class="h-7 text-xs" size="sm" variant="secondary">
                 7d
               </Button>
             </div>
@@ -276,10 +276,10 @@ const handleDeleteCheck = async () => {
       </Card>
     </main>
 
-    <aside class="w-96 shrink-0 border-l border-border h-[calc(100svh-61px)]">
-      <div class="flex flex-col h-full">
-        <div class="p-4 border-b border-border">
-          <h2 class="text-sm font-semibold text-foreground mb-1">
+    <aside class="h-[calc(100svh-61px)] w-96 shrink-0 border-l border-border">
+      <div class="flex h-full flex-col">
+        <div class="border-b border-border p-4">
+          <h2 class="mb-1 text-sm font-semibold text-foreground">
             Run results
           </h2>
           <p class="text-xs text-muted-foreground">

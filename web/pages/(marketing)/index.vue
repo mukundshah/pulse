@@ -3,9 +3,9 @@
     <!-- Background decorative elements -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <!-- Gradient orbs -->
-      <div class="absolute -left-1/4 top-0 h-[600px] w-[600px] rounded-full bg-foreground/5 blur-3xl"></div>
-      <div class="absolute -right-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-foreground/5 blur-3xl"></div>
-      <div class="absolute bottom-0 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-foreground/5 blur-3xl"></div>
+      <div class="absolute top-0 -left-1/4 size-[600px] rounded-full bg-foreground/5 blur-3xl"></div>
+      <div class="absolute top-1/3 -right-1/4 size-[500px] rounded-full bg-foreground/5 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/2 size-[400px] -translate-x-1/2 rounded-full bg-foreground/5 blur-3xl"></div>
     </div>
 
     <!-- Hero Section -->
@@ -46,12 +46,12 @@
 
     <!-- The Story Section -->
     <section id="story" class="relative border-t border-border py-24">
-      <div class="container relative z-10">
+      <div class="relative z-10 container">
         <div class="mx-auto max-w-3xl">
           <div class="mb-16 text-center">
             <div class="mb-4 inline-flex items-center gap-2">
               <div class="h-px w-8 bg-border"></div>
-              <span class="text-xs font-medium uppercase tracking-wider text-muted-foreground">The Story</span>
+              <span class="text-xs font-medium tracking-wider text-muted-foreground uppercase">The Story</span>
               <div class="h-px w-8 bg-border"></div>
             </div>
             <h2 class="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -69,7 +69,7 @@
             <p>
               So I built Pulse. Not because I needed another monitoring tool, but because I needed to understand. Every line of code, every design decision, every feature was a lesson in building systems that matter.
             </p>
-            <p class="text-foreground font-medium">
+            <p class="font-medium text-foreground">
               This is what happens when curiosity meets dedication. When you're not satisfied with just using a tool, but need to understand how it works from the inside out.
             </p>
           </div>
@@ -79,11 +79,11 @@
 
     <!-- What It Does Section -->
     <section id="features" class="relative border-t border-border bg-muted/30 py-24">
-      <div class="container relative z-10">
+      <div class="relative z-10 container">
         <div class="mb-16 text-center">
           <div class="mb-4 inline-flex items-center gap-2">
             <div class="h-px w-8 bg-border"></div>
-            <span class="text-xs font-medium uppercase tracking-wider text-muted-foreground">What It Does</span>
+            <span class="text-xs font-medium tracking-wider text-muted-foreground uppercase">What It Does</span>
             <div class="h-px w-8 bg-border"></div>
           </div>
           <h2 class="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -95,8 +95,8 @@
         </div>
         <div class="grid gap-8 md:grid-cols-3">
           <div class="flex flex-col">
-            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-              <Icon class="h-6 w-6" name="lucide:globe" />
+            <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+              <Icon class="size-6" name="lucide:globe" />
             </div>
             <h3 class="mb-2 text-xl font-semibold">
               HTTP & API Monitoring
@@ -106,8 +106,8 @@
             </p>
           </div>
           <div class="flex flex-col">
-            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-              <Icon class="h-6 w-6" name="lucide:network" />
+            <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+              <Icon class="size-6" name="lucide:network" />
             </div>
             <h3 class="mb-2 text-xl font-semibold">
               Infrastructure Checks
@@ -117,8 +117,8 @@
             </p>
           </div>
           <div class="flex flex-col">
-            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-              <Icon class="h-6 w-6" name="lucide:bell" />
+            <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+              <Icon class="size-6" name="lucide:bell" />
             </div>
             <h3 class="mb-2 text-xl font-semibold">
               Smart Alerting
@@ -133,12 +133,12 @@
 
     <!-- The Philosophy Section -->
     <section class="relative border-t border-border py-24">
-      <div class="container relative z-10">
+      <div class="relative z-10 container">
         <div class="mx-auto max-w-3xl">
           <div class="mb-16 text-center">
             <div class="mb-4 inline-flex items-center gap-2">
               <div class="h-px w-8 bg-border"></div>
-              <span class="text-xs font-medium uppercase tracking-wider text-muted-foreground">The Philosophy</span>
+              <span class="text-xs font-medium tracking-wider text-muted-foreground uppercase">The Philosophy</span>
               <div class="h-px w-8 bg-border"></div>
             </div>
             <h2 class="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -153,7 +153,7 @@
             <p>
               This isn't about competing with commercial solutions—it's about understanding. About having the freedom to see exactly how everything works, to modify it to your needs, to learn from it.
             </p>
-            <p class="text-foreground font-medium">
+            <p class="font-medium text-foreground">
               Sometimes the best way to understand a system is to build it yourself. Pulse is that journey, shared.
             </p>
           </div>
@@ -163,12 +163,12 @@
 
     <!-- The Dedication Section -->
     <section class="relative border-t border-border bg-muted/30 py-24">
-      <div class="container relative z-10">
+      <div class="relative z-10 container">
         <div class="mx-auto max-w-3xl">
           <div class="mb-16 text-center">
             <div class="mb-4 inline-flex items-center gap-2">
               <div class="h-px w-8 bg-border"></div>
-              <span class="text-xs font-medium uppercase tracking-wider text-muted-foreground">The Dedication</span>
+              <span class="text-xs font-medium tracking-wider text-muted-foreground uppercase">The Dedication</span>
               <div class="h-px w-8 bg-border"></div>
             </div>
             <h2 class="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -179,8 +179,8 @@
           <div class="grid gap-8 md:grid-cols-2">
             <Card class="border-foreground/10">
               <CardHeader>
-                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-                  <Icon class="h-6 w-6" name="lucide:target" />
+                <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+                  <Icon class="size-6" name="lucide:target" />
                 </div>
                 <CardTitle>Thoughtful Design</CardTitle>
                 <CardDescription class="mt-2">
@@ -190,8 +190,8 @@
             </Card>
             <Card class="border-foreground/10">
               <CardHeader>
-                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-                  <Icon class="h-6 w-6" name="lucide:code-2" />
+                <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+                  <Icon class="size-6" name="lucide:code-2" />
                 </div>
                 <CardTitle>Built to Learn</CardTitle>
                 <CardDescription class="mt-2">
@@ -201,8 +201,8 @@
             </Card>
             <Card class="border-foreground/10">
               <CardHeader>
-                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-                  <Icon class="h-6 w-6" name="lucide:users" />
+                <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+                  <Icon class="size-6" name="lucide:users" />
                 </div>
                 <CardTitle>Team Ready</CardTitle>
                 <CardDescription class="mt-2">
@@ -212,8 +212,8 @@
             </Card>
             <Card class="border-foreground/10">
               <CardHeader>
-                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background">
-                  <Icon class="h-6 w-6" name="lucide:zap" />
+                <div class="mb-4 flex size-12 items-center justify-center rounded-lg border border-border bg-background">
+                  <Icon class="size-6" name="lucide:zap" />
                 </div>
                 <CardTitle>Real-time Everything</CardTitle>
                 <CardDescription class="mt-2">
@@ -228,12 +228,12 @@
 
     <!-- The Vision Section -->
     <section class="relative border-t border-border py-24">
-      <div class="container relative z-10">
+      <div class="relative z-10 container">
         <div class="mx-auto max-w-3xl text-center">
           <div class="mb-8">
             <div class="mb-4 inline-flex items-center gap-2">
               <div class="h-px w-8 bg-border"></div>
-              <span class="text-xs font-medium uppercase tracking-wider text-muted-foreground">The Vision</span>
+              <span class="text-xs font-medium tracking-wider text-muted-foreground uppercase">The Vision</span>
               <div class="h-px w-8 bg-border"></div>
             </div>
             <h2 class="mb-6 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -248,7 +248,7 @@
             <p>
               It's a project born from genuine curiosity about how complex systems work. It's built with care, attention to detail, and a deep respect for the craft of software engineering.
             </p>
-            <p class="text-foreground font-medium">
+            <p class="font-medium text-foreground">
               If you're someone who values understanding over convenience, who wants to know how things work under the hood, who believes in self-hosting and open source—this is for you.
             </p>
             <p>
@@ -264,7 +264,7 @@
             </Button>
             <Button as-child size="lg" variant="outline">
               <a href="https://github.com/mukundshah/pulse" rel="noopener noreferrer" target="_blank">
-                <Icon class="mr-2 h-4 w-4" name="lucide:github" />
+                <Icon class="mr-2 size-4" name="lucide:github" />
                 Explore the code
               </a>
             </Button>

@@ -24,7 +24,7 @@ const handleTryAgain = () => {
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen items-center justify-center p-4">
+  <div class="flex min-h-screen flex-col items-center justify-center p-4">
     <div class="w-full max-w-lg text-center">
       <div class="mb-12">
         <h1 class="mb-3 text-6xl font-light tracking-tight text-foreground/60">
@@ -35,7 +35,7 @@ const handleTryAgain = () => {
         </p>
       </div>
 
-      <div class="flex flex-col gap-3 sm:flex-row sm:justify-center items-center">
+      <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Button variant="ghost" @click="handleTryAgain">
           Try again
         </Button>
@@ -47,7 +47,7 @@ const handleTryAgain = () => {
       </div>
     </div>
     <DevOnly>
-      <div class="mt-4 max-w-7xl overflow-x-auto mx-auto">
+      <div class="mx-auto mt-4 max-w-7xl overflow-x-auto">
         <h2 class="text-sm font-medium">
           Error stack
         </h2>

@@ -49,7 +49,7 @@ const tooltipLabel = computed(() => {
 </script>
 
 <template>
-  <div :class="cn('border-border/50 bg-background/70 backdrop-blur-md grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl', props.class)">
+  <div :class="cn('grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background/70 px-2.5 py-1.5 text-xs shadow-xl backdrop-blur-md', props.class)">
     <slot>
       <div v-if="!nestLabel && tooltipLabel" class="font-medium">
         {{ tooltipLabel }}
@@ -58,16 +58,16 @@ const tooltipLabel = computed(() => {
         <div
           v-for="{ value, itemConfig, indicatorColor, key } in payload"
           :key="key"
-          :class="cn('[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5', indicator === 'dot' && 'items-center')"
+          :class="cn('flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 [&>svg]:text-muted-foreground', indicator === 'dot' && 'items-center')"
         >
           <component :is="itemConfig.icon" v-if="itemConfig?.icon" />
           <template v-else-if="!hideIndicator">
             <div
               :class="cn(
-                'shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)',
+                'shrink-0 rounded-[2px] border-border bg-(--color-bg)',
                 {
                   'my-0.5': nestLabel && indicator === 'dashed',
-                  'h-2.5 w-2.5': indicator === 'dot',
+                  'size-2.5': indicator === 'dot',
                   'w-1': indicator === 'line',
                   'w-0 border-[1.5px] border-dashed bg-transparent': indicator === 'dashed',
                 },
@@ -88,7 +88,7 @@ const tooltipLabel = computed(() => {
                 {{ itemConfig?.label || value }}
               </span>
             </div>
-            <span v-if="value !== undefined || value !== null" class="text-foreground font-mono font-medium tabular-nums">
+            <span v-if="value !== undefined || value !== null" class="font-mono font-medium text-foreground tabular-nums">
               {{ valueFormatter ? valueFormatter(value, key) : value.toLocaleString() }}
             </span>
           </div>

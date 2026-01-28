@@ -232,7 +232,7 @@ const dnsResponse = computed(() => {
 
 <template>
   <div class="flex">
-    <main class="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100svh-61px)] flex flex-col gap-y-6">
+    <main class="flex h-[calc(100svh-61px)] flex-1 flex-col gap-y-6 overflow-y-auto p-4 md:p-6">
       <!-- Header -->
       <div class="space-y-2.5">
         <div class="flex items-center gap-3">
@@ -242,7 +242,7 @@ const dnsResponse = computed(() => {
             :name="STATUS_ICON_COLOR_MAP[run?.status as keyof typeof STATUS_ICON_COLOR_MAP].icon"
           />
 
-          <div class="flex items-center gap-2 flex-1">
+          <div class="flex flex-1 items-center gap-2">
             <h1 class="text-lg font-semibold text-foreground">
               {{ run?.check?.name || 'Unnamed Check' }}
             </h1>
@@ -252,7 +252,7 @@ const dnsResponse = computed(() => {
           </div>
         </div>
 
-        <div class="text-sm text-muted-foreground flex items-center gap-2">
+        <div class="flex items-center gap-2 text-sm text-muted-foreground">
           <div>
             Run #{{ run?.run_number || '—' }} • {{ STATUS_TEXT_MAP[run?.status as keyof typeof STATUS_TEXT_MAP] }} on
             <NuxtTime
@@ -272,11 +272,11 @@ const dnsResponse = computed(() => {
         </div>
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <Badge class="text-xs font-mono" variant="secondary">
+            <Badge class="font-mono text-xs" variant="secondary">
               {{ run?.check?.type.toUpperCase() }}
             </Badge>
 
-            <div v-if="run?.check?.type === 'http'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <div v-if="run?.check?.type === 'http'" class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
               <Badge class="text-xs" variant="secondary">
                 {{ run?.check?.method }}
               </Badge>
@@ -291,12 +291,12 @@ const dnsResponse = computed(() => {
                 }) }}
               </Badge>
             </div>
-            <div v-else-if="run?.check?.type === 'tcp'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <div v-else-if="run?.check?.type === 'tcp'" class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
               <Badge class="text-xs" variant="secondary">
                 {{ run?.check?.host }}{{ ':' }}{{ run?.check?.port }}
               </Badge>
             </div>
-            <div v-else-if="run?.check?.type === 'dns'" class="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <div v-else-if="run?.check?.type === 'dns'" class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
               <Badge class="text-xs" variant="secondary">
                 {{ run?.check?.dns_record_type?.toUpperCase() }}
               </Badge>
@@ -309,15 +309,15 @@ const dnsResponse = computed(() => {
           <div class="flex items-center gap-4">
             <div v-if="run?.check?.type === 'http'" class="flex items-center gap-2">
               <Badge
-                class="px-3 text-base font-mono"
+                class="px-3 font-mono text-base"
                 :variant="(run as Record<string, unknown>)?.response_status_code && (run as Record<string, unknown>).response_status_code as number >= 200 && (run as Record<string, unknown>).response_status_code as number < 300 ? 'default' : 'destructive'"
               >
                 {{ (run as Record<string, unknown>)?.response_status_code || '—' }}
               </Badge>
             </div>
-            <div class="flex items-center gap-2 text-sm font-mono">
-              <Icon class="w-4 h-4 text-muted-foreground" name="lucide:clock" />
-              <FormattedNumber class="text-sm font-mono text-muted-foreground" :options="{ style: 'unit', unit: 'millisecond' }" :value="(run as Record<string, unknown>)?.total_time_ms as number || 0" />
+            <div class="flex items-center gap-2 font-mono text-sm">
+              <Icon class="size-4 text-muted-foreground" name="lucide:clock" />
+              <FormattedNumber class="font-mono text-sm text-muted-foreground" :options="{ style: 'unit', unit: 'millisecond' }" :value="(run as Record<string, unknown>)?.total_time_ms as number || 0" />
             </div>
           </div>
         </div>
@@ -335,52 +335,52 @@ const dnsResponse = computed(() => {
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-border">
-                  <th class="text-left py-2 px-3 text-muted-foreground font-medium">
+                  <th class="px-3 py-2 text-left font-medium text-muted-foreground">
                     Source
                   </th>
-                  <th class="text-left py-2 px-3 text-muted-foreground font-medium">
+                  <th class="px-3 py-2 text-left font-medium text-muted-foreground">
                     Property
                   </th>
-                  <th class="text-left py-2 px-3 text-muted-foreground font-medium">
+                  <th class="px-3 py-2 text-left font-medium text-muted-foreground">
                     Comparison
                   </th>
-                  <th class="text-left py-2 px-3 text-muted-foreground font-medium">
+                  <th class="px-3 py-2 text-left font-medium text-muted-foreground">
                     Target
                   </th>
-                  <th class="text-left py-2 px-3 text-muted-foreground font-medium">
+                  <th class="px-3 py-2 text-left font-medium text-muted-foreground">
                     Actual
                   </th>
-                  <th class="text-left py-2 px-3 text-muted-foreground font-medium sr-only">
+                  <th class="sr-only px-3 py-2 text-left font-medium text-muted-foreground">
                     Passed
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(assertion, index) in run?.assertion_results" :key="index" class="border-b border-border/50">
-                  <td class="py-2 px-3">
+                  <td class="px-3 py-2">
                     {{ ASSERTION_PROPERTIES[assertion.source as keyof typeof ASSERTION_PROPERTIES].label }}
                   </td>
-                  <td class="py-2 px-3 font-mono">
+                  <td class="px-3 py-2 font-mono">
                     <Badge v-if="assertion.property" variant="secondary">
                       {{ assertion.property }}
                     </Badge>
                     <span v-else>n/a</span>
                   </td>
-                  <td class="py-2 px-3">
+                  <td class="px-3 py-2">
                     {{ assertion.comparison }}
                   </td>
-                  <td class="py-2 px-3 font-mono">
+                  <td class="px-3 py-2 font-mono">
                     <Badge variant="secondary">
                       {{ assertion.target }}
                     </Badge>
                   </td>
-                  <td class="py-2 px-3 font-mono">
-                    <Badge v-if="assertion.received" variant="secondary" :class="assertion.passed ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'">
+                  <td class="px-3 py-2 font-mono">
+                    <Badge v-if="assertion.received" variant="secondary" :class="assertion.passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'">
                       {{ assertion.received }}
                     </Badge>
                     <span v-else>n/a</span>
                   </td>
-                  <td class="py-2 px-3">
+                  <td class="px-3 py-2">
                     <Icon
                       :class="assertion.passed ? 'text-green-500' : 'text-red-500'"
                       :name="assertion.passed ? 'lucide:check-circle' : 'lucide:x-circle'"
@@ -400,43 +400,43 @@ const dnsResponse = computed(() => {
         </CardHeader>
         <CardContent>
           <div class="divide-y divide-border">
-            <div class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center bg-muted">
-              <div class="text-xs font-semibold uppercase px-3">
+            <div class="grid h-8 grid-cols-[160px_1fr_80px] items-center gap-2 bg-muted">
+              <div class="px-3 text-xs font-semibold uppercase">
                 Connection Start
               </div>
               <div></div>
-              <div class="text-right text-xs font-semibold uppercase px-3">
+              <div class="px-3 text-right text-xs font-semibold uppercase">
                 Time
               </div>
             </div>
-            <div v-for="timing in timelineData.slice(0, 3)" :key="timing.type" class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center">
-              <div class="text-sm font-semibold px-3">
+            <div v-for="timing in timelineData.slice(0, 3)" :key="timing.type" class="grid h-8 grid-cols-[160px_1fr_80px] items-center gap-2">
+              <div class="px-3 text-sm font-semibold">
                 {{ timing.type }}
               </div>
               <div class="relative h-4">
                 <div class="absolute inset-0" :style="{ left: `${timing.left}%`, width: `${timing.width}%`, backgroundColor: timing.color }"></div>
               </div>
-              <div class="text-right text-sm font-semibold px-3">
+              <div class="px-3 text-right text-sm font-semibold">
                 {{ formatDuration(timing.length) }}
               </div>
             </div>
-            <div v-if="timelineData.length > 3" class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center bg-muted">
-              <div class="text-xs font-semibold uppercase px-3">
+            <div v-if="timelineData.length > 3" class="grid h-8 grid-cols-[160px_1fr_80px] items-center gap-2 bg-muted">
+              <div class="px-3 text-xs font-semibold uppercase">
                 Request/Response
               </div>
               <div></div>
-              <div class="text-right text-xs font-semibold uppercase px-3">
+              <div class="px-3 text-right text-xs font-semibold uppercase">
                 Time
               </div>
             </div>
-            <div v-for="timing in timelineData.slice(3)" :key="timing.type" class="grid grid-cols-[160px_1fr_80px] gap-2 h-8 items-center">
-              <div class="text-sm font-semibold px-3">
+            <div v-for="timing in timelineData.slice(3)" :key="timing.type" class="grid h-8 grid-cols-[160px_1fr_80px] items-center gap-2">
+              <div class="px-3 text-sm font-semibold">
                 {{ timing.type }}
               </div>
               <div class="relative h-4">
                 <div class="absolute inset-0" :style="{ left: `${timing.left}%`, width: `${timing.width}%`, backgroundColor: timing.color }"></div>
               </div>
-              <div class="text-right text-sm font-semibold px-3">
+              <div class="px-3 text-right text-sm font-semibold">
                 {{ formatDuration(timing.length) }}
               </div>
             </div>
@@ -454,7 +454,7 @@ const dnsResponse = computed(() => {
           <div v-if="dnsResponse.dns_server" class="mb-6 flex items-center gap-3 rounded-lg border bg-muted/30 p-4">
             <Icon class="size-5 text-muted-foreground" name="lucide:server" />
             <div>
-              <div class="text-xs font-medium uppercase text-muted-foreground">
+              <div class="text-xs font-medium text-muted-foreground uppercase">
                 DNS Server
               </div>
               <div class="font-mono text-sm font-semibold">
@@ -496,37 +496,37 @@ const dnsResponse = computed(() => {
                   <table class="w-full text-sm">
                     <thead>
                       <tr class="border-b bg-muted/50">
-                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">
                           Name
                         </th>
-                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">
                           Type
                         </th>
-                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">
                           TTL
                         </th>
-                        <th class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">
                           Data
                         </th>
-                        <th v-if="dnsResponse.formats.json.Answer.some(a => a.preference !== undefined || a.port !== undefined || a.priority !== undefined)" class="text-left py-3 px-4 text-xs font-semibold uppercase text-muted-foreground">
+                        <th v-if="dnsResponse.formats.json.Answer.some(a => a.preference !== undefined || a.port !== undefined || a.priority !== undefined)" class="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">
                           Additional
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="(answer, index) in dnsResponse.formats.json.Answer" :key="index" class="border-b border-border/50 transition-colors hover:bg-muted/30">
-                        <td class="py-3 px-4 font-mono text-sm">
+                        <td class="px-4 py-3 font-mono text-sm">
                           {{ answer.name }}
                         </td>
-                        <td class="py-3 px-4">
+                        <td class="px-4 py-3">
                           <Badge variant="secondary">
                             {{ answer.type }}
                           </Badge>
                         </td>
-                        <td class="py-3 px-4 font-mono text-sm">
+                        <td class="px-4 py-3 font-mono text-sm">
                           {{ answer.TTL }}s
                         </td>
-                        <td class="py-3 px-4">
+                        <td class="px-4 py-3">
                           <div class="flex flex-wrap gap-1">
                             <Badge
                               v-if="Array.isArray(answer.data)"
@@ -551,7 +551,7 @@ const dnsResponse = computed(() => {
                             </Badge>
                           </div>
                         </td>
-                        <td v-if="answer.preference !== undefined || answer.port !== undefined || answer.priority !== undefined" class="py-3 px-4">
+                        <td v-if="answer.preference !== undefined || answer.port !== undefined || answer.priority !== undefined" class="px-4 py-3">
                           <div class="flex flex-wrap gap-2 text-xs">
                             <Badge v-if="answer.preference !== undefined" class="font-mono" variant="outline">
                               Pref: {{ answer.preference }}
@@ -584,7 +584,7 @@ const dnsResponse = computed(() => {
               <!-- JSON Format -->
               <div v-if="dnsResponse.formats?.json">
                 <div class="rounded-lg border bg-muted/30 p-4">
-                  <pre class="overflow-x-auto text-xs font-mono leading-relaxed whitespace-pre-wrap text-foreground">{{ JSON.stringify(dnsResponse.formats.json, null, 2) }}</pre>
+                  <pre class="overflow-x-auto font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground">{{ JSON.stringify(dnsResponse.formats.json, null, 2) }}</pre>
                 </div>
               </div>
               <div v-else class="rounded-lg border border-dashed p-8 text-center">
@@ -599,7 +599,7 @@ const dnsResponse = computed(() => {
               <!-- Raw Format -->
               <div v-if="dnsResponse.formats?.raw">
                 <div class="rounded-lg border bg-muted/30 p-4">
-                  <pre class="overflow-x-auto text-xs font-mono leading-relaxed whitespace-pre-wrap text-foreground">{{ dnsResponse.formats.raw }}</pre>
+                  <pre class="overflow-x-auto font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground">{{ dnsResponse.formats.raw }}</pre>
                 </div>
               </div>
               <div v-else class="rounded-lg border border-dashed p-8 text-center">

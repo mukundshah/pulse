@@ -43,16 +43,16 @@ function selectIcon(icon: string) {
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
       <button
-        class="size-10 bg-[#ECF4E9] text-[#1E4841] rounded-full flex items-center justify-center text-lg shrink-0 hover:bg-[#D9E8D4] transition-colors cursor-pointer"
+        class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#ECF4E9] text-lg text-[#1E4841] transition-colors hover:bg-[#D9E8D4]"
         type="button"
       >
         <Icon :name="modelValue" />
       </button>
     </PopoverTrigger>
     <PopoverContent align="start" class="w-82 p-0" side="bottom">
-      <div class="py-3 space-y-3 overflow-clip">
+      <div class="space-y-3 overflow-clip py-3">
         <div class="space-y-2 px-3">
-          <h4 class="font-semibold text-sm text-[#1E4841] sr-only">
+          <h4 class="sr-only text-sm font-semibold text-[#1E4841]">
             Select Icon
           </h4>
           <div class="relative">
@@ -63,25 +63,25 @@ function selectIcon(icon: string) {
               type="search"
             />
             <Icon
-              class="absolute right-2.5 top-1/2 -translate-y-1/2 size-4 text-[#6B7271] pointer-events-none"
+              class="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-[#6B7271]"
               name="lucide:search"
             />
           </div>
         </div>
-        <div class="h-96 overflow-y-auto space-y-4 px-3 pr-0">
+        <div class="h-96 space-y-4 overflow-y-auto px-3 pr-0">
           <div
             v-for="category in filteredCategories"
             :key="category.category"
             class="space-y-2"
           >
-            <h5 class="text-xs font-medium text-[#6B7271] uppercase tracking-wide">
+            <h5 class="text-xs font-medium tracking-wide text-[#6B7271] uppercase">
               {{ category.category }}
             </h5>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="icon in category.icons"
                 :key="icon"
-                class="size-10 bg-[#F5F5F5] hover:bg-[#ECF4E9] text-[#1E4841] rounded-lg flex items-center justify-center text-lg transition-colors"
+                class="flex size-10 items-center justify-center rounded-lg bg-[#F5F5F5] text-lg text-[#1E4841] transition-colors hover:bg-[#ECF4E9]"
                 type="button"
                 :class="{ 'bg-[#ECF4E9] ring-2 ring-[#1E4841]': modelValue === icon }"
                 @click="selectIcon(icon)"

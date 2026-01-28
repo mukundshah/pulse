@@ -12,7 +12,7 @@ const props = defineProps<{ class?: HTMLAttributes['class'] }>()
     aria-disabled="true"
     data-slot="breadcrumb-page"
     role="link"
-    :class="cn('text-foreground font-normal', props.class)"
+    :class="cn('font-normal text-foreground', props.class)"
   >
     <slot></slot>
   </span>

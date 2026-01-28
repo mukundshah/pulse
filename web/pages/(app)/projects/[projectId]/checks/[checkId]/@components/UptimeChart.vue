@@ -44,16 +44,16 @@ const { data: response, pending, error, refresh } = useLazyPulseAPI('/internal/p
 
 <template>
   <div class="h-48 w-full">
-    <Skeleton v-if="pending" class="h-full w-full" />
+    <Skeleton v-if="pending" class="size-full" />
 
-    <div v-else-if="error" class="h-full flex flex-col items-center justify-center text-sm text-destructive gap-2">
+    <div v-else-if="error" class="flex h-full flex-col items-center justify-center gap-2 text-sm text-destructive">
       <p>Failed to load uptime data</p>
       <Button size="sm" variant="outline" @click="refresh()">
         Retry
       </Button>
     </div>
 
-    <div v-else class="h-full w-full">
+    <div v-else class="size-full">
       <ChartContainer class="h-48 w-full" :config="chartConfig" :cursor="true">
         <VisXYContainer :data="response?.data">
           <VisStackedBar

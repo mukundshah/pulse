@@ -36,7 +36,7 @@ const onSubmit = handleSubmit(async (data) => {
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
         <div class="mb-4 inline-flex items-center justify-center">
-          <AppIcon class="text-foreground size-12" />
+          <AppIcon class="size-12 text-foreground" />
         </div>
         <h1 class="mb-2 text-3xl font-semibold tracking-tight">
           Reset your password
@@ -103,7 +103,7 @@ const onSubmit = handleSubmit(async (data) => {
             variant="ghost"
           >
             <NuxtLink to="/auth/login">
-              <Icon class="mr-2 h-4 w-4" name="lucide:arrow-left" />
+              <Icon class="mr-2 size-4" name="lucide:arrow-left" />
               Back to sign in
             </NuxtLink>
           </Button>

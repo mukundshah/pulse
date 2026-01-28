@@ -42,7 +42,7 @@ const onReset = () => {
 <template>
   <form class="flex flex-row gap-y-6" @reset="onReset" @submit="onSubmit">
     <FormField v-slot="{ componentField }" name="name">
-      <FormItem class="px-1.25 py-2 pb-2.5 w-full">
+      <FormItem class="w-full px-1.25 py-2 pb-2.5">
         <FormLabel class="sr-only">
           Project Name
         </FormLabel>

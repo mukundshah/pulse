@@ -28,7 +28,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
   <div
     v-if="collapsible === 'none'"
     data-slot="sidebar"
-    :class="cn('bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col', props.class)"
+    :class="cn('flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground', props.class)"
     v-bind="$attrs"
   >
     <slot></slot>
@@ -41,7 +41,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
     @update:open="setOpenMobile"
   >
     <SheetContent
-      class="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+      class="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
       data-mobile="true"
       data-sidebar="sidebar"
       data-slot="sidebar"
@@ -54,7 +54,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
         <SheetTitle>Sidebar</SheetTitle>
         <SheetDescription>Displays the mobile sidebar.</SheetDescription>
       </SheetHeader>
-      <div class="flex h-full w-full flex-col">
+      <div class="flex size-full flex-col">
         <slot></slot>
       </div>
     </SheetContent>
@@ -62,7 +62,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
   <div
     v-else
-    class="group peer text-sidebar-foreground hidden md:block"
+    class="group peer hidden text-sidebar-foreground md:block"
     data-slot="sidebar"
     :data-collapsible="state === 'collapsed' ? collapsible : ''"
     :data-side="side"
@@ -95,7 +95,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
       v-bind="$attrs"
     >
       <div
-        class="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+        class="flex size-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
         data-sidebar="sidebar"
       >
         <slot></slot>

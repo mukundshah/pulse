@@ -12,25 +12,25 @@ useHead({ titleTemplate: '%siteName %separator %s' })
 
 <template>
   <div class="magicpattern">
-    <header class="py-2 px-2 sm:px-4 flex items-center justify-end">
+    <header class="flex items-center justify-end p-2 sm:px-4">
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Button size="icon" variant="ghost">
-            <Icon class="h-4 w-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
+            <Icon class="size-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
             <span class="sr-only">Toggle theme</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem @click="colorMode.preference = 'light'">
-            <Icon class="h-4 w-4" :name="THEME_ICONS.light" />
+            <Icon class="size-4" :name="THEME_ICONS.light" />
             Light
           </DropdownMenuItem>
           <DropdownMenuItem @click="colorMode.preference = 'dark'">
-            <Icon class="h-4 w-4" :name="THEME_ICONS.dark" />
+            <Icon class="size-4" :name="THEME_ICONS.dark" />
             Dark
           </DropdownMenuItem>
           <DropdownMenuItem @click="colorMode.preference = 'system'">
-            <Icon class="h-4 w-4" :name="THEME_ICONS.system" />
+            <Icon class="size-4" :name="THEME_ICONS.system" />
             System
           </DropdownMenuItem>
         </DropdownMenuContent>

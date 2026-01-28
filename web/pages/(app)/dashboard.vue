@@ -27,9 +27,9 @@ const greeting = computed(() => {
   <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
+        <h1 class="flex items-center gap-2 text-3xl font-semibold tracking-tight">
           <span>{{ greeting }}, </span>
-          <Skeleton v-if="userPending" class="h-6 w-24 inline-block" />
+          <Skeleton v-if="userPending" class="inline-block h-6 w-24" />
           <span v-else class="inline-block">{{ user?.name }}</span>
         </h1>
         <p class="text-muted-foreground">

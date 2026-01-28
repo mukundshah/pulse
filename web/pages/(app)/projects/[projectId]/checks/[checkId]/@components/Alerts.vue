@@ -45,7 +45,7 @@ const { data: response, pending } = useLazyPulseAPI(`/internal/projects/{project
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead class="p-0 w-px">
+          <TableHead class="w-px p-0">
             <span class="sr-only">Link</span>
           </TableHead>
           <TableHead class="w-[30%] min-w-[150px] text-left">
@@ -65,7 +65,7 @@ const { data: response, pending } = useLazyPulseAPI(`/internal/projects/{project
             <TableCell class="p-0" />
             <TableCell>
               <div class="flex items-center gap-2">
-                <Skeleton class="h-5 w-5 rounded-full" />
+                <Skeleton class="size-5 rounded-full" />
                 <Skeleton class="h-4 w-20" />
               </div>
             </TableCell>
@@ -82,7 +82,7 @@ const { data: response, pending } = useLazyPulseAPI(`/internal/projects/{project
           <TableCell colspan="4">
             <Empty class="h-48">
               <EmptyHeader>
-                <EmptyMedia class="text-muted-foreground rounded-full bg-muted" variant="icon">
+                <EmptyMedia class="rounded-full bg-muted text-muted-foreground" variant="icon">
                   <Bell />
                 </EmptyMedia>
                 <EmptyDescription>No alerts have been triggered yet</EmptyDescription>
@@ -93,7 +93,7 @@ const { data: response, pending } = useLazyPulseAPI(`/internal/projects/{project
 
         <TableRow v-for="alert in response?.data" :key="alert.id">
           <TableCell class="p-0">
-            <NuxtLink class="absolute h-full w-full inset-0" :to="`/projects/${projectId}/checks/${checkId}/runs/${alert.run_id}`" />
+            <NuxtLink class="absolute inset-0 size-full" :to="`/projects/${projectId}/checks/${checkId}/runs/${alert.run_id}`" />
           </TableCell>
           <TableCell>
             <div class="flex items-center gap-2">

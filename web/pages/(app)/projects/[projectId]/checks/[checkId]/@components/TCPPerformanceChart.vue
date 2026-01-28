@@ -82,16 +82,16 @@ const timeBucket = computed(() => {
 
 <template>
   <div class="h-74 w-full">
-    <Skeleton v-if="pending" class="h-full w-full" />
+    <Skeleton v-if="pending" class="size-full" />
 
-    <div v-else-if="error" class="h-full flex flex-col items-center justify-center text-sm text-destructive gap-2">
+    <div v-else-if="error" class="flex h-full flex-col items-center justify-center gap-2 text-sm text-destructive">
       <p>Failed to load performance data</p>
       <Button size="sm" variant="outline" @click="refresh()">
         Retry
       </Button>
     </div>
 
-    <div v-else-if="chartData.length === 0" class="h-full flex items-center justify-center text-sm text-muted-foreground">
+    <div v-else-if="chartData.length === 0" class="flex h-full items-center justify-center text-sm text-muted-foreground">
       No performance data available
     </div>
 

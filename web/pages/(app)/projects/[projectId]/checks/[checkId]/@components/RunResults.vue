@@ -73,7 +73,7 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
   <div ref="containerRef" class="divide-y divide-border">
     <Empty v-if="response && response.data.length === 0" class="h-full">
       <EmptyHeader>
-        <EmptyMedia class="text-muted-foreground rounded-full bg-muted" variant="icon">
+        <EmptyMedia class="rounded-full bg-muted text-muted-foreground" variant="icon">
           <Activity />
         </EmptyMedia>
         <EmptyDescription>Check has no run results yet</EmptyDescription>
@@ -83,7 +83,7 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
     <NuxtLink
       v-for="run in response?.data"
       :key="run.id"
-      class="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors group"
+      class="group flex items-center gap-3 p-3 transition-colors hover:bg-accent/50"
       :to="`/projects/${projectId}/checks/${checkId}/runs/${run.id}`"
     >
       <Icon
@@ -91,8 +91,8 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
         :class="STATUS_ICON_COLOR_MAP[run.status as keyof typeof STATUS_ICON_COLOR_MAP].color"
         :name="STATUS_ICON_COLOR_MAP[run.status as keyof typeof STATUS_ICON_COLOR_MAP].icon"
       />
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
+      <div class="min-w-0 flex-1">
+        <div class="mb-1 flex items-center gap-2">
           <span class="text-sm font-medium text-foreground">
             {{ run.region?.name || 'Unknown' }}
           </span>
@@ -106,7 +106,7 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
           />
         </p>
       </div>
-      <FormattedNumber class="text-xs font-mono text-muted-foreground" :options="{ style: 'unit', unit: 'millisecond' }" :value="run.total_time_ms" />
+      <FormattedNumber class="font-mono text-xs text-muted-foreground" :options="{ style: 'unit', unit: 'millisecond' }" :value="run.total_time_ms" />
     </NuxtLink>
 
     <template v-if="pending || isFetchingMore">
@@ -115,8 +115,8 @@ const { isLoading: isFetchingMore } = useInfiniteScroll(
         :key="i"
         class="flex items-center gap-3 p-3"
       >
-        <Skeleton class="size-4.5 rounded-full shrink-0" />
-        <div class="flex-1 min-w-0 space-y-2">
+        <Skeleton class="size-4.5 shrink-0 rounded-full" />
+        <div class="min-w-0 flex-1 space-y-2">
           <div class="flex items-center gap-2">
             <Skeleton class="h-4 w-24" />
           </div>

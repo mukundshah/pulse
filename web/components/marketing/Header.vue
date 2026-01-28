@@ -15,11 +15,11 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+  <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
     <div class="container grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4">
       <div class="flex items-center gap-2">
         <NuxtLink class="flex items-center gap-2" to="/">
-          <AppIcon class="text-foreground size-10" />
+          <AppIcon class="size-10 text-foreground" />
           <span class="text-lg font-semibold tracking-wider">Pulse</span>
         </NuxtLink>
       </div>
@@ -31,21 +31,21 @@ const handleLogout = async () => {
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button class="-mr-2" size="icon" variant="ghost">
-              <Icon class="h-4 w-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
+              <Icon class="size-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
               <span class="sr-only">Toggle theme</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem @click="colorMode.preference = 'light'">
-              <Icon class="h-4 w-4" :name="THEME_ICONS.light" />
+              <Icon class="size-4" :name="THEME_ICONS.light" />
               Light
             </DropdownMenuItem>
             <DropdownMenuItem @click="colorMode.preference = 'dark'">
-              <Icon class="h-4 w-4" :name="THEME_ICONS.dark" />
+              <Icon class="size-4" :name="THEME_ICONS.dark" />
               Dark
             </DropdownMenuItem>
             <DropdownMenuItem @click="colorMode.preference = 'system'">
-              <Icon class="h-4 w-4" :name="THEME_ICONS.system" />
+              <Icon class="size-4" :name="THEME_ICONS.system" />
               System
             </DropdownMenuItem>
           </DropdownMenuContent>

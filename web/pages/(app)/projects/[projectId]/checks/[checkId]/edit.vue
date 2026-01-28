@@ -7,7 +7,7 @@ import { useForm, Field as VeeField, FieldArray as VeeFieldArray } from 'vee-val
 import { z } from 'zod'
 
 import { constructURL } from '@/utils/url'
-import { ASSERTION_COMPARISONS, ASSERTION_PROPERTIES, ASSERTION_SOURCES, DNS_RECORD_TYPES, DNS_RESOLVER_PROTOCOLS, HTTP_METHODS, IP_VERSIONS, STATUS_CODES } from '~/constants/http'
+import { ASSERTION_COMPARISONS, ASSERTION_PROPERTIES, ASSERTION_SOURCES, DNS_RECORD_TYPES, DNS_RESOLVER_PROTOCOLS, HTTP_METHODS, IP_VERSIONS } from '~/constants/http'
 
 const TYPE_TITLE_MAP = {
   http: 'HTTP Monitor',
@@ -676,7 +676,7 @@ const onSubmit = handleSubmit(async (data) => {
 
             <div class="flex flex-col gap-4">
               <VeeFieldArray v-slot="{ fields, push, remove }" name="headers">
-                <div class="flex flex-row items-center gap-2 justify-between">
+                <div class="flex flex-row items-center justify-between gap-2">
                   <Label>Headers</Label>
                   <Button
                     size="sm"
@@ -771,7 +771,7 @@ const onSubmit = handleSubmit(async (data) => {
         <CardContent>
           <VeeFieldArray v-slot="{ fields, push, remove }" name="assertions">
             <div class="flex flex-col gap-4">
-              <div class="flex flex-row items-center gap-2 justify-between mb-4">
+              <div class="mb-4 flex flex-row items-center justify-between gap-2">
                 <h2 class="text-lg font-medium">
                   Assertions
                 </h2>
@@ -967,7 +967,7 @@ const onSubmit = handleSubmit(async (data) => {
                 </Field>
               </VeeField>
             </div>
-            <div class="flex flex-row gap-4 justify-start">
+            <div class="flex flex-row justify-start gap-4">
               <VeeField v-slot="{ field, errors }" name="should_fail">
                 <Field class="w-fit" orientation="horizontal" :data-invalid="!!errors.length">
                   <Checkbox
@@ -1156,7 +1156,7 @@ const onSubmit = handleSubmit(async (data) => {
           <div class="space-y-6">
             <div class="flex flex-row items-end gap-4">
               <VeeField v-slot="{ field, errors }" name="degraded_threshold">
-                <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                   <FieldLabel for="degraded_threshold">
                     Degraded after
                   </FieldLabel>
@@ -1168,13 +1168,13 @@ const onSubmit = handleSubmit(async (data) => {
                     :name="field.name"
                     @update:model-value="field.onChange"
                   >
-                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                       <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                      <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                        <ChevronUp class="h-4 w-4" />
+                      <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                        <ChevronUp class="size-4" />
                       </NumberFieldIncrement>
-                      <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                        <ChevronDown class="h-4 w-4" />
+                      <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                        <ChevronDown class="size-4" />
                       </NumberFieldDecrement>
                     </NumberFieldContent>
                   </NumberField>
@@ -1209,7 +1209,7 @@ const onSubmit = handleSubmit(async (data) => {
             </div>
             <div class="flex flex-row items-end gap-4">
               <VeeField v-slot="{ field, errors }" name="failed_threshold">
-                <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                   <FieldLabel for="failed_threshold">
                     Failed after
                   </FieldLabel>
@@ -1221,13 +1221,13 @@ const onSubmit = handleSubmit(async (data) => {
                     :name="field.name"
                     @update:model-value="field.onChange"
                   >
-                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                       <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                      <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                        <ChevronUp class="h-4 w-4" />
+                      <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                        <ChevronUp class="size-4" />
                       </NumberFieldIncrement>
-                      <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                        <ChevronDown class="h-4 w-4" />
+                      <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                        <ChevronDown class="size-4" />
                       </NumberFieldDecrement>
                     </NumberFieldContent>
                   </NumberField>
@@ -1352,7 +1352,7 @@ const onSubmit = handleSubmit(async (data) => {
 
             <template v-if="values.retries !== 'none'">
               <VeeField v-slot="{ field, errors }" name="retries_count">
-                <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                   <FieldLabel for="retries_count">
                     Number of retries
                   </FieldLabel>
@@ -1364,13 +1364,13 @@ const onSubmit = handleSubmit(async (data) => {
                     :name="field.name"
                     @update:model-value="field.onChange"
                   >
-                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                    <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                       <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                      <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                        <ChevronUp class="h-4 w-4" />
+                      <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                        <ChevronUp class="size-4" />
                       </NumberFieldIncrement>
-                      <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                        <ChevronDown class="h-4 w-4" />
+                      <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                        <ChevronDown class="size-4" />
                       </NumberFieldDecrement>
                     </NumberFieldContent>
                   </NumberField>
@@ -1380,7 +1380,7 @@ const onSubmit = handleSubmit(async (data) => {
 
               <div class="flex flex-row items-end gap-4">
                 <VeeField v-slot="{ field, errors }" name="retries_delay">
-                  <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                  <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                     <FieldLabel for="retries_delay">
                       Delay between retries
                     </FieldLabel>
@@ -1392,13 +1392,13 @@ const onSubmit = handleSubmit(async (data) => {
                       :name="field.name"
                       @update:model-value="field.onChange"
                     >
-                      <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                      <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                         <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                        <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                          <ChevronUp class="h-4 w-4" />
+                        <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                          <ChevronUp class="size-4" />
                         </NumberFieldIncrement>
-                        <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                          <ChevronDown class="h-4 w-4" />
+                        <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                          <ChevronDown class="size-4" />
                         </NumberFieldDecrement>
                       </NumberFieldContent>
                     </NumberField>
@@ -1434,7 +1434,7 @@ const onSubmit = handleSubmit(async (data) => {
 
               <template v-if="values.retries === 'linear' || values.retries === 'exponential'">
                 <VeeField v-slot="{ field, errors }" name="retries_factor">
-                  <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                  <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                     <FieldLabel for="retries_factor">
                       Factor
                     </FieldLabel>
@@ -1446,13 +1446,13 @@ const onSubmit = handleSubmit(async (data) => {
                       :name="field.name"
                       @update:model-value="field.onChange"
                     >
-                      <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                      <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                         <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                        <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                          <ChevronUp class="h-4 w-4" />
+                        <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                          <ChevronUp class="size-4" />
                         </NumberFieldIncrement>
-                        <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                          <ChevronDown class="h-4 w-4" />
+                        <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                          <ChevronDown class="size-4" />
                         </NumberFieldDecrement>
                       </NumberFieldContent>
                     </NumberField>
@@ -1525,7 +1525,7 @@ const onSubmit = handleSubmit(async (data) => {
 
                 <template v-if="values.retries_jitter && values.retries_jitter !== 'none'">
                   <VeeField v-slot="{ field, errors }" name="retries_jitter_factor">
-                    <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                    <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                       <FieldLabel for="retries_jitter_factor">
                         Jitter Factor
                       </FieldLabel>
@@ -1537,13 +1537,13 @@ const onSubmit = handleSubmit(async (data) => {
                         :name="field.name"
                         @update:model-value="field.onChange"
                       >
-                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                          <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                            <ChevronUp class="h-4 w-4" />
+                          <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                            <ChevronUp class="size-4" />
                           </NumberFieldIncrement>
-                          <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                            <ChevronDown class="h-4 w-4" />
+                          <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                            <ChevronDown class="size-4" />
                           </NumberFieldDecrement>
                         </NumberFieldContent>
                       </NumberField>
@@ -1554,7 +1554,7 @@ const onSubmit = handleSubmit(async (data) => {
 
                 <div class="flex flex-row items-end gap-4">
                   <VeeField v-slot="{ field, errors }" name="retries_max_delay">
-                    <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                    <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                       <FieldLabel for="retries_max_delay">
                         Max delay
                       </FieldLabel>
@@ -1566,13 +1566,13 @@ const onSubmit = handleSubmit(async (data) => {
                         :name="field.name"
                         @update:model-value="field.onChange"
                       >
-                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                          <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                            <ChevronUp class="h-4 w-4" />
+                          <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                            <ChevronUp class="size-4" />
                           </NumberFieldIncrement>
-                          <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                            <ChevronDown class="h-4 w-4" />
+                          <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                            <ChevronDown class="size-4" />
                           </NumberFieldDecrement>
                         </NumberFieldContent>
                       </NumberField>
@@ -1608,7 +1608,7 @@ const onSubmit = handleSubmit(async (data) => {
 
                 <div class="flex flex-row items-end gap-4">
                   <VeeField v-slot="{ field, errors }" name="retries_timeout">
-                    <Field class="[&>div]:w-36 w-fit" :data-invalid="!!errors.length">
+                    <Field class="w-fit [&>div]:w-36" :data-invalid="!!errors.length">
                       <FieldLabel for="retries_timeout">
                         Timeout
                       </FieldLabel>
@@ -1620,13 +1620,13 @@ const onSubmit = handleSubmit(async (data) => {
                         :name="field.name"
                         @update:model-value="field.onChange"
                       >
-                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=increment]:pr-0 *:data-[slot=input]:has-data-[slot=decrement]:pl-0">
+                        <NumberFieldContent class="*:data-[slot=input]:has-data-[slot=decrement]:pl-0 *:data-[slot=input]:has-data-[slot=increment]:pr-0">
                           <NumberFieldInput class="pe-7" :aria-invalid="!!errors.length" />
-                          <NumberFieldIncrement class="border-b left-[unset] right-px -translate-y-full border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                            <ChevronUp class="h-4 w-4" />
+                          <NumberFieldIncrement class="right-px left-[unset] h-[calc(50%-1px)] -translate-y-full border-b border-l border-input px-1.25 py-0">
+                            <ChevronUp class="size-4" />
                           </NumberFieldIncrement>
-                          <NumberFieldDecrement class="left-[unset] right-px translate-y-0 border-l border-input py-0 px-1.25 h-[calc(50%-1px)]">
-                            <ChevronDown class="h-4 w-4" />
+                          <NumberFieldDecrement class="right-px left-[unset] h-[calc(50%-1px)] translate-y-0 border-l border-input px-1.25 py-0">
+                            <ChevronDown class="size-4" />
                           </NumberFieldDecrement>
                         </NumberFieldContent>
                       </NumberField>

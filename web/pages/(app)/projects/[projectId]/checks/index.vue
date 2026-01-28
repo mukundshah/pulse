@@ -110,14 +110,14 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
 
 <template>
   <div class="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
-    <div class="grid grid-cols-1 gap-4 @xl/main:grid-cols-3 py-4">
-      <Card class="@container/card from-green-200/30 to-green-200/5 dark:from-green-900/30 dark:to-green-900/5 bg-linear-to-t shadow-none border-green-500/20 dark:border-green-900/30 py-4 *:data-[slot=card-header]:px-4">
+    <div class="grid grid-cols-1 gap-4 py-4 @xl/main:grid-cols-3">
+      <Card class="@container/card border-green-500/20 bg-linear-to-t from-green-200/30 to-green-200/5 py-4 shadow-none *:data-[slot=card-header]:px-4 dark:border-green-900/30 dark:from-green-900/30 dark:to-green-900/5">
         <CardHeader>
           <CardDescription class="text-green-600 dark:text-green-400">
             Passing
           </CardDescription>
           <Skeleton v-if="statusCountsLoading" class="h-9 w-24" />
-          <CardTitle v-else class="font-semibold tabular-nums text-3xl text-green-600 dark:text-green-400">
+          <CardTitle v-else class="text-3xl font-semibold text-green-600 tabular-nums dark:text-green-400">
             {{ counts?.passing }}
           </CardTitle>
           <CardAction>
@@ -125,13 +125,13 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
           </CardAction>
         </CardHeader>
       </Card>
-      <Card class="@container/card from-yellow-200/30 to-yellow-200/5 dark:from-yellow-900/30 dark:to-yellow-900/5 bg-linear-to-t shadow-none border-yellow-500/30 dark:border-yellow-900/30 py-4 *:data-[slot=card-header]:px-4">
+      <Card class="@container/card border-yellow-500/30 bg-linear-to-t from-yellow-200/30 to-yellow-200/5 py-4 shadow-none *:data-[slot=card-header]:px-4 dark:border-yellow-900/30 dark:from-yellow-900/30 dark:to-yellow-900/5">
         <CardHeader>
           <CardDescription class="text-yellow-600 dark:text-yellow-400">
             Degraded
           </CardDescription>
           <Skeleton v-if="statusCountsLoading" class="h-9 w-24" />
-          <CardTitle v-else class="font-semibold tabular-nums text-3xl text-yellow-600 dark:text-yellow-400">
+          <CardTitle v-else class="text-3xl font-semibold text-yellow-600 tabular-nums dark:text-yellow-400">
             {{ counts?.degraded }}
           </CardTitle>
           <CardAction>
@@ -139,13 +139,13 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
           </CardAction>
         </CardHeader>
       </Card>
-      <Card class="@container/card from-red-200/30 to-red-200/5 dark:from-red-900/30 dark:to-red-900/5 bg-linear-to-t shadow-none border-red-500/20 dark:border-red-900/30 py-4 *:data-[slot=card-header]:px-4">
+      <Card class="@container/card border-red-500/20 bg-linear-to-t from-red-200/30 to-red-200/5 py-4 shadow-none *:data-[slot=card-header]:px-4 dark:border-red-900/30 dark:from-red-900/30 dark:to-red-900/5">
         <CardHeader>
           <CardDescription class="text-red-600 dark:text-red-400">
             Failing
           </CardDescription>
           <Skeleton v-if="statusCountsLoading" class="h-9 w-24" />
-          <CardTitle v-else class="font-semibold tabular-nums text-3xl text-red-600 dark:text-red-400">
+          <CardTitle v-else class="text-3xl font-semibold text-red-600 tabular-nums dark:text-red-400">
             {{ counts?.failing }}
           </CardTitle>
           <CardAction>
@@ -158,10 +158,10 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead class="p-0 w-px">
+          <TableHead class="w-px p-0">
             <span class="sr-only">Link</span>
           </TableHead>
-          <TableHead class="pl-9 w-[calc(47%-64px)] min-w-[200px] text-left">
+          <TableHead class="w-[calc(47%-64px)] min-w-[200px] pl-9 text-left">
             Name
           </TableHead>
           <TableHead class="w-[8%] min-w-[80px] text-center">
@@ -196,7 +196,7 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
             <TableCell class="p-0" />
             <TableCell>
               <div class="flex items-center gap-4">
-                <Skeleton class="h-2.5 w-2.5 rounded-full" />
+                <Skeleton class="size-2.5 rounded-full" />
                 <div class="space-y-2">
                   <Skeleton class="h-4 w-32" />
                   <Skeleton class="h-3 w-24" />
@@ -225,7 +225,7 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
               <Skeleton class="h-4 w-12" />
             </TableCell>
             <TableCell class="text-right">
-              <Skeleton class="h-8 w-8 rounded-md" />
+              <Skeleton class="size-8 rounded-md" />
             </TableCell>
           </TableRow>
         </template>
@@ -251,7 +251,7 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
           class="relative cursor-pointer hover:bg-muted/50"
         >
           <TableCell class="p-0">
-            <NuxtLink class="absolute h-full w-full inset-0" :to="`/projects/${projectId}/checks/${check.id}`" />
+            <NuxtLink class="absolute inset-0 size-full" :to="`/projects/${projectId}/checks/${check.id}`" />
           </TableCell>
           <TableCell>
             <div class="flex items-center justify-start gap-4">
@@ -307,17 +307,17 @@ const handleDeleteCheck = async (check: PulseAPIResponse<'listProjectChecks'>[nu
               <DropdownMenuContent align="end">
                 <DropdownMenuItem as-child>
                   <NuxtLink :to="`/projects/${projectId}/checks/${check.id}/edit`">
-                    <Icon class="mr-2 h-4 w-4" name="lucide:edit" />
+                    <Icon class="mr-2 size-4" name="lucide:edit" />
                     Edit
                   </NuxtLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled>
-                  <Icon class="mr-2 h-4 w-4" name="lucide:copy" />
+                  <Icon class="mr-2 size-4" name="lucide:copy" />
                   Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem class="text-destructive" @click="handleDeleteCheck(check)">
-                  <Icon class="mr-2 h-4 w-4" name="lucide:trash-2" />
+                  <Icon class="mr-2 size-4" name="lucide:trash-2" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>

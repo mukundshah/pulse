@@ -44,7 +44,7 @@ const handleLogout = async () => {
       <Sidebar class="h-auto border-r" collapsible="offcanvas">
         <SidebarHeader class="border-b">
           <NuxtLink class="flex items-center gap-2.5 px-2 py-1.5" to="/dashboard">
-            <AppIcon class="text-foreground size-8" />
+            <AppIcon class="size-8 text-foreground" />
             <span class="text-base font-semibold tracking-wider">Pulse</span>
           </NuxtLink>
         </SidebarHeader>
@@ -95,7 +95,7 @@ const handleLogout = async () => {
                 </template>
                 <template v-else>
                   <SidebarMenuItem>
-                    <div class="px-2 py-2 text-sm text-muted-foreground">
+                    <div class="p-2 text-sm text-muted-foreground">
                       No projects yet
                     </div>
                   </SidebarMenuItem>
@@ -112,12 +112,12 @@ const handleLogout = async () => {
                   class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   size="lg"
                 >
-                  <Skeleton class="h-8 w-8 rounded-lg" />
+                  <Skeleton class="size-8 rounded-lg" />
                   <div class="grid flex-1 text-left text-sm leading-tight">
                     <Skeleton class="h-4 max-w-(--skeleton-width) flex-1" :style="{ '--skeleton-width': '40%' }" />
-                    <Skeleton class="h-3 max-w-(--skeleton-width) flex-1 mt-1" :style="{ '--skeleton-width': '70%' }" />
+                    <Skeleton class="mt-1 h-3 max-w-(--skeleton-width) flex-1" :style="{ '--skeleton-width': '70%' }" />
                   </div>
-                  <Skeleton class="ml-auto size-6 rounded" />
+                  <Skeleton class="ml-auto size-6 rounded-sm" />
                 </SidebarMenuButton>
               </template>
               <DropdownMenu v-else>
@@ -126,7 +126,7 @@ const handleLogout = async () => {
                     class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     size="lg"
                   >
-                    <Avatar class="h-8 w-8 rounded-lg grayscale">
+                    <Avatar class="size-8 rounded-lg grayscale">
                       <AvatarImage :alt="user?.name" :src="user?.avatar_url ?? ''" />
                       <AvatarFallback class="rounded-lg">
                         {{ user?.initials }}
@@ -134,7 +134,7 @@ const handleLogout = async () => {
                     </Avatar>
                     <div class="grid flex-1 text-left text-sm leading-tight">
                       <span class="truncate font-medium">{{ user?.name }}</span>
-                      <span class="text-muted-foreground truncate text-xs">
+                      <span class="truncate text-xs text-muted-foreground">
                         {{ user?.email }}
                       </span>
                     </div>
@@ -149,7 +149,7 @@ const handleLogout = async () => {
                 >
                   <DropdownMenuLabel class="p-0 font-normal">
                     <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                      <Avatar class="h-8 w-8 rounded-lg">
+                      <Avatar class="size-8 rounded-lg">
                         <AvatarImage :alt="user?.name" :src="user?.avatar_url ?? ''" />
                         <AvatarFallback class="rounded-lg">
                           {{ user?.initials }}
@@ -157,7 +157,7 @@ const handleLogout = async () => {
                       </Avatar>
                       <div class="grid flex-1 text-left text-sm leading-tight">
                         <span class="truncate font-medium">{{ user?.name }}</span>
-                        <span class="text-muted-foreground truncate text-xs">
+                        <span class="truncate text-xs text-muted-foreground">
                           {{ user?.email }}
                         </span>
                       </div>
@@ -173,22 +173,22 @@ const handleLogout = async () => {
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                       <div class="flex items-center gap-2">
-                        <Icon class="h-4 w-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
+                        <Icon class="size-4" :name="THEME_ICONS[colorMode.preference as keyof typeof THEME_ICONS]" />
                         <span>Theme</span>
                       </div>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent>
                         <DropdownMenuItem @click="colorMode.preference = 'light'">
-                          <Icon class="h-4 w-4" :name="THEME_ICONS.light" />
+                          <Icon class="size-4" :name="THEME_ICONS.light" />
                           Light
                         </DropdownMenuItem>
                         <DropdownMenuItem @click="colorMode.preference = 'dark'">
-                          <Icon class="h-4 w-4" :name="THEME_ICONS.dark" />
+                          <Icon class="size-4" :name="THEME_ICONS.dark" />
                           Dark
                         </DropdownMenuItem>
                         <DropdownMenuItem @click="colorMode.preference = 'system'">
-                          <Icon class="h-4 w-4" :name="THEME_ICONS.system" />
+                          <Icon class="size-4" :name="THEME_ICONS.system" />
                           System
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
@@ -205,9 +205,9 @@ const handleLogout = async () => {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset class="overflow-auto h-svh">
-        <header class="bg-background/90 sticky top-0 z-10 flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) backdrop-blur-md">
-          <div class="flex items-center gap-2 justify-between w-full px-4 lg:px-6">
+      <SidebarInset class="h-svh overflow-auto">
+        <header class="sticky top-0 z-10 flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background/90 backdrop-blur-md transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+          <div class="flex w-full items-center justify-between gap-2 px-4 lg:px-6">
             <div class="flex items-center gap-2">
               <SidebarTrigger />
               <!-- Breadcrumbs -->
@@ -232,9 +232,9 @@ const handleLogout = async () => {
 
                 <template #fallback>
                   <div class="flex items-center gap-2">
-                    <Skeleton class="rounded-sm h-5 w-16" />
-                    <Skeleton class="rounded-sm h-5 w-4" />
-                    <Skeleton class="rounded-sm h-5 w-24" />
+                    <Skeleton class="h-5 w-16 rounded-sm" />
+                    <Skeleton class="h-5 w-4 rounded-sm" />
+                    <Skeleton class="h-5 w-24 rounded-sm" />
                   </div>
                 </template>
               </ClientOnly>
@@ -320,8 +320,8 @@ const handleLogout = async () => {
                 </template>
                 <template #fallback>
                   <div class="flex items-center gap-2">
-                    <Skeleton class="h-8 rounded-sm w-24" />
-                    <Skeleton class="h-8 rounded-sm w-24" />
+                    <Skeleton class="h-8 w-24 rounded-sm" />
+                    <Skeleton class="h-8 w-24 rounded-sm" />
                   </div>
                 </template>
               </ClientOnly>

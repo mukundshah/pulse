@@ -39,7 +39,7 @@ const content = computed(() => {
     v-if="$slots.default || content"
     data-slot="field-error"
     role="alert"
-    :class="cn('text-destructive text-sm font-normal', props.class)"
+    :class="cn('text-sm font-normal text-destructive', props.class)"
   >
     <slot v-if="$slots.default"></slot>
 

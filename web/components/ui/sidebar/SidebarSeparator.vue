@@ -11,7 +11,7 @@ const props = defineProps<{ class?: HTMLAttributes['class'] }>()
   <Separator
     data-sidebar="separator"
     data-slot="sidebar-separator"
-    :class="cn('bg-sidebar-border mx-2 w-auto', props.class)"
+    :class="cn('mx-2 w-auto bg-sidebar-border', props.class)"
   >
     <slot></slot>
   </Separator>

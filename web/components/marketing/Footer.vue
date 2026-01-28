@@ -4,7 +4,7 @@
       <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
         <div class="flex items-center gap-2">
           <NuxtLink class="flex items-center gap-2" to="/">
-            <AppIcon class="text-foreground size-6" />
+            <AppIcon class="size-6 text-foreground" />
             <span class="text-sm font-medium tracking-wider">Pulse</span>
           </NuxtLink>
         </div>
