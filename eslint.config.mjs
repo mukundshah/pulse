@@ -1,11 +1,29 @@
 // @ts-check
 import antfu from '@antfu/eslint-config'
+import betterTw from 'eslint-plugin-better-tailwindcss'
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
   {
     rules: {
       'nuxt/nuxt-config-keys-order': 'off',
+    },
+  },
+  {
+    plugins: {
+      'better-tailwindcss': betterTw,
+    },
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: 'web/assets/css/tailwind.css',
+      },
+    },
+    rules: {
+      ...betterTw.configs.recommended.rules,
+      'better-tailwindcss/enforce-consistent-line-wrapping': ['warn', {
+        printWidth: 2000,
+        preferSingleLine: true,
+      }],
     },
   },
   antfu({

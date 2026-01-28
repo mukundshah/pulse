@@ -51,6 +51,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.4.2",
     "eslint": "^9.39.1",
+    "eslint-plugin-better-tailwindcss": "^4.0.2",
     "shadcn-vue": "^2.4.1",
     "typescript": "^5.9.3"
   }
