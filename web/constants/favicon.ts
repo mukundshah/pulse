@@ -139,7 +139,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
   default: [
     {
       rel: 'icon',
-      href: '/icon-light.svg',
+      href: '/favicons/icon-light.svg',
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: light)',
@@ -147,7 +147,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
     },
     {
       rel: 'icon',
-      href: '/icon-dark.svg',
+      href: '/favicons/icon-dark.svg',
       type: 'image/svg+xml',
       sizes: 'any',
       media: '(prefers-color-scheme: dark)',
@@ -155,7 +155,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
     },
     {
       rel: 'icon',
-      href: '/icon-light.png',
+      href: '/favicons/icon-light.png',
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: light)',
@@ -163,7 +163,7 @@ export const FAVICONS: Record<string, ResolvableArray<ResolvableLink>> = {
     },
     {
       rel: 'icon',
-      href: '/icon-dark.png',
+      href: '/favicons/icon-dark.png',
       sizes: '48x48',
       type: 'image/png',
       media: '(prefers-color-scheme: dark)',
